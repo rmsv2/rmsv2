@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from .lib.configreader import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,8 +77,12 @@ WSGI_APPLICATION = 'rmsv2.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config.get('database', 'db_name', fallback='rms'),
+        'USER': config.get('database', 'user', fallback='user'),
+        'PASSWORD': config.get('database', 'password', fallback='rms'),
+        'HOST': config.get('database', 'host', fallback='localhost'),
+        'PORT': config.get('database', 'port', fallback=''),
     }
 }
 
