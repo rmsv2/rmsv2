@@ -1,0 +1,21 @@
+{
+  "name": "static",
+  "authors": [
+    "Julian Jacobi <mail@julianjacobi.net>"
+  ],
+  "description": "rmsv2 static files",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "admin-lte": "adminlte#^2.4.2"
+  }
+}
