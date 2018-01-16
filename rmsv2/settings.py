@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import socket
 from .lib.configreader import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -83,7 +84,7 @@ DATABASES = {
         'NAME': config.get('database', 'db_name', fallback='rms'),
         'USER': config.get('database', 'user', fallback='user'),
         'PASSWORD': config.get('database', 'password', fallback='rms'),
-        'HOST': config.get('database', 'host', fallback='localhost'),
+        'HOST': socket.gethostbyname(config.get('database', 'host', fallback='localhost')),
         'PORT': config.get('database', 'port', fallback=''),
     }
 }
@@ -130,3 +131,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
