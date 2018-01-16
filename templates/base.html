@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% if title %}
+            {{ title }} -
+        {% endif %}
+        RMSv2
+    </title>
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/Ionicons/css/ionicons.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/admin-lte/dist/css/AdminLTE.min.css' %}">
+</head>
+{% block body %}
+
+{% endblock %}
+<script type="application/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.css' %}"></script>
+<script type="application/javascript" src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+{% block scripts %}
+
+{% endblock %}
+</html>
