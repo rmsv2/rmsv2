@@ -22,7 +22,7 @@ def add_device_view(request):
         form = forms.DeviceForm()
     return render(request, 'inventory/device_form.html', context={'form': form,
                                                                   'add': True,
-                                                                  'title': 'Gerätetyp hinzufügen'})
+                                                                  'title': 'Gerätetyp erstellen'})
 
 
 @login_required()

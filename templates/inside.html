@@ -48,7 +48,7 @@
                         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="{% if '/inventory/addDevice' in request.path %}active{% endif %}"><a href="{% url 'add_device' %}"><i class="fa fa-plus-circle"></i>Gerätetyp hinzufügen</a></li>
+                        <li class="{% if '/inventory/addDevice' in request.path %}active{% endif %}"><a href="{% url 'add_device' %}"><i class="fa fa-plus-circle"></i>Gerätetyp erstellen</a></li>
                         <li class="{% if '/inventory/devices/uncategorized' in request.path %}active{% endif %}"><a href="{% url 'untagged_devices' %}"><i class="fa fa-square-o"></i>Unkategorisierte Geräte</a></li>
                     </ul>
                 </li>
