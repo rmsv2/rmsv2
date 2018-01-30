@@ -5,17 +5,22 @@ from django.db import models
 
 class Tag(models.Model):
     name = models.CharField('Name', max_length=200, unique=True, primary_key=True)
-    tags = models.ManyToManyField('Tag')
+
+
+class Category(models.Model):
+    name = models.CharField('Name', max_length=200)
+    top_category = models.ForeignKey('Category', on_delete=models.PROTECT)
 
 
 class Device(models.Model):
     name = models.CharField('Name', max_length=100)
     model_number = models.CharField('Modell Nummer', max_length=100)
     vendor = models.CharField('Hersteller', max_length=300, default='')
-    description = models.TextField('Beschreibung')
+    description = models.TextField('Beschreibung', null=True, blank=True)
     price_new = models.FloatField('Neupreis')
     price_rental = models.FloatField('Vermietpreis')
     tags = models.ManyToManyField(Tag, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, verbose_name='Kategorie', blank=True)
 
     @classmethod
     def untagged(cls):

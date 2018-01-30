@@ -49,7 +49,7 @@
                     </a>
                     <ul class="treeview-menu">
                         <li class="{% if '/inventory/addDevice' in request.path %}active{% endif %}"><a href="{% url 'add_device' %}"><i class="fa fa-plus-circle"></i>Gerätetyp hinzufügen</a></li>
-                        <li class="{% if '/inventory/devices/untagged' in request.path %}active{% endif %}"><a href="{% url 'untagged_devices' %}"><i class="fa fa-square-o"></i>Ungetaggte Geräte</a></li>
+                        <li class="{% if '/inventory/devices/uncategorized' in request.path %}active{% endif %}"><a href="{% url 'untagged_devices' %}"><i class="fa fa-square-o"></i>Unkategorisierte Geräte</a></li>
                     </ul>
                 </li>
             </ul>

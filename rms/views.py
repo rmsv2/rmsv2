@@ -26,9 +26,9 @@ def add_device_view(request):
 
 
 @login_required()
-def untagged_devices_view(request):
+def uncategorized_devices_view(request):
     return render(request, 'inventory/device_list.html', context={'devices': models.Device.untagged(),
-                                                                  'title': 'Ungetaggte Geräte'})
+                                                                  'title': 'Unkategorisierte Geräte'})
 
 
 @login_required()
