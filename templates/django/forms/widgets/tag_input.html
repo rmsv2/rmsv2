@@ -1,0 +1,108 @@
+<style type="text/css">
+    #tagSuggestions {
+        position: absolute;
+        background: white;
+        min-width: 50%;
+        overflow-y: scroll;
+    }
+</style>
+<div id="hidden-tag-suggestions">
+{% for val in widget.value %}
+    {% if val.strip != '' %}
+    <input type="hidden" name="tags" value="{{ val }}">
+    {% endif %}
+{% endfor %}
+</div>
+<div id="selected-tags">
+{% for val in widget.value %}
+    {% if val.strip != '' %}
+    <span class="tag-element">{{ val }}[<a href="#">x</a>]</span>
+    {% endif %}
+{% endfor %}
+</div>
+<br>
+<input type="text" class="form-control tags-search-field">
+<div id="tagSuggestions">
+    <ul class="nav nav-list nav-pills nav-stacked">
+        <li><a href="#" class="tag-suggestion init-tag-suggestion">Neuen Tag erstellen: <span id="new-tag-name"></span></a></li>
+    </ul>
+</div>
+
+<script>
+    var available_tags = [
+        {% for group_name, group_choices, group_index in widget.optgroups %}
+            {% for option in group_choices %}
+                {% if option.value.strip != '' %}
+                '{{ option.value }}',
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    ];
+    function delete_tag_element() {
+        var $this = $(this);
+        var value = $this.parent().text();
+        value = value.substr(0, value.indexOf('[x]'));
+        $('#hidden-tag-suggestions').find('input[value="'+value+'"]').remove();
+        $this.parent().remove();
+    }
+    function tag_suggestion_callback(){
+        var value = this.text;
+        if ($(this).hasClass('init-tag-suggestion')) {
+            value = $(this).find('#new-tag-name').text()
+        }
+        $('#hidden-tag-suggestions').append($('<input type="hidden" name="tags" value="'+value+'">'));
+
+        var new_element = $('<span class="tag-element">'+value+'[<a href="#">x</a>] </span>');
+        new_element.find('a').on('click', delete_tag_element);
+        $('#selected-tags').append(new_element);
+        $('.tags-search-field').val('')
+    }
+    $().ready(function () {
+        $('#tagSuggestions').hide();
+        $('.tags-search-field').on('keyup', function () {
+            var tag_suggestions = $('#tagSuggestions');
+            if (this.value.length > 0){
+                tag_suggestions.show();
+                $('#new-tag-name').text(this.value);
+                var searchValue = this.value.toLowerCase();
+                var results = [];
+                for (var i in available_tags) {
+                    if (available_tags.hasOwnProperty(i)) {
+                        var compartment = available_tags[i].toLowerCase();
+                        if (compartment.indexOf(searchValue) >= 0) {
+                            results.push(available_tags[i])
+                        }
+                    }
+                }
+                $('.ajax-tag-suggestion').remove();
+                var suggestion_list = $('#tagSuggestions').find('ul');
+                for (var j in results) {
+                    if (results.hasOwnProperty(j)){
+                        var new_element = $('<li class="ajax-tag-suggestion"><a href="#" class="tag-suggestion">'+results[j]+'</a></li>');
+                        new_element.find('a').on('click', tag_suggestion_callback);
+                        suggestion_list.append(new_element);
+                    }
+                }
+            } else {
+                tag_suggestions.hide();
+            }
+        });
+        $('.tags-search-field').on('focusout', function () {
+            setTimeout(function () {
+                $('#tagSuggestions').hide();
+            }, 200);
+        });
+        $('.init-tag-suggestion').on('click', function () {
+            var value = $(this).find('#new-tag-name').text();
+            $.post(window.location.origin+'/api/inventory/tags/add', {name: value}, function () {
+                $('#hidden-tag-suggestions').append($('<input type="hidden" name="tags" value="'+value+'">'));
+
+                var new_element = $('<span class="tag-element">'+value+'[<a href="#">x</a>] </span>');
+                new_element.find('a').on('click', delete_tag_element);
+                $('#selected-tags').append(new_element);
+                $('.tags-search-field').val('')
+            })
+        });
+        $('.tag-element').find('a').on('click', delete_tag_element)
+    });
+</script>

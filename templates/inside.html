@@ -41,14 +41,14 @@
         <section class="sidebar">
             <ul class="sidebar-menu tree" data-widget="tree">
                 <li class="header">NAVIGATION</li>
-                <li class="treeview">
+                <li class="treeview {% if '/inventory' in request.path %}active{% endif %}">
                     <a href="#">
                         <i class="fa fa-cubes"></i>
                         <span>Inventar</span>
                         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-plus-circle"></i>Gerätetyp hinzufügen</a></li>
+                        <li class="{% if '/inventory/addDevice' in request.path %}active{% endif %}"><a href="{% url 'add_device' %}"><i class="fa fa-plus-circle"></i>Gerätetyp hinzufügen</a></li>
                     </ul>
                 </li>
             </ul>
