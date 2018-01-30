@@ -11,10 +11,15 @@ class Tag(models.Model):
 class Device(models.Model):
     name = models.CharField('Name', max_length=100)
     model_number = models.CharField('Modell Nummer', max_length=100)
+    vendor = models.CharField('Hersteller', max_length=300, default='')
     description = models.TextField('Beschreibung')
     price_new = models.FloatField('Neupreis')
     price_rental = models.FloatField('Vermietpreis')
     tags = models.ManyToManyField(Tag, blank=True)
+
+    @classmethod
+    def untagged(cls):
+        return cls.objects.filter(tags=None)
 
 
 class Instance(models.Model):

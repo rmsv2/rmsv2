@@ -1,0 +1,21 @@
+<dl class="dl-horizontal">
+    <dt>Name</dt>
+    <dd>{{ device.name }}</dd>
+    <dt>Hersteller</dt>
+    <dd>{{ device.vendor }}</dd>
+    <dt>Modell Nummer</dt>
+    <dd>{{ device.model_number }}</dd>
+    <dt>Bechreibung</dt>
+    <dd>{{ device.description }}</dd>
+    <dt>Neupreis</dt>
+    <dd>{{ device.price_new }}€</dd>
+    <dt>Verleihpreis</dt>
+    <dd>{{ device.price_rental }}€</dd>
+    <dt>Tags</dt>
+    <dd>
+        {% for tag in device.tags_set.all %}
+            <span>{{ tag.name }}</span>
+        {% endfor %}
+
+    </dd>
+</dl>

@@ -1,0 +1,22 @@
+<div class="modal modal-danger fade" id="delete_device{{ device.id }}" tabindex="-1" role="dialog" aria-labelledby="delete_device{{ device.id }}_label">
+    <form action="{% url 'delete_device' device.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete_device{{ device.id }}_label">Gerätetyp löschen</h4>
+                </div>
+                <div class="modal-body">
+                    Soll der Gerätetyp wirklich gelöscht werden?<br>
+                    <br>
+                    {% include 'inventory/widgets/device_info.html' %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline">Löschen</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
