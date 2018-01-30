@@ -29,11 +29,14 @@ class Device(models.Model):
     def uncategorized(cls):
         return cls.objects.filter(category=None)
 
+    def __str__(self):
+        return '{} ({})'.format(self.name, self.vendor)
+
 
 class Instance(models.Model):
     serial_number = models.CharField('Seriennummer', max_length=200)
     inventory_number = models.CharField('Inventarnummer', max_length=200)
-    identificial_description = models.TextField('Identifikationsbeschreibung')
+    identificial_description = models.TextField('Identifikations- beschreibung', null=True, blank=True)
     broken = models.BooleanField('Defekt?')
-    device = models.ForeignKey(Device, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, verbose_name='Gerätetyp')
+    tags = models.ManyToManyField(Tag, blank=True)

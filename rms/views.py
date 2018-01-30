@@ -16,6 +16,23 @@ def redirect_previous(request):
         return redirect('home')
 
 
+def get_path(category):
+    path = []
+    path_urls = []
+    actual_category = category
+    while actual_category is not None:
+        path.append({'text': actual_category.name,
+                     'url': reverse('category', kwargs={'category_id': actual_category.id})})
+        path_urls.append(reverse('category', kwargs={'category_id': actual_category.id}))
+        actual_category = actual_category.top_category
+    path.reverse()
+
+    if len(path_urls) is 0:
+        path_urls.append(reverse('uncategorized_devices'))
+
+    return path, path_urls
+
+
 @login_required()
 def home_view(request):
     return render(request, 'home.html', context={'title': 'Home'})
@@ -43,7 +60,7 @@ def edit_device_view(request, device_id):
             form = forms.DeviceForm(request.POST, instance=device)
             if form.is_valid():
                 form.save()
-                return redirect_previous(request)
+                return redirect('device', device_id=device.id)
         else:
             form = forms.DeviceForm(instance=device)
 
@@ -77,23 +94,32 @@ def device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
 
-        path = []
-        path_urls = []
-        actual_category = device.category
-        while actual_category is not None:
-            path.append({'text': actual_category.name,
-                         'url': reverse('category', kwargs={'category_id': actual_category.id})})
-            path_urls.append(reverse('category', kwargs={'category_id': actual_category.id}))
-            actual_category = actual_category.top_category
-        path.reverse()
-
-        if len(path_urls) is 0:
-            path_urls.append(reverse('uncategorized_devices'))
+        path, path_urls = get_path(device.category)
 
         return render(request, 'inventory/device.html', context={'title': device.name,
                                                                  'device': device,
                                                                  'path': path,
                                                                  'category_path_urls': path_urls})
+    except models.Device.DoesNotExist:
+        return HttpResponse('', status=404)
+
+
+@login_required()
+def create_instance_view(request, device_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+        if request.method == 'POST':
+            post = request.POST.dict()
+            post['device'] = '{}'.format(device.id)
+            form = forms.InstanceForm(post)
+            if form.is_valid():
+                form.save()
+                return redirect('device', device_id=device.id)
+        else:
+            form = forms.InstanceForm(initial={'device': device})
+        form.disable_device_field()
+        return render(request, 'generics/form.html', context={'title': 'Instanz erstellen',
+                                                              'form': form})
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
 

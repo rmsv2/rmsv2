@@ -10,6 +10,7 @@ urlpatterns = [
     path('inventory/devices/<int:device_id>/delete', views.delete_device_view, name='delete_device'),
     path('inventory/devices/<int:device_id>/edit', views.edit_device_view, name='edit_device'),
     path('inventory/devices/<int:device_id>', views.device_view, name='device'),
+    path('inventory/devices/<int:device_id>/instances/add', views.create_instance_view, name='create_instance'),
 
     path('inventory/categories/add', views.create_category_view, name='create_category'),
     path('inventory/categories/<int:category_id>', views.category_view, name='category'),
