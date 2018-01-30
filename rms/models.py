@@ -9,7 +9,10 @@ class Tag(models.Model):
 
 class Category(models.Model):
     name = models.CharField('Name', max_length=200)
-    top_category = models.ForeignKey('Category', on_delete=models.PROTECT)
+    top_category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, blank=True, verbose_name='Übergeordnete Kategorie')
+
+    def __str__(self):
+        return self.name
 
 
 class Device(models.Model):
@@ -23,8 +26,8 @@ class Device(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, verbose_name='Kategorie', blank=True)
 
     @classmethod
-    def untagged(cls):
-        return cls.objects.filter(tags=None)
+    def uncategorized(cls):
+        return cls.objects.filter(category=None)
 
 
 class Instance(models.Model):

@@ -1,0 +1,14 @@
+{% extends 'inside.html' %}
+
+{% block content %}
+    <section class="content-header">
+    <h1>{{ title }}</h1>
+    </section>
+    <section class="content">
+    <div class="box box-default">
+        <div class="box-body">
+            {% include 'inventory/device_list.html' %}
+        </div>
+    </div>
+    </section>
+{% endblock %}

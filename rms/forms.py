@@ -16,3 +16,15 @@ class DeviceForm(ModelForm):
         super(DeviceForm, self).__init__(*args, **kwargs)
         for fieldname in self.fields:
             self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+
+
+class CategoryForm(ModelForm):
+
+    class Meta:
+        model = models.Category
+        exclude = []
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryForm, self).__init__(*args, **kwargs)
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})

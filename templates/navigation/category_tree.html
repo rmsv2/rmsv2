@@ -1,0 +1,11 @@
+{% for category in categories %}
+    {% url 'category' category.id as category_url %}
+    <li class="{% if category_url in category_path_urls %}active{% endif %}">
+        <a href="{% url 'category' category.id %}"><i class="fa fa-circle-o"></i>{{ category.name }}</a>
+        {% if category.category_set.all %}
+            <ul class="treeview-menu">
+                {% include 'navigation/category_tree.html' with categories=category.category_set.all %}
+            </ul>
+        {% endif %}
+    </li>
+{% endfor %}
