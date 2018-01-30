@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from django.http import Http404
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from rms import forms
 from . import models
@@ -50,7 +50,7 @@ def edit_device_view(request, device_id):
         return render(request, 'generics/form.html', context={'title': 'Grätetyp bearbeiten',
                                                               'form': form})
     except models.Device.DoesNotExist:
-        return Http404()
+        return HttpResponse('', status=404)
 
 
 @login_required()
@@ -87,12 +87,15 @@ def device_view(request, device_id):
             actual_category = actual_category.top_category
         path.reverse()
 
+        if len(path_urls) is 0:
+            path_urls.append(reverse('uncategorized_devices'))
+
         return render(request, 'inventory/device.html', context={'title': device.name,
                                                                  'device': device,
                                                                  'path': path,
                                                                  'category_path_urls': path_urls})
     except models.Device.DoesNotExist:
-        return Http404()
+        return HttpResponse('', status=404)
 
 
 @login_required()
