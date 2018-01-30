@@ -52,7 +52,7 @@
                         <li class="{% if '/inventory/categories/add' in request.path %}active{% endif %}"><a href="{% url 'create_category' %}"><i class="fa fa-plus-circle"></i>Kategorie erstellen</a></li>
                         <li role="separator" class="list-seperator"></li>
                         {% include 'navigation/category_tree.html' with categories=top_categories %}
-                        <li class="{% if '/inventory/devices/uncategorized' in request.path %}active{% endif %}"><a href="{% url 'untagged_devices' %}"><i class="fa fa-square-o"></i>Unkategorisierte Geräte</a></li>
+                        <li class="{% if '/inventory/devices/uncategorized' in request.path %}active{% endif %}"><a href="{% url 'untagged_devices' %}"><i class="fa fa-circle-o"></i>Unkategorisierte Geräte</a></li>
                     </ul>
                 </li>
             </ul>

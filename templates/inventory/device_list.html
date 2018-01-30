@@ -9,10 +9,10 @@
 <tbody>
 {% for device in devices %}
     <tr>
-        <td>{{ device.name }}</td>
-        <td>{{ device.vendor }}</td>
+        <td><a href="{% url 'device' device.id %}">{{ device.name }}</a></td>
+        <td><a href="{% url 'device' device.id %}">{{ device.vendor }}</a></td>
         <td style="text-align: right;">
-            <a href="#"><i class="fa fa-edit"></i></a>
+            <a href="{% url 'edit_device' device.id %}"><i class="fa fa-edit"></i></a>
             <a href="#" data-toggle="modal" data-target="#delete_device{{ device.id }}"><i class="fa fa-trash text-danger"></i></a>
         </td>
     </tr>

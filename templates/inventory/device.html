@@ -2,19 +2,22 @@
 
 {% block content %}
     <section class="content-header">
-    <h1>Kategorie: {{ category.name }}</h1>
+    <h1>Gerätetyp: {{ device.name }}</h1>
     <ol class="breadcrumb">
         <li><i class="fa fa-cubes"></i> Inventar</li>
         {% for element in path %}
             <li><a href="{{ element.url }}">{{ element.text }}</a></li>
         {% endfor %}
-
+        <li>{{ device.name }}</li>
     </ol>
     </section>
     <section class="content">
     <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">Übersicht</h3>
+        </div>
         <div class="box-body">
-            {% include 'inventory/device_list.html' with devices=category.device_set.all %}
+            {% include 'inventory/widgets/device_info.html' %}
         </div>
     </div>
     </section>

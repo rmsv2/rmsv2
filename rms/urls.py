@@ -8,6 +8,8 @@ urlpatterns = [
     path('inventory/addDevice', views.add_device_view, name='add_device'),
     path('inventory/devices/uncategorized', views.uncategorized_devices_view, name='untagged_devices'),
     path('inventory/devices/<int:device_id>/delete', views.delete_device_view, name='delete_device'),
+    path('inventory/devices/<int:device_id>/edit', views.edit_device_view, name='edit_device'),
+    path('inventory/devices/<int:device_id>', views.device_view, name='device'),
 
     path('inventory/categories/add', views.create_category_view, name='create_category'),
     path('inventory/categories/<int:category_id>', views.category_view, name='category'),

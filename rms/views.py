@@ -1,9 +1,19 @@
 from django.shortcuts import render, redirect, reverse
+from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from rms import forms
 from . import models
 
 # Create your views here.
+
+
+def redirect_previous(request):
+    if 'redirect' in request.GET:
+        return redirect(request.GET['redirect'])
+    elif 'HTTP_REFERER' in request.META:
+        return redirect(request.META['HTTP_REFERER'])
+    else:
+        return redirect('home')
 
 
 @login_required()
@@ -26,9 +36,27 @@ def add_device_view(request):
 
 
 @login_required()
+def edit_device_view(request, device_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+        if request.method == 'POST':
+            form = forms.DeviceForm(request.POST, instance=device)
+            if form.is_valid():
+                form.save()
+                return redirect_previous(request)
+        else:
+            form = forms.DeviceForm(instance=device)
+
+        return render(request, 'generics/form.html', context={'title': 'Grätetyp bearbeiten',
+                                                              'form': form})
+    except models.Device.DoesNotExist:
+        return Http404()
+
+
+@login_required()
 def uncategorized_devices_view(request):
     return render(request, 'inventory/uncategorized_devices.html', context={'devices': models.Device.uncategorized(),
-                                                                  'title': 'Unkategorisierte Geräte'})
+                                                                            'title': 'Unkategorisierte Geräte'})
 
 
 @login_required()
@@ -41,12 +69,30 @@ def delete_device_view(request, device_id):
     except models.Device.DoesNotExist:
         pass
 
-    if 'redirect' in request.GET:
-        return redirect(request.GET['redirect'])
-    elif 'HTTP_REFERER' in request.META:
-        return redirect(request.META['HTTP_REFERER'])
-    else:
-        return redirect('home')
+    return redirect_previous(request)
+
+
+@login_required()
+def device_view(request, device_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+
+        path = []
+        path_urls = []
+        actual_category = device.category
+        while actual_category is not None:
+            path.append({'text': actual_category.name,
+                         'url': reverse('category', kwargs={'category_id': actual_category.id})})
+            path_urls.append(reverse('category', kwargs={'category_id': actual_category.id}))
+            actual_category = actual_category.top_category
+        path.reverse()
+
+        return render(request, 'inventory/device.html', context={'title': device.name,
+                                                                 'device': device,
+                                                                 'path': path,
+                                                                 'category_path_urls': path_urls})
+    except models.Device.DoesNotExist:
+        return Http404()
 
 
 @login_required()
@@ -75,7 +121,8 @@ def category_view(request, category_id):
         path_urls = []
         actual_category = category
         while actual_category is not None:
-            path.append(actual_category)
+            path.append({'text': actual_category.name,
+                         'url': reverse('category', kwargs={'category_id': actual_category.id})})
             path_urls.append(reverse('category', kwargs={'category_id': actual_category.id}))
             actual_category = actual_category.top_category
         path.reverse()
