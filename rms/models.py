@@ -14,6 +14,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def sub_categories_sorted_by_name(self):
+        return Category.objects.filter(top_category=self).order_by('name')
+
 
 class Device(models.Model):
     name = models.CharField('Name', max_length=100)
