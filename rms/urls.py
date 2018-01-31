@@ -11,6 +11,10 @@ urlpatterns = [
     path('inventory/devices/<int:device_id>/edit', views.edit_device_view, name='edit_device'),
     path('inventory/devices/<int:device_id>', views.device_view, name='device'),
     path('inventory/devices/<int:device_id>/instances/add', views.create_instance_view, name='create_instance'),
+    path('inventory/devices/<int:device_id>/instances/<int:instance_id>/edit',
+         views.edit_instance_view, name='edit_instance'),
+    path('inventory/devices/<int:device_id>/instances/<int:instance_id>/delete',
+         views.delete_instance_view, name='delete_instance'),
 
     path('inventory/categories/add', views.create_category_view, name='create_category'),
     path('inventory/categories/<int:category_id>', views.category_view, name='category'),

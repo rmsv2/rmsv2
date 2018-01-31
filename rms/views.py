@@ -131,6 +131,51 @@ def create_instance_view(request, device_id):
 
 
 @login_required()
+def edit_instance_view(request, device_id, instance_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+        instance = models.Instance.objects.get(id=instance_id)
+
+        if request.method == 'POST':
+            post = request.POST.dict()
+            post['device'] = '{}'.format(device.id)
+            form = forms.InstanceForm(post, instance=instance)
+            if form.is_valid():
+                form.save()
+                return redirect('device', device_id=device.id)
+        else:
+            form = forms.InstanceForm(instance=instance)
+        form.disable_device_field()
+        path, path_urls = get_path(device.category)
+        path.insert(0, {'text': '<i class="fa fa-cubes"></i>Inventar'})
+        path.append({'url': reverse('device', kwargs={'device_id': device.id}), 'text': device.name})
+        return render(request, 'generics/form.html', context={'title': 'Instanz erstellen',
+                                                              'form': form,
+                                                              'path': path,
+                                                              'category_path_urls': path_urls})
+
+    except models.Device.DoesNotExist:
+        return HttpResponse('', status=404)
+    except models.Instance.DoesNotExist:
+        return redirect('device', device_id)
+
+
+@login_required()
+def delete_instance_view(request, device_id, instance_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+        instance = models.Instance.objects.get(id=instance_id)
+
+        if request.method == 'POST':
+            instance.delete()
+            return redirect('device', device_id=device.id)
+    except models.Device.DoesNotExist:
+        return HttpResponse('', status=404)
+    except models.Instance.DoesNotExist:
+        return redirect('device', device_id=device_id)
+
+
+@login_required()
 def create_category_view(request, category_id=None):
     if request.method == 'POST':
         form = forms.CategoryForm(request.POST)

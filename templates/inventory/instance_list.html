@@ -12,10 +12,11 @@
         <td>{{ instance.serial_number }}</td>
         <td>{{ instance.inventory_number }}</td>
         <td style="text-align: right;">
-            <a href="#"><i class="fa fa-edit"></i></a>
-            <a href="#"><i class="fa fa-trash"></i></a>
+            <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>
+            <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash"></i></a>
         </td>
         </tr>
+        {% include 'inventory/modals/instance_delete_modal.html' %}
     {% endfor %}
     {% if not instances %}
     <tr>
