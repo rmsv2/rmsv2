@@ -118,8 +118,11 @@ def create_instance_view(request, device_id):
         else:
             form = forms.InstanceForm(initial={'device': device})
         form.disable_device_field()
+        path, path_urls = get_path(device.category)
         return render(request, 'generics/form.html', context={'title': 'Instanz erstellen',
-                                                              'form': form})
+                                                              'form': form,
+                                                              'path': path,
+                                                              'category_path_urls': path_urls})
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
 
