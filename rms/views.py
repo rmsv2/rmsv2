@@ -168,3 +168,24 @@ def category_view(request, category_id):
 
     except models.Category.DoesNotExist:
         return redirect('home')
+
+
+@login_required()
+def edit_category_view(request, category_id):
+    try:
+        category = models.Category.objects.get(id=category_id)
+        if request.method == 'POST':
+            form = forms.CategoryForm(request.POST, instance=category)
+            if form.is_valid():
+                form.save()
+                return redirect('category', category_id=category.id)
+        else:
+            form = forms.CategoryForm(instance=category)
+        path, path_urls = get_path(category)
+        path.insert(0, {'text': '<i class="fa fa-cubes"></i> Inventar'})
+        return render(request, 'generics/form.html', context={'title': 'Kategorie bearbeiten',
+                                                              'form': form,
+                                                              'path': path,
+                                                              'category_path_urls': path_urls})
+    except models.Category.DoesNotExist:
+        return redirect('home')

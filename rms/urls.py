@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('inventory/categories/add', views.create_category_view, name='create_category'),
     path('inventory/categories/<int:category_id>', views.category_view, name='category'),
+    path('inventory/categories/<int:category_id>/edit', views.edit_category_view, name='edit_category'),
 
 
     path('api/inventory/tags/search', tag_search_view),

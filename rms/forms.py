@@ -1,4 +1,4 @@
-from django.forms import ModelForm, fields
+from django.forms import ModelForm, fields, ValidationError
 from rms import models
 from .form_widgets import TagInputWidget
 
@@ -47,3 +47,11 @@ class CategoryForm(ModelForm):
         super(CategoryForm, self).__init__(*args, **kwargs)
         for fieldname in self.fields:
             self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+
+    def clean_top_category(self):
+        new_top_category = self.cleaned_data['top_category']
+        while new_top_category is not None:
+            if new_top_category.id == self.instance.id:
+                raise ValidationError('Category loop not allowed', 'category_loop')
+            new_top_category = new_top_category.top_category
+        return self.cleaned_data['top_category']

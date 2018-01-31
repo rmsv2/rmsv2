@@ -2,7 +2,13 @@
 
 {% block content %}
     <section class="content-header">
-    <h1>Kategorie: {{ category.name }}</h1>
+    <h1>
+        Kategorie: {{ category.name }}
+        <div class="btn-group" role="group">
+            <a href="{% url 'edit_category' category.id %}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Bearbeiten</a>
+            <a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Entfernen</a>
+        </div>
+    </h1>
     <ol class="breadcrumb">
         <li><i class="fa fa-cubes"></i> Inventar</li>
         {% for element in path %}
