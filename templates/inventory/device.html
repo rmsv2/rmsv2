@@ -1,6 +1,13 @@
 {% extends 'inside.html' %}
 
 {% block content %}
+    {% if protected_error %}
+    <div class="alert alert-danger alert-dismissable" role="alert">
+        <a href="{% url 'device' device.id %}"><button type="button" class="close" aria-hidden="true">&times;</button></a>
+        <h4><i class="fa fa-ban"></i> Gerätetyp konnte nicht entfernt werden!</h4>
+        So lange Instanzen dieses Gerätetyps existieren kann der Gerätetyp nicht gelöscht werden.
+    </div>
+    {% endif %}
     <section class="content-header">
     <h1>Gerätetyp: {{ device.name }}</h1>
     <ol class="breadcrumb">

@@ -3,7 +3,7 @@
 {% block content %}
     {% if protected_error %}
     <div class="alert alert-danger alert-dismissable" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <a href="{% url 'category' category.id %}"><button type="button" class="close" aria-hidden="true">&times;</button></a>
         <h4><i class="fa fa-ban"></i> Kategorie konnte nicht entfernt werden!</h4>
         So lange Unterkategorien oder Geräte in dieser Kategorie enthalten sind kann die Kategorie nicht entfernt werden.
     </div>

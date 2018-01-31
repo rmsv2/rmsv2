@@ -82,7 +82,10 @@ def delete_device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
 
-        device.delete()
+        try:
+            device.delete()
+        except ProtectedError:
+            return redirect(reverse('device', kwargs={'device_id': device.id})+'?protected_error=1')
 
     except models.Device.DoesNotExist:
         pass
@@ -97,10 +100,14 @@ def device_view(request, device_id):
 
         path, path_urls = get_path(device.category)
 
-        return render(request, 'inventory/device.html', context={'title': device.name,
-                                                                 'device': device,
-                                                                 'path': path,
-                                                                 'category_path_urls': path_urls})
+        context = {'title': device.name,
+                   'device': device,
+                   'path': path,
+                   'category_path_urls': path_urls}
+        if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
+            context['protected_error'] = True
+
+        return render(request, 'inventory/device.html', context=context)
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
 
