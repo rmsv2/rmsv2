@@ -1,12 +1,19 @@
 {% extends 'inside.html' %}
 
 {% block content %}
+    {% if protected_error %}
+    <div class="alert alert-danger alert-dismissable" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h4><i class="fa fa-ban"></i> Kategorie konnte nicht entfernt werden!</h4>
+        So lange Unterkategorien oder Geräte in dieser Kategorie enthalten sind kann die Kategorie nicht entfernt werden.
+    </div>
+    {% endif %}
     <section class="content-header">
     <h1>
         Kategorie: {{ category.name }}
         <div class="btn-group" role="group">
             <a href="{% url 'edit_category' category.id %}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Bearbeiten</a>
-            <a href="#" class="btn btn-default btn-xs"><i class="fa fa-trash"></i> Entfernen</a>
+            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#category_delete_modal"><i class="fa fa-trash"></i> Entfernen</button>
         </div>
     </h1>
     <ol class="breadcrumb">
@@ -24,4 +31,24 @@
         </div>
     </div>
     </section>
+    <form action="{% url 'delete_category' category.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal modal-danger fade" id="category_delete_modal" tabindex="-1" role="dialog" aria-labelledby="category_delete_modal_label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="category_delete_modal_label">Kategorie löschen</h4>
+                    </div>
+                    <div class="modal-body">
+                        Soll die Kategorie "{{ category.name }}" gelöscht werden?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                        <button type="submit" class="btn btn-outline">Löschen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models.deletion import ProtectedError
 from rms import forms
 from . import models
 
@@ -161,10 +162,15 @@ def category_view(request, category_id):
             actual_category = actual_category.top_category
         path.reverse()
 
-        return render(request, 'inventory/category.html', context={'title': 'Kategorie: {}'.format(category.name),
-                                                                   'path': path,
-                                                                   'category_path_urls': path_urls,
-                                                                   'category': category})
+        context = {'title': 'Kategorie: {}'.format(category.name),
+                   'path': path,
+                   'category_path_urls': path_urls,
+                   'category': category}
+
+        if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
+            context['protected_error'] = True
+
+        return render(request, 'inventory/category.html', context=context)
 
     except models.Category.DoesNotExist:
         return redirect('home')
@@ -189,3 +195,23 @@ def edit_category_view(request, category_id):
                                                               'category_path_urls': path_urls})
     except models.Category.DoesNotExist:
         return redirect('home')
+
+
+@login_required()
+def remove_category_view(request, category_id):
+    try:
+        category = models.Category.objects.get(id=category_id)
+        if request.method == 'POST':
+            top_category = category.top_category
+            try:
+                category.delete()
+            except ProtectedError:
+                return redirect(reverse('category', kwargs={'category_id': category.id})+'?protected_error=1')
+
+            if top_category is not None:
+                return redirect('category', category_id=top_category.id)
+        else:
+            return redirect('category', category_id=category.id)
+    except models.Category.DoesNotExist:
+        pass
+    return redirect('home')
