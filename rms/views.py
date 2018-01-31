@@ -119,6 +119,8 @@ def create_instance_view(request, device_id):
             form = forms.InstanceForm(initial={'device': device})
         form.disable_device_field()
         path, path_urls = get_path(device.category)
+        path.insert(0, {'text': '<i class="fa fa-cubes"></i>Inventar'})
+        path.append({'url': reverse('device', kwargs={'device_id': device.id}), 'text': device.name})
         return render(request, 'generics/form.html', context={'title': 'Instanz erstellen',
                                                               'form': form,
                                                               'path': path,

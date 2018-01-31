@@ -3,6 +3,12 @@
 {% block content %}
     <section class="content-header">
     <h1>{{ title }}</h1>
+    <ol class="breadcrumb">
+        {% for element in path %}
+            <li><a href="{{ element.url }}">{{ element.text|safe }}</a></li>
+        {% endfor %}
+
+    </ol>
     </section>
     <section class="content">
     <div class="box box-default">
