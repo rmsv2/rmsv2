@@ -21,6 +21,10 @@ urlpatterns = [
     path('inventory/categories/<int:category_id>/edit', views.edit_category_view, name='edit_category'),
     path('inventory/categories/<int:category_id>/delete', views.remove_category_view, name='delete_category'),
 
+    path('settings/profile', views.profile_view, name='profile'),
+    path('settings/profile/edit', views.edit_profile_view, name='edit_profile'),
+    path('settings/profile/changePassword', views.change_password_view, name='change_password'),
+
 
     path('api/inventory/tags/search', tag_search_view),
     path('api/inventory/tags/add', tag_add_view),

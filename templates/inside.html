@@ -22,13 +22,14 @@
                             {% if user.first_name and user.last_name %}
                                 {{ user.first_name }} {{ user.last_name }}
                             {% elif user.email %}
-                                {{ user.email }}
-                            {% else %}
                                 {{ user.username }}
+                            {% else %}
+                                {{ user.email }}
                             {% endif %}
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a href="{% url 'profile' %}"><i class="fa fa-gears"></i> Einstellungen</a></li>
                             <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                         </ul>
                     </li>

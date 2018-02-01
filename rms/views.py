@@ -267,3 +267,38 @@ def remove_category_view(request, category_id):
     except models.Category.DoesNotExist:
         pass
     return redirect('home')
+
+
+@login_required()
+def profile_view(request):
+    return render(request, 'settings/profile.html', context={'title': 'Profil',
+                                                             'path': [{'text': 'Profil'}]})
+
+
+@login_required()
+def edit_profile_view(request):
+    if request.method == 'POST':
+        form = forms.ProfileChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = forms.ProfileChangeForm(instance=request.user)
+    return render(request, 'settings/edit_profile.html', context={'title': 'Profil bearbeiten',
+                                                                  'path': [{'text': 'Profil'}],
+                                                                  'form': form})
+
+
+@login_required()
+def change_password_view(request):
+    if request.method == 'POST':
+        form = forms.PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = forms.PasswordChangeForm(user=request.user)
+    return render(request, 'settings/edit_profile.html', context={'title': 'Passwort ändern',
+                                                                  'path': [{'text': 'Profil'}],
+                                                                  'form': form})
+

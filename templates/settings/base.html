@@ -1,0 +1,28 @@
+{% extends 'inside.html' %}
+
+{% block content %}
+    <section class="content-header">
+    <h1>Einstellungen</h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-gears"></i> Einstellungen</a></li>
+        {% for element in path %}
+            <li><a href="{{ element.url }}">{{ element.text|safe }}</a></li>
+        {% endfor %}
+
+    </ol>
+    </section>
+    <section class="content">
+    <div class="box" style="border-top: none;">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="{% if '/settings/profile' in request.path %}active{% endif %}"><a href="{% url 'profile' %}"><i class="far fa-user"></i> Profil</a></li>
+                <li class="{% if '/settings/groups' in request.path %}active{% endif %}"><a href="#"><i class="fa fa-user"></i> Benutzer</a></li>
+                <li class="{% if '/settings/groups' in request.path %}active{% endif %}"><a href="#"><i class="fa fa-group"></i> Gruppen</a></li>
+            </ul>
+        </div>
+        <div class="container-fluid">
+            {% block settings-content %}{% endblock %}
+        </div>
+    </div>
+    </section>
+{% endblock %}

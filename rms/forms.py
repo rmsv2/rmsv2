@@ -1,4 +1,6 @@
 from django.forms import ModelForm, fields, ValidationError
+from django.contrib.auth import models as auth_models
+from django.contrib.auth import forms as auth_forms
 from rms import models
 from .form_widgets import TagInputWidget
 
@@ -55,3 +57,24 @@ class CategoryForm(ModelForm):
                 raise ValidationError('Category loop not allowed', 'category_loop')
             new_top_category = new_top_category.top_category
         return self.cleaned_data['top_category']
+
+
+class ProfileChangeForm(ModelForm):
+
+    class Meta:
+        model = auth_models.User
+        fields = ['first_name', 'last_name', 'email']
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileChangeForm, self).__init__(*args, **kwargs)
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+
+
+class PasswordChangeForm(auth_forms.PasswordChangeForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+
