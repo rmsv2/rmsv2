@@ -12,7 +12,7 @@
             {% else %}
                 <p class="login-box-msg">Bitte einloggen.</p>
             {% endif %}
-            <form method="post" action="{% url 'login' %}">
+            <form method="post" action="{{ request.get_full_path }}">
                 {% csrf_token %}
                 <div class="form-group has-feedback {% if form.username.errors %}has-error{% endif %}">
                     <input class="form-control" placeholder="Nutzername" name="{{ form.username.html_name }}" {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
