@@ -16,6 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "admin-lte": "adminlte#^2.4.2"
+    "admin-lte": "adminlte#^2.4.2",
+    "font-awesome": "fontawesome#^4.7.0"
   }
 }
