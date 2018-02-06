@@ -1,0 +1,27 @@
+{% extends 'settings/base.html' %}
+
+{% block settings-content %}
+    <a href="{% url 'create_user' %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-user-plus"></i> Benutzer erstellen</a>
+    <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Vollständiger Name</th>
+        <th>E-Mail Adresse</th>
+        <th style="text-align: right">Aktionen</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+        <tr>
+        <td><a href="{% url 'user' user.id %}">{{ user.username }}</a></td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+        <td style="text-align: right">
+            <a href="#"><i class="fa fa-trash"></i></a>
+        </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'settings/base.html' %}
+
+{% block settings-content %}
+    <a href="{% url 'edit_user' user.id%}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Bearbeiten</a>
+    <dl class="dl-horizontal">
+        <dt>Username</dt>
+        <dd>{{ user.username }}</dd>
+        <dt>Vollständiger Name</dt>
+        <dd>
+            {% if user.first_name or user.last_name %}
+                {{ user.first_name }} {{ user.last_name }}
+            {% else %}
+                -
+            {% endif %}
+        </dd>
+        <dt>E-Mail</dt>
+        <dd>{{ user.email }}</dd>
+        <dt>Passwort</dt>
+        <dd><a href="#" class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Passort zurücksetzen</a></dd>
+        <br>
+        <dt>Zuletzt aktiv</dt>
+        <dd>{{ user.last_login|date:'l, d. F Y H:i' }} Uhr</dd>
+    </dl>
+    <br>
+{% endblock %}

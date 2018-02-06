@@ -25,6 +25,11 @@ urlpatterns = [
     path('settings/profile/edit', views.edit_profile_view, name='edit_profile'),
     path('settings/profile/changePassword', views.change_password_view, name='change_password'),
 
+    path('settings/users', views.users_list_view, name='users_list'),
+    path('settings/users/add', views.create_user_view, name='create_user'),
+    path('settings/users/<int:user_id>', views.user_view, name='user'),
+    path('settings/users/<int:user_id>/edit', views.user_edit_view, name='edit_user'),
+
 
     path('api/inventory/tags/search', tag_search_view),
     path('api/inventory/tags/add', tag_add_view),

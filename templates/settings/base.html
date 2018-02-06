@@ -1,6 +1,11 @@
 {% extends 'inside.html' %}
 
 {% block content %}
+    <style>
+    .nav-tabs-custom li.active {
+        cursor: pointer;
+    }
+    </style>
     <section class="content-header">
     <h1>Einstellungen</h1>
     <ol class="breadcrumb">
@@ -16,7 +21,7 @@
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 <li class="{% if '/settings/profile' in request.path %}active{% endif %}"><a href="{% url 'profile' %}"><i class="far fa-user"></i> Profil</a></li>
-                <li class="{% if '/settings/groups' in request.path %}active{% endif %}"><a href="#"><i class="fa fa-user"></i> Benutzer</a></li>
+                <li class="{% if '/settings/users' in request.path %}active{% endif %}"><a href="{% url 'users_list' %}"><i class="fa fa-user"></i> Benutzer</a></li>
                 <li class="{% if '/settings/groups' in request.path %}active{% endif %}"><a href="#"><i class="fa fa-group"></i> Gruppen</a></li>
             </ul>
         </div>

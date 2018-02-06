@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models.deletion import ProtectedError
 from rms import forms
 from . import models
@@ -284,7 +285,7 @@ def edit_profile_view(request):
             return redirect('profile')
     else:
         form = forms.ProfileChangeForm(instance=request.user)
-    return render(request, 'settings/edit_profile.html', context={'title': 'Profil bearbeiten',
+    return render(request, 'settings/settings_form.html', context={'title': 'Profil bearbeiten',
                                                                   'path': [{'text': 'Profil'}],
                                                                   'form': form})
 
@@ -298,7 +299,63 @@ def change_password_view(request):
             return redirect('profile')
     else:
         form = forms.PasswordChangeForm(user=request.user)
-    return render(request, 'settings/edit_profile.html', context={'title': 'Passwort ändern',
-                                                                  'path': [{'text': 'Profil'}],
-                                                                  'form': form})
+    return render(request, 'settings/settings_form.html', context={'title': 'Passwort ändern',
+                                                                   'path': [{'text': 'Profil'}],
+                                                                   'form': form})
 
+
+@login_required()
+def users_list_view(request):
+    users = User.objects.all()
+    return render(request, 'settings/users.html', context={'title': 'Benutzer',
+                                                           'path': [{'text', 'Benutzer'}],
+                                                           'users': users})
+
+
+@login_required()
+def user_view(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        return render(request, 'settings/user.html', context={'title': user.username,
+                                                              'path': [{'text': 'Benutzer',
+                                                                        'url': reverse('users_list')},
+                                                                       {'text': user.username}],
+                                                              'user': user})
+    except User.DoesNotExist:
+        return redirect('users_list')
+
+
+@login_required()
+def user_edit_view(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        if request.method == 'POST':
+            form = forms.EditUserForm(data=request.POST, instance=user)
+        else:
+            form = forms.EditUserForm(instance=user)
+        return render(request, 'settings/settings_form.html', context={'title': user.username,
+                                                                       'path': [{'text': 'Benutzer',
+                                                                                 'url': reverse('users_list')},
+                                                                                {'text': user.username,
+                                                                                 'url': reverse('user',
+                                                                                                kwargs={
+                                                                                                    'user_id': user.id
+                                                                                                })}],
+                                                                       'form': form})
+    except User.DoesNotExist:
+        return redirect('users_list')
+
+
+@login_required()
+def create_user_view(request):
+    if request.method == 'POST':
+        form = forms.CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('users_list')
+    else:
+        form = forms.CreateUserForm()
+    return render(request, 'settings/settings_form.html', context={'title': 'Benutzer erstellen',
+                                                                   'path': [{'text': 'Benutzer',
+                                                                             'url': reverse('users_list')}],
+                                                                   'form': form})
