@@ -19,12 +19,12 @@
                 <ul class="nav navbar-nav">
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            {% if user.first_name and user.last_name %}
-                                {{ user.first_name }} {{ user.last_name }}
-                            {% elif user.email %}
-                                {{ user.username }}
+                            {% if request.user.first_name and request.user.last_name %}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% elif request.user.email %}
+                                {{ request.user.username }}
                             {% else %}
-                                {{ user.email }}
+                                {{ request.user.email }}
                             {% endif %}
                             <span class="caret"></span>
                         </a>
