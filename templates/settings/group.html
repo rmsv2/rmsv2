@@ -1,0 +1,84 @@
+{% extends 'settings/base.html' %}
+
+{% block settings-content %}
+    <h3 style="margin-top: 0;">Informationen</h3>
+    <a href="#" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Bearbeiten</a>
+    <dl class="dl-horizontal">
+        <dt>Gruppenname</dt>
+        <dd>{{ group.name }}</dd>
+    </dl>
+    <div class="col-md-6">
+        <h3>Berechtigungen</h3>
+        <form action="{{ request.get_full_path }}" method="post" class="form-inline">
+        {% csrf_token %}
+            <table class="table table-condensed table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th style="text-align: right;">Aktionen</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for perm in group.permissions.all %}
+                    <tr>
+                    <td>{{ perm.name }}</td>
+                    <td style="text-align: right;">
+                        <a href="#"><i class="fa fa-trash"></i></a>
+                    </td>
+                    </tr>
+                {% endfor %}
+                {%  if not group.permissions.all %}
+                    <tr><td colspan="100" style="text-align: center;">Keine Berechtigungen vorhanden</td></tr>
+                {% endif %}
+                <tr>
+                    <td colspan="100">
+                        <select name="permission" class="form-control input-sm">
+                            {% for perm in available_permissions %}
+                                <option value="{{ perm.id }}">{{ perm.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Berechtigung hinzufügen</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h3>Mitglieder</h3>
+        <form action="{{ request.get_full_path }}" method="post" class="form-inline">
+            {% csrf_token %}
+            <table class="table table-condensed table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Username</th>
+                    <th style="text-align: right;">Aktionen</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in group.user_set.all %}
+                    <tr>
+                    <td>{{ user.username }}</td>
+                    <td style="text-align: right;">
+                        <a href="#"><i class="fa fa-trash"></i></a>
+                    </td>
+                    </tr>
+                {% endfor %}
+                {% if not group.user_set.all %}
+                    <tr><td colspan="100" style="text-align: center;">Kein Benutzer in der Gruppe</td></tr>
+                {% endif %}
+                <tr>
+                    <td colspan="100">
+                        <select name="user" class="form-control input-sm">
+                            {% for user in available_users %}
+                                <option value="{{ user.id }}">{{ user.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> Benutzer hinzufügen</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+{% endblock %}

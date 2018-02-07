@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
 from rms import forms
@@ -400,8 +400,7 @@ def add_group_view(request):
         form = forms.GroupForm(request.POST)
         if form.is_valid():
             group = form.save()
-            # todo change redirect
-            return redirect('groups_list')
+            return redirect('group', group_id=group.id)
     else:
         form = forms.GroupForm()
     return render(request, 'settings/settings_form.html', context={'title': 'Gruppe erstellen',
@@ -409,3 +408,37 @@ def add_group_view(request):
                                                                              'url': reverse('groups_list')},
                                                                             {'text': 'Gruppe erstellen'}],
                                                                    'form': form})
+
+
+@login_required()
+def group_view(request, group_id):
+    try:
+        group = Group.objects.get(id=group_id)
+        if request.method == 'POST':
+            if 'permission' in request.POST:
+                try:
+                    perm = Permission.objects.get(id=request.POST['permission'])
+                    group.permissions.add(perm)
+                except Permission.DoesNotExist:
+                    pass
+            if 'user' in request.POST:
+                try:
+                    user = User.objects.get(id=request.POST['user'])
+                    group.user_set.add(user)
+                except User.DoesNotExist:
+                    pass
+            return redirect('group', group_id=group_id)
+        available_permissions = list(set(group.permissions.model.objects.all()) ^ set(group.permissions.all()))
+        available_users = list(set(group.user_set.model.objects.all()) ^ set(group.user_set.all()))
+        return render(request, 'settings/group.html', context={'title': group.name,
+                                                               'path': [{'text': 'Gruppen',
+                                                                         'url': reverse('groups_list')},
+                                                                        {'text': group.name,
+                                                                         'url': reverse('group', kwargs={
+                                                                             'group_id': group_id
+                                                                         })}],
+                                                               'group': group,
+                                                               'available_permissions': available_permissions,
+                                                               'available_users': available_users})
+    except Group.DoesNotExist:
+        return redirect('groups_list')

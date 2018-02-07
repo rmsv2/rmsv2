@@ -25,7 +25,7 @@
                 <li class="{% if '/settings/groups' in request.path %}active{% endif %}"><a href="{% url 'groups_list' %}"><i class="fa fa-group"></i> Gruppen</a></li>
             </ul>
         </div>
-        <div class="container-fluid">
+        <div class="box-body">
             {% block settings-content %}{% endblock %}
         </div>
     </div>

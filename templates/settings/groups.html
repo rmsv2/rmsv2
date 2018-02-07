@@ -12,7 +12,7 @@
     <tbody>
     {% for group in groups %}
         <tr>
-        <td><a href="#">{{ group.name }}</a></td>
+        <td><a href="{% url 'group' group.id %}">{{ group.name }}</a></td>
         <td style="text-align: right">
             <a href="#"><i class="fa fa-trash"></i></a>
         </td>
