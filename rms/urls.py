@@ -31,6 +31,8 @@ urlpatterns = [
     path('settings/users/<int:user_id>/edit', views.user_edit_view, name='edit_user'),
     path('settings/users/<int:user_id>/resetPassword', views.user_password_reset, name='user_password_reset'),
 
+    path('settings/groups', views.groups_list_view, name='groups_list'),
+
 
     path('api/inventory/tags/search', tag_search_view),
     path('api/inventory/tags/add', tag_add_view),

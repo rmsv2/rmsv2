@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
 from rms import forms
@@ -384,3 +384,11 @@ def user_password_reset(request, user_id):
             return redirect('user', user_id=user.id)
     except User.DoesNotExist:
         return redirect('users_list')
+
+
+@login_required()
+def groups_list_view(request):
+    groups = Group.objects.all()
+    return render(request, 'settings/groups.html', context={'title': 'Gruppen',
+                                                            'path': [{'text': 'Gruppen'}],
+                                                            'groups': groups})
