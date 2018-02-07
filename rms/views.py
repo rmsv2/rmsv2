@@ -327,6 +327,16 @@ def user_view(request, user_id):
 
 
 @login_required()
+def delete_user_view(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.delete()
+    except User.DoesNotExist:
+        pass
+    return redirect('users_list')
+
+
+@login_required()
 def user_edit_view(request, user_id):
     try:
         user = User.objects.get(id=user_id)
