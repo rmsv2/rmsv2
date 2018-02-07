@@ -105,3 +105,14 @@ class EditUserForm(ModelForm):
         for fieldname in self.fields:
             self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
+
+class GroupForm(ModelForm):
+
+    class Meta:
+        model = auth_models.Group
+        fields = ['name']
+
+    def __init__(self, *args, **kwargs):
+        super(GroupForm, self).__init__(*args, **kwargs)
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})

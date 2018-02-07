@@ -32,6 +32,7 @@ urlpatterns = [
     path('settings/users/<int:user_id>/resetPassword', views.user_password_reset, name='user_password_reset'),
 
     path('settings/groups', views.groups_list_view, name='groups_list'),
+    path('settings/groups/add', views.add_group_view, name='add_group'),
 
 
     path('api/inventory/tags/search', tag_search_view),

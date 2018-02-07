@@ -392,3 +392,20 @@ def groups_list_view(request):
     return render(request, 'settings/groups.html', context={'title': 'Gruppen',
                                                             'path': [{'text': 'Gruppen'}],
                                                             'groups': groups})
+
+
+@login_required()
+def add_group_view(request):
+    if request.method == 'POST':
+        form = forms.GroupForm(request.POST)
+        if form.is_valid():
+            group = form.save()
+            # todo change redirect
+            return redirect('groups_list')
+    else:
+        form = forms.GroupForm()
+    return render(request, 'settings/settings_form.html', context={'title': 'Gruppe erstellen',
+                                                                   'path': [{'text': 'Gruppen',
+                                                                             'url': reverse('groups_list')},
+                                                                            {'text': 'Gruppe erstellen'}],
+                                                                   'form': form})
