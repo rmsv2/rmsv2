@@ -16,7 +16,12 @@
         <dt>E-Mail</dt>
         <dd>{{ user.email }}</dd>
         <dt>Passwort</dt>
-        <dd><a href="#" class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Passort zurücksetzen</a></dd>
+        <dd>
+            <form action="{% url 'user_password_reset' user.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Password zurücksetzen</button>
+            </form>
+        </dd>
         <br>
         <dt>Zuletzt aktiv</dt>
         <dd>{{ user.last_login|date:'l, d. F Y H:i' }} Uhr</dd>

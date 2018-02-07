@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+#    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -139,3 +139,17 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
+
+# Email settings
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = config.get('mail', 'host', fallback=None)
+EMAIL_PORT = config.get('mail', 'port', fallback=587)
+EMAIL_HOST_USER = config.get('mail', 'user', fallback=None)
+EMAIL_HOST_PASSWORD = config.get('mail', 'password', fallback=None)
+EMAIL_USE_TLS = True if config.get('mail', 'tls', fallback='yes') == 'yes' else False
+
+if EMAIL_HOST is None or EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None:
+    print('Email unconfigured!')
+    exit(1)

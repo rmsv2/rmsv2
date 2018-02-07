@@ -29,6 +29,7 @@ urlpatterns = [
     path('settings/users/add', views.create_user_view, name='create_user'),
     path('settings/users/<int:user_id>', views.user_view, name='user'),
     path('settings/users/<int:user_id>/edit', views.user_edit_view, name='edit_user'),
+    path('settings/users/<int:user_id>/resetPassword', views.user_password_reset, name='user_password_reset'),
 
 
     path('api/inventory/tags/search', tag_search_view),

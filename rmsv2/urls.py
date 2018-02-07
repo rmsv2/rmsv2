@@ -21,5 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('reset/<str:uidb64>/<str:token>', auth_views.PasswordResetConfirmView.as_view(),
+         name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_complete'),
     path('', include('rms.urls')),
 ]

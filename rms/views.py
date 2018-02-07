@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
 from rms import forms
 from . import models
@@ -359,3 +360,27 @@ def create_user_view(request):
                                                                    'path': [{'text': 'Benutzer',
                                                                              'url': reverse('users_list')}],
                                                                    'form': form})
+
+
+@login_required()
+def user_password_reset(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        if request.method == 'POST':
+            form = PasswordResetForm(data={'email': user.email})
+            form.is_valid()
+            form.save(request=request)
+            return render(request, 'settings/password_reseted.html', context={'title': 'Password zurückgesetzt',
+                                                                              'path': [{'text': 'Benutzer',
+                                                                                        'url': reverse('users_list')},
+                                                                                       {'text': user.username,
+                                                                                        'url': reverse('user',
+                                                                                                       kwargs={
+                                                                                                           'user_id':
+                                                                                                               user.id
+                                                                                                       })}],
+                                                                              'user': user})
+        else:
+            return redirect('user', user_id=user.id)
+    except User.DoesNotExist:
+        return redirect('users_list')
