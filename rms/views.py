@@ -427,6 +427,18 @@ def group_view(request, group_id):
                     group.user_set.add(user)
                 except User.DoesNotExist:
                     pass
+            if 'delete_permission' in request.POST:
+                try:
+                    perm = Permission.objects.get(id=request.POST['delete_permission'])
+                    group.permissions.remove(perm)
+                except Permission.DoesNotExist:
+                    pass
+            if 'delete_user' in request.POST:
+                try:
+                    user = User.objects.get(id=request.POST['delete_user'])
+                    group.user_set.remove(user)
+                except User.DoesNotExist:
+                    pass
             return redirect('group', group_id=group_id)
         available_permissions = list(set(group.permissions.model.objects.all()) ^ set(group.permissions.all()))
         available_users = list(set(group.user_set.model.objects.all()) ^ set(group.user_set.all()))

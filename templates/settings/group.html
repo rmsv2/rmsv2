@@ -23,7 +23,7 @@
                     <tr>
                     <td>{{ perm.name }}</td>
                     <td style="text-align: right;">
-                        <a href="#"><i class="fa fa-trash"></i></a>
+                        <a href="#" data-toggle="modal" data-target="#remove_perm{{ perm.id }}"><i class="fa fa-trash"></i></a>
                     </td>
                     </tr>
                 {% endfor %}
@@ -60,7 +60,9 @@
                     <tr>
                     <td>{{ user.username }}</td>
                     <td style="text-align: right;">
-                        <a href="#"><i class="fa fa-trash"></i></a>
+                        <a href="#" data-toggle="modal" data-target="#remove_user{{ user.id }}">
+                            <i class="fa fa-trash"></i>
+                        </a>
                     </td>
                     </tr>
                 {% endfor %}
@@ -81,4 +83,51 @@
             </table>
         </form>
     </div>
+    {% for user in group.user_set.all %}
+        <div class="modal modal-danger fade" id="remove_user{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="remove_user{{ user.id }}_label">
+            <form action="{{ request.get_full_path }}" method="post">
+                {% csrf_token %}
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="remove_user{{ user.id }}_label">Benutzer aus Gruppe entfernen</h4>
+                        </div>
+                        <div class="modal-body">
+                            Soll der Benutzer <b>{{ user.username }}</b> wirklich aus der Gruppe <b>{{ group.name }}</b> entfernt werden?
+                            <input type="hidden" name="delete_user" value="{{ user.id }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-outline">Entfernen</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endfor %}
+    {% for perm in group.permissions.all %}
+        <div class="modal modal-danger fade" id="remove_perm{{ perm.id }}" tabindex="-1" role="dialog" aria-labelledby="remove_perm{{ perm.id }}_label">
+            <form action="{{ request.get_full_path }}" method="post">
+                {% csrf_token %}
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="remove_perm{{ perm.id }}_label">Benutzer aus Gruppe entfernen</h4>
+                        </div>
+                        <div class="modal-body">
+                            Soll die Berechtigung <b>{{ perm.name }}</b> wirklich aus der Gruppe <b>{{ group.name }}</b> entfernt werden?
+                            <input type="hidden" name="delete_permission" value="{{ perm.id }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                            <button type="submit" class="btn btn-outline">Entfernen</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endfor %}
+
 {% endblock %}
