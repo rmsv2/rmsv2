@@ -1,6 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
+
+
+class RMSUser(User):
+
+    class Meta:
+        proxy = True
+        permissions = (('view_user', 'Can view user'),)
 
 
 class Tag(models.Model):

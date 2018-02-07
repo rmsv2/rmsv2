@@ -1,7 +1,9 @@
 {% extends 'settings/base.html' %}
 
 {% block settings-content %}
-    <a href="{% url 'create_user' %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-user-plus"></i> Benutzer erstellen</a>
+    {% if perms.auth.add_user %}
+        <a href="{% url 'create_user' %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-user-plus"></i> Benutzer erstellen</a>
+    {% endif %}
     <table class="table table-striped table-hover">
     <thead>
     <tr>
@@ -18,27 +20,29 @@
         <td>{{ user.first_name }} {{ user.last_name }}</td>
         <td>{{ user.email }}</td>
         <td style="text-align: right">
-            <a href="#" data-toggle="modal" data-target="#delete_user{{ user.id }}"><i class="fa fa-trash"></i></a>
-            <div class="modal modal-danger fade" id="delete_user{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="delete_user{{ user.id }}_label" style="text-align: left;">
-                <form action="{% url 'delete_user' user.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="delete_user{{ user.id }}_label">Benutzer entfernen</h4>
-                            </div>
-                            <div class="modal-body">
-                                Soll der Benutzer <b>{{ user.username }}</b> unwiederuflich gelöscht werden?
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
-                                <button type="submit" class="btn btn-outline">Löschen</button>
+            {% if perms.auth.delete_user %}
+                <a href="#" data-toggle="modal" data-target="#delete_user{{ user.id }}"><i class="fa fa-trash"></i></a>
+                <div class="modal modal-danger fade" id="delete_user{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="delete_user{{ user.id }}_label" style="text-align: left;">
+                    <form action="{% url 'delete_user' user.id %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="delete_user{{ user.id }}_label">Benutzer entfernen</h4>
+                                </div>
+                                <div class="modal-body">
+                                    Soll der Benutzer <b>{{ user.username }}</b> unwiederuflich gelöscht werden?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                                    <button type="submit" class="btn btn-outline">Löschen</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
+            {% endif %}
         </td>
         </tr>
     {% endfor %}

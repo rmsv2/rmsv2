@@ -6,6 +6,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
 from rms import forms
 from . import models
+from .decorators import permission_required
 
 # Create your views here.
 
@@ -306,6 +307,7 @@ def change_password_view(request):
 
 
 @login_required()
+@permission_required('auth.view_user')
 def users_list_view(request):
     users = User.objects.all()
     return render(request, 'settings/users.html', context={'title': 'Benutzer',
@@ -314,6 +316,7 @@ def users_list_view(request):
 
 
 @login_required()
+@permission_required('auth.view_user')
 def user_view(request, user_id):
     try:
         user = User.objects.get(id=user_id)
@@ -327,6 +330,7 @@ def user_view(request, user_id):
 
 
 @login_required()
+@permission_required('auth.delete_user')
 def delete_user_view(request, user_id):
     try:
         user = User.objects.get(id=user_id)
@@ -337,6 +341,7 @@ def delete_user_view(request, user_id):
 
 
 @login_required()
+@permission_required('auth.change_user')
 def user_edit_view(request, user_id):
     try:
         user = User.objects.get(id=user_id)
@@ -358,6 +363,7 @@ def user_edit_view(request, user_id):
 
 
 @login_required()
+@permission_required('auth.add_user')
 def create_user_view(request):
     if request.method == 'POST':
         form = forms.CreateUserForm(request.POST)
@@ -373,6 +379,7 @@ def create_user_view(request):
 
 
 @login_required()
+@permission_required('auth.change_user')
 def user_password_reset(request, user_id):
     try:
         user = User.objects.get(id=user_id)

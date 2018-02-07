@@ -1,7 +1,9 @@
 {% extends 'settings/base.html' %}
 
 {% block settings-content %}
-    <a href="{% url 'edit_user' user.id%}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Bearbeiten</a>
+    {% if perms.auth.change_user %}
+        <a href="{% url 'edit_user' user.id%}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Bearbeiten</a>
+    {% endif %}
     <dl class="dl-horizontal">
         <dt>Username</dt>
         <dd>{{ user.username }}</dd>
@@ -15,13 +17,15 @@
         </dd>
         <dt>E-Mail</dt>
         <dd>{{ user.email }}</dd>
-        <dt>Passwort</dt>
-        <dd>
-            <form action="{% url 'user_password_reset' user.id %}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Password zurücksetzen</button>
-            </form>
-        </dd>
+        {% if perms.auth.change_user %}
+            <dt>Passwort</dt>
+            <dd>
+                <form action="{% url 'user_password_reset' user.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Password zurücksetzen</button>
+                </form>
+            </dd>
+        {% endif %}
         <br>
         <dt>Zuletzt aktiv</dt>
         <dd>{{ user.last_login|date:'l, d. F Y H:i' }} Uhr</dd>
