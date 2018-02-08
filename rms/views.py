@@ -454,6 +454,16 @@ def edit_group_view(request, group_id):
 
 
 @login_required()
+def remove_group_view(request, group_id):
+    try:
+        group = Group.objects.get(id=group_id)
+        group.delete()
+    except Group.DoesNotExist:
+        pass
+    return redirect('groups_list')
+
+
+@login_required()
 def group_view(request, group_id):
     try:
         group = Group.objects.get(id=group_id)
