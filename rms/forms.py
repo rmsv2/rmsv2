@@ -5,7 +5,16 @@ from rms import models
 from .form_widgets import TagInputWidget
 
 
-class DeviceForm(ModelForm):
+class BootstrapForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(BootstrapForm, self).__init__(*args, **kwargs)
+        for fieldname in self.fields:
+            if not isinstance(self.fields[fieldname], fields.BooleanField):
+                self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+
+
+class DeviceForm(BootstrapForm):
 
     class Meta:
         model = models.Device
@@ -14,13 +23,8 @@ class DeviceForm(ModelForm):
             'tags': TagInputWidget(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(DeviceForm, self).__init__(*args, **kwargs)
-        for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
-
-class InstanceForm(ModelForm):
+class InstanceForm(BootstrapForm):
 
     class Meta:
         model = models.Instance
@@ -29,26 +33,15 @@ class InstanceForm(ModelForm):
             'tags': TagInputWidget(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(InstanceForm, self).__init__(*args, **kwargs)
-        for fieldname in self.fields:
-            if not isinstance(self.fields[fieldname], fields.BooleanField):
-                self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
-
     def disable_device_field(self):
         self.fields['device'].widget.attrs.update({'disabled': 'disabled'})
 
 
-class CategoryForm(ModelForm):
+class CategoryForm(BootstrapForm):
 
     class Meta:
         model = models.Category
         exclude = []
-
-    def __init__(self, *args, **kwargs):
-        super(CategoryForm, self).__init__(*args, **kwargs)
-        for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
     def clean_top_category(self):
         new_top_category = self.cleaned_data['top_category']
@@ -59,16 +52,11 @@ class CategoryForm(ModelForm):
         return self.cleaned_data['top_category']
 
 
-class ProfileChangeForm(ModelForm):
+class ProfileChangeForm(BootstrapForm):
 
     class Meta:
         model = auth_models.User
         fields = ['first_name', 'last_name', 'email']
-
-    def __init__(self, *args, **kwargs):
-        super(ProfileChangeForm, self).__init__(*args, **kwargs)
-        for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
@@ -76,14 +64,15 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
         for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+            if not isinstance(self.fields[fieldname], fields.BooleanField):
+                self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
 
 class CreateUserForm(auth_forms.UserCreationForm):
 
     class Meta:
         model = auth_models.User
-        fields = ['username', 'first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_superuser']
         field_classes = {
             'username': auth_forms.UsernameField
         }
@@ -91,28 +80,19 @@ class CreateUserForm(auth_forms.UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(CreateUserForm, self).__init__(*args, **kwargs)
         for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+            if not isinstance(self.fields[fieldname], fields.BooleanField):
+                self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
 
-class EditUserForm(ModelForm):
+class EditUserForm(BootstrapForm):
 
     class Meta:
         model = auth_models.User
-        fields = ['username', 'first_name', 'last_name', 'email']
-
-    def __init__(self, *args, **kwargs):
-        super(EditUserForm, self).__init__(*args, **kwargs)
-        for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_superuser']
 
 
-class GroupForm(ModelForm):
+class GroupForm(BootstrapForm):
 
     class Meta:
         model = auth_models.Group
         fields = ['name']
-
-    def __init__(self, *args, **kwargs):
-        super(GroupForm, self).__init__(*args, **kwargs)
-        for fieldname in self.fields:
-            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
