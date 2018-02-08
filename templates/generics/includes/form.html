@@ -1,5 +1,8 @@
 <form action="{{ request.get_full_path }}" method="post" class="form-horizontal">
     {% csrf_token %}
+    {% if form.non_field_errors %}
+        {{ form.non_field_errors }}
+    {% endif %}
     {% for field in form %}
     <div class="form-group has-feedback {% if field.errors %}has-error{% endif %}">
         <label for="{{ field.id_for_label }}" class="control-label col-sm-2">{{ field.label }}</label>
