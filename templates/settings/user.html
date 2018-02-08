@@ -17,6 +17,8 @@
         </dd>
         <dt>E-Mail</dt>
         <dd>{{ user.email }}</dd>
+        <dt>Administrator</dt>
+        <dd><i class="fa {% if user.is_superuser %}fa-check{% else %}fa-times{% endif %}" ></i></dd>
         {% if perms.auth.change_user %}
             <dt>Passwort</dt>
             <dd>
