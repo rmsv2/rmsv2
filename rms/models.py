@@ -1,14 +1,21 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import models as auth_models
 
 # Create your models here.
 
 
-class RMSUser(User):
+class User(auth_models.User):
 
     class Meta:
         proxy = True
         permissions = (('view_user', 'Can view user'),)
+
+
+class Group(auth_models.Group):
+
+    class Meta:
+        proxy = True
+        permissions = (('view_group', 'Can view group'),)
 
 
 class Tag(models.Model):

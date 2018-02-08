@@ -34,7 +34,13 @@
         <br>
         <dt>Gruppen</dt>
         <dd>
-            {% for group in user.groups.all %}<a href="{% url 'group' group.id %}">{{ group.name }}</a>, {% endfor %}
+            {% for group in user.groups.all %}
+                {% if perms.auth.view_group %}
+                    <a href="{% url 'group' group.id %}">{{ group.name }}</a>,
+                {% else %}
+                    {{ group.name }},
+                {% endif %}
+            {% endfor %}
             {% if not user.groups.all %}-{% endif %}
         </dd>
     </dl>

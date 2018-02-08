@@ -407,6 +407,7 @@ def user_password_reset(request, user_id):
 
 
 @login_required()
+@permission_required('auth.view_group')
 def groups_list_view(request):
     groups = Group.objects.all()
     return render(request, 'settings/groups.html', context={'title': 'Gruppen',
@@ -415,6 +416,7 @@ def groups_list_view(request):
 
 
 @login_required()
+@permission_required('auth.add_group')
 def add_group_view(request):
     if request.method == 'POST':
         form = forms.GroupForm(request.POST)
@@ -431,6 +433,7 @@ def add_group_view(request):
 
 
 @login_required()
+@permission_required('auth.change_group')
 def edit_group_view(request, group_id):
     try:
         group = Group.objects.get(id=group_id)
@@ -454,6 +457,7 @@ def edit_group_view(request, group_id):
 
 
 @login_required()
+@permission_required('auth.delete_group')
 def remove_group_view(request, group_id):
     try:
         group = Group.objects.get(id=group_id)
@@ -464,7 +468,8 @@ def remove_group_view(request, group_id):
 
 
 @login_required()
-def group_view(request, group_id):
+@permission_required('auth.change_group')
+def modify_group_view(request, group_id):
     try:
         group = Group.objects.get(id=group_id)
         if request.method == 'POST':
@@ -492,7 +497,16 @@ def group_view(request, group_id):
                     group.user_set.remove(user)
                 except User.DoesNotExist:
                     pass
-            return redirect('group', group_id=group_id)
+        return redirect('group', group_id=group_id)
+    except Group.DoesNotExist:
+        return redirect('groups_list')
+
+
+@login_required()
+@permission_required('auth.view_group')
+def group_view(request, group_id):
+    try:
+        group = Group.objects.get(id=group_id)
         available_permissions = list(set(group.permissions.model.objects.all()) ^ set(group.permissions.all()))
         available_users = list(set(group.user_set.model.objects.all()) ^ set(group.user_set.all()))
         return render(request, 'settings/group.html', context={'title': group.name,
