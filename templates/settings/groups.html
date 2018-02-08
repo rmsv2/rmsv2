@@ -38,6 +38,9 @@
         </td>
         </tr>
     {% endfor %}
+    {% if not groups %}
+        <tr><td colspan="100" style="text-align: center;">Keine Gruppen vorhanden.</td></tr>
+    {% endif %}
     </tbody>
     </table>
 {% endblock %}
