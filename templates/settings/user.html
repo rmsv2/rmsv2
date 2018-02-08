@@ -31,6 +31,12 @@
         <br>
         <dt>Zuletzt aktiv</dt>
         <dd>{{ user.last_login|date:'l, d. F Y H:i' }} Uhr</dd>
+        <br>
+        <dt>Gruppen</dt>
+        <dd>
+            {% for group in user.groups.all %}<a href="{% url 'group' group.id %}">{{ group.name }}</a>, {% endfor %}
+            {% if not user.groups.all %}-{% endif %}
+        </dd>
     </dl>
     <br>
 {% endblock %}
