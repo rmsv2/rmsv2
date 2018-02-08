@@ -35,6 +35,7 @@ urlpatterns = [
     path('settings/groups', views.groups_list_view, name='groups_list'),
     path('settings/groups/add', views.add_group_view, name='add_group'),
     path('settings/groups/<int:group_id>', views.group_view, name='group'),
+    path('settings/groups/<int:group_id>/edit', views.edit_group_view, name='edit_group'),
 
 
     path('api/inventory/tags/search', tag_search_view),

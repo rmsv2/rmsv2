@@ -431,6 +431,29 @@ def add_group_view(request):
 
 
 @login_required()
+def edit_group_view(request, group_id):
+    try:
+        group = Group.objects.get(id=group_id)
+        if request.method == 'POST':
+            form = forms.GroupForm(data=request.POST, instance=group)
+            if form.is_valid():
+                form.save()
+                return redirect('group', group_id=group.id)
+        else:
+            form = forms.GroupForm(instance=group)
+        return render(request, 'settings/settings_form.html', context={'title': 'Gruppe bearbeiten',
+                                                                       'path': [{'text': 'Gruppen',
+                                                                                 'url': reverse('groups_list')},
+                                                                                {'text': group.name,
+                                                                                 'url': reverse('group', kwargs={
+                                                                                     'group_id': group.id
+                                                                                 })}],
+                                                                       'form': form})
+    except Group.DoesNotExist:
+        return redirect('groups_list')
+
+
+@login_required()
 def group_view(request, group_id):
     try:
         group = Group.objects.get(id=group_id)
