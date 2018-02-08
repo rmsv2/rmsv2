@@ -346,9 +346,9 @@ def user_edit_view(request, user_id):
     try:
         user = User.objects.get(id=user_id)
         if request.method == 'POST':
-            form = forms.UserForm(data=request.POST, instance=user)
+            form = forms.EditUserForm(data=request.POST, instance=user)
         else:
-            form = forms.UserForm(instance=user)
+            form = forms.EditUserForm(instance=user)
         return render(request, 'settings/settings_form.html', context={'title': user.username,
                                                                        'path': [{'text': 'Benutzer',
                                                                                  'url': reverse('users_list')},
@@ -366,12 +366,12 @@ def user_edit_view(request, user_id):
 @permission_required('auth.add_user')
 def create_user_view(request):
     if request.method == 'POST':
-        form = forms.UserForm(request.POST)
+        form = forms.CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('users_list')
     else:
-        form = forms.UserForm()
+        form = forms.CreateUserForm()
     return render(request, 'settings/settings_form.html', context={'title': 'Benutzer erstellen',
                                                                    'path': [{'text': 'Benutzer',
                                                                              'url': reverse('users_list')}],

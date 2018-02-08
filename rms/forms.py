@@ -79,17 +79,29 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
             self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
 
-class UserForm(auth_forms.UserCreationForm):
+class CreateUserForm(auth_forms.UserCreationForm):
 
     class Meta:
         model = auth_models.User
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_superuser']
+        fields = ['username', 'first_name', 'last_name', 'email']
         field_classes = {
             'username': auth_forms.UsernameField
         }
 
     def __init__(self, *args, **kwargs):
-        super(UserForm, self).__init__(*args, **kwargs)
+        super(CreateUserForm, self).__init__(*args, **kwargs)
+        for fieldname in self.fields:
+            self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
+
+
+class EditUserForm(ModelForm):
+
+    class Meta:
+        model = auth_models.User
+        fields = ['username', 'first_name', 'last_name', 'email']
+
+    def __init__(self, *args, **kwargs):
+        super(EditUserForm, self).__init__(*args, **kwargs)
         for fieldname in self.fields:
             self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
