@@ -311,7 +311,7 @@ def change_password_view(request):
 def users_list_view(request):
     users = User.objects.all()
     return render(request, 'settings/users.html', context={'title': 'Benutzer',
-                                                           'path': [{'text', 'Benutzer'}],
+                                                           'path': [{'text': 'Benutzer'}],
                                                            'users': users})
 
 
