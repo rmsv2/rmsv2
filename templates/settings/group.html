@@ -30,16 +30,18 @@
                 {%  if not group.permissions.all %}
                     <tr><td colspan="100" style="text-align: center;">Keine Berechtigungen vorhanden</td></tr>
                 {% endif %}
-                <tr>
-                    <td colspan="100">
-                        <select name="permission" class="form-control input-sm">
-                            {% for perm in available_permissions %}
-                                <option value="{{ perm.id }}">{{ perm.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Berechtigung hinzufügen</button>
-                    </td>
-                </tr>
+                {% if available_permissions %}
+                    <tr>
+                        <td colspan="100">
+                            <select name="permission" class="form-control input-sm">
+                                {% for perm in available_permissions %}
+                                    <option value="{{ perm.id }}">{{ perm.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Berechtigung hinzufügen</button>
+                        </td>
+                    </tr>
+                {% endif %}
                 </tbody>
             </table>
         </form>
@@ -69,16 +71,18 @@
                 {% if not group.user_set.all %}
                     <tr><td colspan="100" style="text-align: center;">Kein Benutzer in der Gruppe</td></tr>
                 {% endif %}
-                <tr>
-                    <td colspan="100">
-                        <select name="user" class="form-control input-sm">
-                            {% for user in available_users %}
-                                <option value="{{ user.id }}">{{ user.username }}</option>
-                            {% endfor %}
-                        </select>
-                        <button class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> Benutzer hinzufügen</button>
-                    </td>
-                </tr>
+                {% if available_users %}
+                    <tr>
+                        <td colspan="100">
+                            <select name="user" class="form-control input-sm">
+                                {% for user in available_users %}
+                                    <option value="{{ user.id }}">{{ user.username }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-primary btn-sm"><i class="fa fa-user-plus"></i> Benutzer hinzufügen</button>
+                        </td>
+                    </tr>
+                {% endif %}
                 </tbody>
             </table>
         </form>
