@@ -347,6 +347,9 @@ def user_edit_view(request, user_id):
         user = User.objects.get(id=user_id)
         if request.method == 'POST':
             form = forms.EditUserForm(data=request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                return redirect('user', user_id=user.id)
         else:
             form = forms.EditUserForm(instance=user)
         return render(request, 'settings/settings_form.html', context={'title': user.username,
