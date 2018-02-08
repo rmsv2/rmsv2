@@ -27,7 +27,25 @@
             </div>
         </div>
         <div class="box-body">
+            <div class="img-responsive col-sm-4 pull-left">
+                <div id="image_wrapper">
+                    <img id="device_image" src="/{{ device.picture }}" width="100%">
+                </div>
+            </div>
+            <div class="col-sm-6" style="position: fixed; top: 0; right: 0; height: 100vh; overflow: hidden; z-index: 300;" id="large_picture_preview">
+
+            </div>
+            <script type="application/javascript">
+                $(document).ready(function () {
+                    $('div#image_wrapper').zoom({
+                        url: '/{{ device.picture }}',
+                        target: $('#large_picture_preview')
+                    })
+                })
+            </script>
+            <div class="col-sm-8">
             {% include 'inventory/widgets/device_info.html' %}
+            </div>
         </div>
     </div>
     <div class="box box-default">

@@ -1,7 +1,20 @@
 from django.db import models
 from django.contrib.auth import models as auth_models
+import string
+import random
+import os
+from rmsv2.settings import BASE_DIR
 
 # Create your models here.
+
+
+def get_device_image_upload_path(instance, orig_filename):
+    while True:
+        filename = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
+        path = os.path.join('static/uploads/devices/', str(instance.id), filename)
+        if not os.path.isfile(os.path.join(BASE_DIR, path)):
+            break
+    return path
 
 
 class User(auth_models.User):
@@ -35,6 +48,7 @@ class Category(models.Model):
 
 class Device(models.Model):
     name = models.CharField('Name', max_length=100)
+    picture = models.ImageField('Bild', upload_to=get_device_image_upload_path, blank=True, null=True, default=None)
     model_number = models.CharField('Modell Nummer', max_length=100)
     vendor = models.CharField('Hersteller', max_length=300, default='')
     description = models.TextField('Beschreibung', null=True, blank=True)

@@ -10,7 +10,8 @@ class BootstrapForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(BootstrapForm, self).__init__(*args, **kwargs)
         for fieldname in self.fields:
-            if not isinstance(self.fields[fieldname], fields.BooleanField):
+            if not isinstance(self.fields[fieldname], fields.BooleanField)\
+                    and not isinstance(self.fields[fieldname], fields.ImageField):
                 self.fields[fieldname].widget.attrs.update({'class': 'form-control'})
 
 

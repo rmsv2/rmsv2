@@ -61,7 +61,7 @@ def edit_device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
         if request.method == 'POST':
-            form = forms.DeviceForm(request.POST, instance=device)
+            form = forms.DeviceForm(request.POST, files=request.FILES, instance=device)
             if form.is_valid():
                 form.save()
                 return redirect('device', device_id=device.id)
