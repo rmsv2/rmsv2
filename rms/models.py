@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import models as auth_models
+from djmoney.models.fields import MoneyField
 import string
 import random
 import os
@@ -52,8 +53,8 @@ class Device(models.Model):
     model_number = models.CharField('Modell Nummer', max_length=100)
     vendor = models.CharField('Hersteller', max_length=300, default='')
     description = models.TextField('Beschreibung', null=True, blank=True)
-    price_new = models.FloatField('Neupreis')
-    price_rental = models.FloatField('Vermietpreis')
+    price_new = MoneyField('Neupreis', decimal_places=2, max_digits=20)
+    price_rental = MoneyField('Vermietpreis', decimal_places=2, max_digits=20)
     tags = models.ManyToManyField(Tag, blank=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, verbose_name='Kategorie', blank=True)
 
