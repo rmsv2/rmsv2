@@ -32,7 +32,7 @@
                     <img id="device_image" src="/{{ device.picture }}" width="100%">
                 </div>
             </div>
-            <div class="col-sm-6" style="position: fixed; top: 0; right: 0; height: 100vh; overflow: hidden; z-index: 300;" id="large_picture_preview">
+            <div class="col-sm-6" style="position: fixed; top: 0; right: 0; height: 100vh; overflow: hidden; z-index: 300; display: none;" id="large_picture_preview">
 
             </div>
             <script type="application/javascript">
@@ -40,6 +40,10 @@
                     $('div#image_wrapper').zoom({
                         url: '/{{ device.picture }}',
                         target: $('#large_picture_preview')
+                    }).on('mouseenter', function () {
+                        $('#large_picture_preview').show()
+                    }).on('mouseleave', function () {
+                        $('#large_picture_preview').hide()
                     })
                 })
             </script>
