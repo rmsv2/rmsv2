@@ -48,8 +48,8 @@ def add_device_view(request):
     if request.method == 'POST':
         form = forms.DeviceForm(request.POST)
         if form.is_valid():
-            form.save(commit=True)
-            return redirect('home')
+            device = form.save(commit=True)
+            return redirect('device', device_id=device.id)
     else:
         form = forms.DeviceForm()
     return render(request, 'inventory/device_form.html', context={'form': form,
