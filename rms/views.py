@@ -60,7 +60,7 @@ def add_device_view(request):
 
 
 @login_required()
-@permission_required('rms.edit_device')
+@permission_required('rms.change_device')
 def edit_device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
