@@ -1,7 +1,18 @@
 {% for category in categories %}
     {% url 'category' category.id as category_url %}
     <li class="{% if category_url in category_path_urls %}active{% endif %}">
-        <a href="{% url 'category' category.id %}"><i class="fa fa-circle-o"></i>{{ category.name }}</a>
+        <a href="{% url 'category' category.id %}">
+            {% if category.sub_categories_sorted_by_name %}
+                {% if category_url in category_path_urls %}
+                    <i class="fa fa-angle-down" style="width: 10px;"></i>
+                {% else %}
+                    <i class="fa fa-angle-right" style="width: 10px;"></i>
+                {% endif %}
+            {% else %}
+                <div style="width: 10px; display: inline-block;"></div>
+            {% endif %}
+            {{ category.name }}
+        </a>
         {% if category.sub_categories_sorted_by_name %}
             <ul class="treeview-menu">
                 {% include 'navigation/category_tree.html' with categories=category.sub_categories_sorted_by_name %}
