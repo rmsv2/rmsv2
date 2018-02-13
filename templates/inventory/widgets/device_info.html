@@ -8,7 +8,7 @@
     <dt>Modell Nummer</dt>
     <dd>{{ device.model_number }}</dd>
     <dt>Bechreibung</dt>
-    <dd>{{ device.description }}</dd>
+    <dd>{{ device.description|linebreaks }}</dd>
     <dt>Neupreis</dt>
     <dd>{% money_localize device.price_new %}</dd>
     <dt>Verleihpreis</dt>
