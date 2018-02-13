@@ -244,7 +244,7 @@ def category_view(request, category_id):
 @login_required()
 @permission_required('rms.view_category')
 def uncategorized_view(request):
-    return render(request, 'inventory/uncategorized_devices.html', context={'devices': models.Device.uncategorized(),
+    return render(request, 'inventory/uncategorized.html', context={'devices': models.Device.uncategorized(),
                                                                             'title': 'Unkategorisierte Geräte'})
 
 
