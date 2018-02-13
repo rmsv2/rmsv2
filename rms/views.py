@@ -32,7 +32,9 @@ def get_path(category):
     path.reverse()
 
     if len(path_urls) is 0:
-        path_urls.append(reverse('uncategorized_devices'))
+        path_urls.append(reverse('uncategorized'))
+        path.append({'text': 'Unkategorisiert',
+                     'url': reverse('uncategorized')})
 
     return path, path_urls
 
@@ -74,13 +76,6 @@ def edit_device_view(request, device_id):
                                                               'form': form})
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
-
-
-@login_required()
-@permission_required('rms.view_category')
-def uncategorized_devices_view(request):
-    return render(request, 'inventory/uncategorized_devices.html', context={'devices': models.Device.uncategorized(),
-                                                                            'title': 'Unkategorisierte Geräte'})
 
 
 @login_required()
@@ -244,6 +239,13 @@ def category_view(request, category_id):
 
     except models.Category.DoesNotExist:
         return redirect('home')
+
+
+@login_required()
+@permission_required('rms.view_category')
+def uncategorized_view(request):
+    return render(request, 'inventory/uncategorized_devices.html', context={'devices': models.Device.uncategorized(),
+                                                                            'title': 'Unkategorisierte Geräte'})
 
 
 @login_required()

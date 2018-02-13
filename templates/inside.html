@@ -59,7 +59,7 @@
                         {% if perms.rms.view_category %}
                             <li role="separator" class="list-seperator"></li>
                             {% include 'navigation/category_tree.html' with categories=top_categories %}
-                            <li class="{% if '/inventory/devices/uncategorized' in request.path or '/inventory/devices/uncategorized' in category_path_urls %}active{% endif %}"><a href="{% url 'uncategorized_devices' %}"><div style="width: 10px; display: inline-block;"></div> Unkategorisierte Geräte</a></li>
+                            <li class="{% if '/inventory/categories/uncategorized' in request.path or '/inventory/devices/uncategorized' in category_path_urls %}active{% endif %}"><a href="{% url 'uncategorized' %}"><div style="width: 10px; display: inline-block;"></div> Unkategorisier</a></li>
                         {% endif %}
                     </ul>
                 </li>
