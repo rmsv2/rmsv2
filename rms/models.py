@@ -67,6 +67,10 @@ class Device(models.Model):
 
 
 class Instance(models.Model):
+
+    class Meta:
+        permissions = (('view_unrentable', 'Can view unrentable inventory'),)
+
     serial_number = models.CharField('Seriennummer', max_length=200)
     inventory_number = models.CharField('Inventarnummer', max_length=200)
     identificial_description = models.TextField('Identifikations- beschreibung', null=True, blank=True)
