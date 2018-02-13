@@ -12,8 +12,12 @@
     <h1>
         Kategorie: {{ category.name }}
         <div class="btn-group" role="group">
-            <a href="{% url 'edit_category' category.id %}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Bearbeiten</a>
-            <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#category_delete_modal"><i class="fa fa-trash"></i> Entfernen</button>
+            {% if perms.rms.change_category %}
+                <a href="{% url 'edit_category' category.id %}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i> Bearbeiten</a>
+            {% endif %}
+            {% if perms.rms.delete_category %}
+                <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#category_delete_modal"><i class="fa fa-trash"></i> Entfernen</button>
+            {% endif %}
         </div>
     </h1>
     <ol class="breadcrumb">

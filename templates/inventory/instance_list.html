@@ -7,21 +7,29 @@
     </tr>
     </thead>
     <tbody>
-    {% for instance in instances %}
+    {% if perms.rms.view_instance %}
+        {% for instance in instances %}
+            <tr>
+            <td>{{ instance.serial_number }}</td>
+            <td>{{ instance.inventory_number }}</td>
+            <td style="text-align: right;">
+                {% if perms.rms.change_instance %}
+                    <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>
+                {% endif %}
+                {% if perms.rms.delete_instance %}
+                    <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash"></i></a>
+                {% endif %}
+            </td>
+            </tr>
+            {% include 'inventory/modals/instance_delete_modal.html' %}
+        {% endfor %}
+        {% if not instances %}
         <tr>
-        <td>{{ instance.serial_number }}</td>
-        <td>{{ instance.inventory_number }}</td>
-        <td style="text-align: right;">
-            <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>
-            <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash"></i></a>
-        </td>
+        <td colspan="100" style="text-align: center;">Keine Elemente gefunden</td>
         </tr>
-        {% include 'inventory/modals/instance_delete_modal.html' %}
-    {% endfor %}
-    {% if not instances %}
-    <tr>
-    <td colspan="100" style="text-align: center;">Keine Elemente gefunden</td>
-    </tr>
+        {% endif %}
+    {% else %}
+        <tr><td colspan="100" style="text-align: center;">Keine Berechtigung die Instanzen anzuzeigen.</td></tr>
     {% endif %}
     </tbody>
 </table>

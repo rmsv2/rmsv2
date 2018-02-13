@@ -24,7 +24,9 @@
         <div class="box-header with-border">
             <h3 class="box-title">Informationen</h3>
             <div class="box-tools">
-                <a href="{% url 'edit_device' device.id %}"><button class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Bearbeiten</button></a>
+                {% if perms.rms.change_device %}
+                    <a href="{% url 'edit_device' device.id %}"><button class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Bearbeiten</button></a>
+                {% endif %}
             </div>
         </div>
         <div class="box-body">
@@ -61,11 +63,13 @@
         <div class="box-header with-border">
             <h3 class="box-title">Instanzen</h3>
             <div class="box-tools">
-                <a href="{% url 'create_instance' device.id %}"><button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Erstellen</button></a>
+                {% if perms.rms.add_instance %}
+                    <a href="{% url 'create_instance' device.id %}"><button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Erstellen</button></a>
+                {% endif %}
             </div>
         </div>
         <div class="box-body">
-            {% include 'inventory/instance_list.html' with instances=device.instance_set.all %}
+            {% include 'inventory/instance_list.html' with instances=instances %}
         </div>
     </div>
     </section>

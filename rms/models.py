@@ -37,6 +37,10 @@ class Tag(models.Model):
 
 
 class Category(models.Model):
+
+    class Meta:
+        permissions = (('view_category', 'Can view category'),)
+
     name = models.CharField('Name', max_length=200)
     top_category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, blank=True, verbose_name='Übergeordnete Kategorie')
 
@@ -48,6 +52,10 @@ class Category(models.Model):
 
 
 class Device(models.Model):
+
+    class Meta:
+        permissions = (('view_device', 'Can view device'),)
+
     name = models.CharField('Name', max_length=100)
     picture = models.ImageField('Bild', upload_to=get_device_image_upload_path, blank=True, null=True, default=None)
     model_number = models.CharField('Modell Nummer', max_length=100)
@@ -69,7 +77,8 @@ class Device(models.Model):
 class Instance(models.Model):
 
     class Meta:
-        permissions = (('view_unrentable', 'Can view unrentable inventory'),)
+        permissions = (('view_unrentable', 'Can view unrentable inventory'),
+                       ('view_instance', 'Can view instance'),)
 
     serial_number = models.CharField('Seriennummer', max_length=200)
     inventory_number = models.CharField('Inventarnummer', max_length=200)

@@ -7,21 +7,31 @@
 </tr>
 </thead>
 <tbody>
-{% for device in devices %}
+{% if perms.rms.view_device %}
+    {% for device in devices %}
+        <tr>
+            <td><a href="{% url 'device' device.id %}">{{ device.name }}</a></td>
+            <td><a href="{% url 'device' device.id %}">{{ device.vendor }}</a></td>
+            <td style="text-align: right;">
+                {% if perms.rms.change_device %}
+                    <a href="{% url 'edit_device' device.id %}"><i class="fa fa-edit"></i></a>
+                {% endif %}
+                {% if perms.rms.delete_device %}
+                    <a href="#" data-toggle="modal" data-target="#delete_device{{ device.id }}"><i class="fa fa-trash text-danger"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% include 'inventory/modals/device_delete_modal.html' %}
+    {% endfor %}
+    {% if not devices %}
     <tr>
-        <td><a href="{% url 'device' device.id %}">{{ device.name }}</a></td>
-        <td><a href="{% url 'device' device.id %}">{{ device.vendor }}</a></td>
-        <td style="text-align: right;">
-            <a href="{% url 'edit_device' device.id %}"><i class="fa fa-edit"></i></a>
-            <a href="#" data-toggle="modal" data-target="#delete_device{{ device.id }}"><i class="fa fa-trash text-danger"></i></a>
-        </td>
+    <td colspan="100" style="text-align: center;">Keine Geräte gefunden</td>
     </tr>
-    {% include 'inventory/modals/device_delete_modal.html' %}
-{% endfor %}
-{% if not devices %}
-<tr>
-<td colspan="100" style="text-align: center;">Keine Geräte gefunden</td>
-</tr>
+    {% endif %}
+{% else %}
+    <tr>
+    <td colspan="100" style="text-align: center;">Keine Berechtigung die Geräte zu sehen</td>
+    </tr>
 {% endif %}
 </tbody>
 </table>

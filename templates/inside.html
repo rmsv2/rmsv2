@@ -42,6 +42,7 @@
         <section class="sidebar">
             <ul class="sidebar-menu tree" data-widget="tree">
                 <li class="header">NAVIGATION</li>
+                {% if perms.rms.view_category or perms.rms.add_device or perms.rms.add_category %}
                 <li class="treeview {% if '/inventory' in request.path %}active{% endif %}">
                     <a href="#">
                         <i class="fa fa-cubes"></i>
@@ -49,13 +50,20 @@
                         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="{% if '/inventory/addDevice' in request.path %}active{% endif %}"><a href="{% url 'add_device' %}"><i class="fa fa-plus-circle"></i>Gerätetyp erstellen</a></li>
-                        <li class="{% if '/inventory/categories/add' in request.path %}active{% endif %}"><a href="{% url 'create_category' %}"><i class="fa fa-plus-circle"></i>Kategorie erstellen</a></li>
-                        <li role="separator" class="list-seperator"></li>
-                        {% include 'navigation/category_tree.html' with categories=top_categories %}
-                        <li class="{% if '/inventory/devices/uncategorized' in request.path or '/inventory/devices/uncategorized' in category_path_urls %}active{% endif %}"><a href="{% url 'uncategorized_devices' %}"><div style="width: 10px; display: inline-block;"></div> Unkategorisierte Geräte</a></li>
+                        {% if perms.rms.add_device %}
+                            <li class="{% if '/inventory/addDevice' in request.path %}active{% endif %}"><a href="{% url 'add_device' %}"><i class="fa fa-plus-circle"></i>Gerätetyp erstellen</a></li>
+                        {% endif %}
+                        {% if perms.rms.add_category %}
+                            <li class="{% if '/inventory/categories/add' in request.path %}active{% endif %}"><a href="{% url 'create_category' %}"><i class="fa fa-plus-circle"></i>Kategorie erstellen</a></li>
+                        {% endif %}
+                        {% if perms.rms.view_category %}
+                            <li role="separator" class="list-seperator"></li>
+                            {% include 'navigation/category_tree.html' with categories=top_categories %}
+                            <li class="{% if '/inventory/devices/uncategorized' in request.path or '/inventory/devices/uncategorized' in category_path_urls %}active{% endif %}"><a href="{% url 'uncategorized_devices' %}"><div style="width: 10px; display: inline-block;"></div> Unkategorisierte Geräte</a></li>
+                        {% endif %}
                     </ul>
                 </li>
+                {% endif %}
             </ul>
         </section>
     </aside>

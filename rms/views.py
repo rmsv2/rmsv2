@@ -43,6 +43,7 @@ def home_view(request):
 
 
 @login_required()
+@permission_required('rms.add_device')
 def add_device_view(request):
     if request.method == 'POST':
         form = forms.DeviceForm(request.POST)
@@ -57,6 +58,7 @@ def add_device_view(request):
 
 
 @login_required()
+@permission_required('rms.edit_device')
 def edit_device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
@@ -75,12 +77,14 @@ def edit_device_view(request, device_id):
 
 
 @login_required()
+@permission_required('rms.view_category')
 def uncategorized_devices_view(request):
     return render(request, 'inventory/uncategorized_devices.html', context={'devices': models.Device.uncategorized(),
                                                                             'title': 'Unkategorisierte Geräte'})
 
 
 @login_required()
+@permission_required('rms.delete_device')
 def delete_device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
@@ -97,6 +101,7 @@ def delete_device_view(request, device_id):
 
 
 @login_required()
+@permission_required('rms.view_device')
 def device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
@@ -110,12 +115,18 @@ def device_view(request, device_id):
         if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
             context['protected_error'] = True
 
+        if request.user.has_perm('rms.view_unrentable'):
+            context['instances'] = device.instance_set.all()
+        else:
+            context['instances'] = device.instance_set.filter(rentable=True)
+
         return render(request, 'inventory/device.html', context=context)
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
 
 
 @login_required()
+@permission_required('rms.add_instance')
 def create_instance_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
@@ -141,6 +152,7 @@ def create_instance_view(request, device_id):
 
 
 @login_required()
+@permission_required('rms.change_instance')
 def edit_instance_view(request, device_id, instance_id):
     try:
         device = models.Device.objects.get(id=device_id)
@@ -171,6 +183,7 @@ def edit_instance_view(request, device_id, instance_id):
 
 
 @login_required()
+@permission_required('rms.delete_instance')
 def delete_instance_view(request, device_id, instance_id):
     try:
         device = models.Device.objects.get(id=device_id)
@@ -186,6 +199,7 @@ def delete_instance_view(request, device_id, instance_id):
 
 
 @login_required()
+@permission_required('rms.add_category')
 def create_category_view(request, category_id=None):
     if request.method == 'POST':
         form = forms.CategoryForm(request.POST)
@@ -203,6 +217,7 @@ def create_category_view(request, category_id=None):
 
 
 @login_required()
+@permission_required('rms.view_category')
 def category_view(request, category_id):
     try:
         category = models.Category.objects.get(id=category_id)
@@ -232,6 +247,7 @@ def category_view(request, category_id):
 
 
 @login_required()
+@permission_required('rms.change_category')
 def edit_category_view(request, category_id):
     try:
         category = models.Category.objects.get(id=category_id)
@@ -253,6 +269,7 @@ def edit_category_view(request, category_id):
 
 
 @login_required()
+@permission_required('rms.delete_category')
 def remove_category_view(request, category_id):
     try:
         category = models.Category.objects.get(id=category_id)
