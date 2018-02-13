@@ -53,8 +53,8 @@ class Device(models.Model):
     model_number = models.CharField('Modell Nummer', max_length=100)
     vendor = models.CharField('Hersteller', max_length=300, default='')
     description = models.TextField('Beschreibung', null=True, blank=True)
-    price_new = MoneyField('Neupreis', decimal_places=2, max_digits=20)
-    price_rental = MoneyField('Vermietpreis', decimal_places=2, max_digits=20)
+    price_new = MoneyField('Neupreis', decimal_places=2, max_digits=20, default_currency='EUR')
+    price_rental = MoneyField('Vermietpreis', decimal_places=2, max_digits=20, default_currency='EUR')
     tags = models.ManyToManyField(Tag, blank=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, verbose_name='Kategorie', blank=True)
 
