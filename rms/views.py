@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
+from django.db.models import Q
 from rms import forms
 from . import models
 from .decorators import permission_required
@@ -540,3 +541,26 @@ def group_view(request, group_id):
                                                                'available_users': available_users})
     except Group.DoesNotExist:
         return redirect('groups_list')
+
+
+@login_required()
+def search_view(request, type):
+    if request.method == 'GET' and 'search' in request.GET:
+        search_string = request.GET['search']
+        if type == 'devices':
+            elements = models.Device.objects.filter(Q(instance__identificial_description__icontains=search_string) |
+                                                    Q(instance__inventory_number__icontains=search_string) |
+                                                    Q(instance__serial_number__icontains=search_string) |
+                                                    Q(description__icontains=search_string) |
+                                                    Q(name__icontains=search_string) |
+                                                    Q(vendor__icontains=search_string) |
+                                                    Q(model_number__icontains=search_string))
+        else:
+            elements = []
+
+        return render(request, 'search.html', context={'title': 'Suche',
+                                                       'search_string': search_string,
+                                                       'type': type,
+                                                       'elements': elements})
+    else:
+        return redirect(request.path)

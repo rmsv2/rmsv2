@@ -1,0 +1,27 @@
+{% extends 'inside.html' %}
+
+{% block content %}
+    <section class="content-header">
+    <h1>
+        Suche: "{{ search_string }}"
+    </h1>
+    <ol class="breadcrumb">
+        <li><i class="fa fa-search"></i> Suche</li>
+        <li>"{{ search_string }}"</li>
+    </ol>
+    </section>
+    <section class="content">
+    <div class="box" style="border-top: none;">
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="{% if '/search/devices' in request.path %}active{% endif %}"><a href="{% url 'search' 'devices' %}?search={{ search_string }}"><i class="far fa-cubes"></i> Inventar</a></li>
+            </ul>
+        </div>
+        <div class="box-body">
+            {% if type == 'devices' %}
+                {% include 'inventory/device_list.html' with devices=elements %}
+            {% endif %}
+        </div>
+    </div>
+    </section>
+{% endblock %}

@@ -40,6 +40,14 @@
 
     <aside class="main-sidebar">
         <section class="sidebar">
+            <form action="{% url 'search' 'devices' %}" method="get" class="sidebar-form">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Suche..." value="{{ search_string }}">
+                    <span class="input-group-btn">
+                        <button type="submit" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+                    </span>
+                </div>
+            </form>
             <ul class="sidebar-menu tree" data-widget="tree">
                 <li class="header">NAVIGATION</li>
                 {% if perms.rms.view_category or perms.rms.add_device or perms.rms.add_category %}
