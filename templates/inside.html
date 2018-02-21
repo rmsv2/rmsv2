@@ -72,6 +72,12 @@
                     </ul>
                 </li>
                 {% endif %}
+                <li class="{% if '/reservations' in requests.path %}active{% endif %}">
+                    <a href="#">
+                        <i class="fa fa-file-text"></i>
+                        <span>Reservierungen</span>
+                    </a>
+                </li>
             </ul>
         </section>
     </aside>

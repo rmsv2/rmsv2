@@ -87,3 +87,28 @@ class Instance(models.Model):
     rentable = models.BooleanField('Ausleihbar', default=False)
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
+
+
+class Project(models.Model):
+    pass
+
+
+class Reservation(models.Model):
+
+    class Meta:
+        permissions = (('view_all_reservations', 'Can view all reservations'),)
+
+    name = models.DateTimeField('Name')
+    owners = models.ManyToManyField(User)
+    start_date = models.DateTimeField('Start')
+    end_date = models.DateTimeField('Ende')
+    description = models.TextField('Beschreibung')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    devices = models.ManyToManyField(Device, through='ReservationDeviceMembership')
+    instance = models.ManyToManyField(Instance)
+
+
+class ReservationDeviceMembership(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    device = models.ForeignKey(Device, on_delete=models.PROTECT)
+    amount = models.IntegerField()

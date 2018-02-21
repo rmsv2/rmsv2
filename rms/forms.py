@@ -97,3 +97,10 @@ class GroupForm(BootstrapForm):
     class Meta:
         model = auth_models.Group
         fields = ['name']
+
+
+class ReservationForm(BootstrapForm):
+
+    class Meta:
+        model = models.Reservation
+        fields = ['name', 'description', 'start_date', 'end_date']
