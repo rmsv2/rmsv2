@@ -1,0 +1,62 @@
+{% extends 'inside.html' %}
+
+{% block content %}
+    <section class="content-header">
+    <h1>
+        {{ title }}
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'customers' %}"><i class="fa fa-users"></i>Kundendaten</a></li>
+        {% if edit %}
+        <li><a href="{% url 'customer' customer.id %}">{{ customer.first_name }} {{ customer.last_name }}</a></li>
+        {% else %}
+        <li>Kunde anlegen</li>
+        {% endif %}
+    </ol>
+    </section>
+    <section class="content">
+    <div class="box box-default">
+        <div class="box-body">
+            <form action="{{ request.path }}" method="post" class="form-horizontal">
+                {% csrf_token %}
+                {% include 'generics/includes/only_form_fields.html' with form=customer_form %}
+                <hr>
+                <h3> Hausanschrift</h3>
+                {% include 'generics/includes/only_form_fields.html' with form=address_form %}
+                <hr>
+                <h3>
+                    Postanschrift
+                    <small>Hausanschrift verwenden</small>
+                    <input id="use_address_for_mailing" type="checkbox" value="on" title="Hausanschrift verwenden" name="mailing_address_equals_address" {% if mailing_address_equals_address %}checked{% endif %}>
+                </h3>
+                <div id="mailing_address">
+                    {% include 'generics/includes/only_form_fields.html' with form=mailing_address_form %}
+                </div>
+                <a href="{% if edit %}{% url 'customer' customer.id %}{% else %}{% url 'customers' %}{% endif %}" class="btn btn-default">Abbrechen</a>
+                <button class="btn btn-primary pull-right" type="submit">Speichern</button>
+            </form>
+        </div>
+    </div>
+    </section>
+    <script type="application/javascript">
+    $(document).ready(function () {
+        var div = $('#mailing_address');
+        var checkbox = $('#use_address_for_mailing');
+        var div_content = div.html();
+        checkbox.change(function () {
+            if(this.checked) {
+                div_content = div.html();
+                div.html('')
+            } else {
+                div.html(div_content)
+            }
+        });
+        if(checkbox.attr('checked')) {
+            div_content = div.html();
+            div.html('')
+        } else {
+            div.html(div_content)
+        }
+    })
+    </script>
+{% endblock %}

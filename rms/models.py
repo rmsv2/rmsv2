@@ -89,6 +89,31 @@ class Instance(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
 
+class Address(models.Model):
+    street = models.CharField('Straße', max_length=200, default=None, null=True)
+    number = models.CharField('Hausnummer', max_length=5, default=None, null=True)
+    mailbox = models.CharField('Postfach', max_length=20, default=None, null=True)
+    city = models.CharField('Stadt', max_length=200)
+    zip_code = models.CharField('Postleitzahl', max_length=5)
+
+
+class Customer(models.Model):
+
+    class Meta:
+        permissions = (('view_customer', 'Can view customer'),)
+
+    company = models.CharField('Firma', max_length=200, default=None, null=True)
+    title = models.CharField('Titel', max_length=50, default=None, null=True)
+    first_name = models.CharField('Vorname', max_length=200)
+    last_name = models.CharField('Nachname', max_length=200)
+    mail = models.EmailField('E-Mail Adresse')
+    phone = models.CharField('Telefon', max_length=30, default=None, null=True)
+    mobile = models.CharField('Mobiltelefon', max_length=30, default=None, null=True)
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='address')
+    mailing_address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='mailing_address')
+    related_user = models.OneToOneField(User, on_delete=models.SET_DEFAULT, default=None, null=True)
+
+
 class Project(models.Model):
     pass
 
@@ -100,12 +125,13 @@ class Reservation(models.Model):
 
     name = models.DateTimeField('Name')
     owners = models.ManyToManyField(User)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     start_date = models.DateTimeField('Start')
     end_date = models.DateTimeField('Ende')
     description = models.TextField('Beschreibung')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     devices = models.ManyToManyField(Device, through='ReservationDeviceMembership')
-    instance = models.ManyToManyField(Instance)
+    instances = models.ManyToManyField(Instance)
 
 
 class ReservationDeviceMembership(models.Model):

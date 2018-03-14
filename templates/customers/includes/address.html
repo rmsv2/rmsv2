@@ -1,0 +1,10 @@
+{% if customer.title %}{{ customer.title }} {% endif %}{{ customer.first_name }} {{ customer.last_name }}<br>
+{% if customer.company %}
+{{ customer.company }}<br>
+{% endif %}
+{% if address.mailbox %}
+Postfach {{ address.mailbox }}<br>
+{% else %}
+{{ address.street }} {{ address.number }}<br>
+{% endif %}
+{{ address.zip_code }} {{ address.city }}<br>

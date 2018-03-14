@@ -1,0 +1,18 @@
+<dl class="dl-horizontal">
+    <dt>Firma</dt>
+    <dd>{% if customer.company %}{{ customer.company }}{% else %}-{% endif %}</dd>
+    <dt>Name</dt>
+    <dd>{% if customer.title %}{{ customer.title }} {% endif %}{{ customer.first_name }} {{ customer.last_name }}</dd>
+    <dt>E-Mail</dt>
+    <dd>{{ customer.mail }}</dd>
+    <dt>Telefon</dt>
+    <dd>{% if customer.phone %}{{ customer.phone }}{% else %}-{% endif %}</dd>
+    <dt>Mobiltelefon</dt>
+    <dd>{% if customer.mobile %}{{ customer.mobile }}{% else %}-{% endif %}</dd>
+    <br>
+    <dt>Hausanschrift</dt>
+    <dd>{% include 'customers/includes/address.html' with address=customer.address %}</dd>
+    <br>
+    <dt>Postanschrift</dt>
+    <dd>{% include 'customers/includes/address.html' with address=customer.mailing_address %}</dd>
+</dl>

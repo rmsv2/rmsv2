@@ -1,17 +1,6 @@
 <form action="{{ request.get_full_path }}" method="post" class="form-horizontal" enctype="multipart/form-data">
     {% csrf_token %}
-    {% if form.non_field_errors %}
-        {{ form.non_field_errors }}
-    {% endif %}
-    {% for field in form %}
-    <div class="form-group has-feedback {% if field.errors %}has-error{% endif %}">
-        <label for="{{ field.id_for_label }}" class="control-label col-sm-2">{{ field.label }}</label>
-        <div class="col-sm-10">
-            {{ field }}
-            {{ field.errors }}
-        </div>
-    </div>
-    {% endfor %}
+    {% include 'generics/includes/only_form_fields.html' %}
     <button type="button" onclick="window.history.back()" class="btn btn-default">Abbrechen</button>
     <button type="submit" class="btn btn-primary pull-right">Speichern</button>
 </form>

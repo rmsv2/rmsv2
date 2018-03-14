@@ -78,6 +78,14 @@
                         <span>Reservierungen</span>
                     </a>
                 </li>
+                {% if perms.rms.view_customer %}
+                <li class="{% if '/customers' in request.path %}active{% endif %}">
+                    <a href="{% url 'customers' %}">
+                        <i class="fa fa-users"></i>
+                        <span>Kundendaten</span>
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </section>
     </aside>

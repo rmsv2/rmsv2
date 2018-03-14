@@ -564,3 +564,132 @@ def search_view(request, type):
                                                        'elements': elements})
     else:
         return redirect(request.path)
+
+
+@login_required()
+@permission_required('rms.view_customer')
+def customers_view(request):
+    customers = models.Customer.objects.all()
+
+    return render(request, 'customers/customers.html', context={'title': 'Kundendaten',
+                                                                'customers': customers})
+
+
+@login_required()
+@permission_required('rms.add_customer')
+def create_customer_view(request):
+    mailing_address_equals_address = False
+    if request.method == 'POST':
+        customer_form = forms.CustomerForm(request.POST, prefix='customer')
+        address_form = forms.AddressForm(request.POST, prefix='address')
+        if 'mailing_address_equals_address' in request.POST and request.POST['mailing_address_equals_address'] == 'on':
+            mailing_address_equals_address = True
+            mailing_address_form = forms.AddressForm(prefix='mailing_address')
+        else:
+            mailing_address_form = forms.AddressForm(request.POST, prefix='mailing_address')
+        if mailing_address_equals_address:
+            if customer_form.is_valid() and address_form.is_valid():
+                customer = customer_form.save(False)
+                address = address_form.save(True)
+                customer.address = address
+                customer.mailing_address = address
+                customer.save()
+                return redirect('customer', customer_id=customer.id)
+        else:
+            if mailing_address_form.is_valid() and customer_form.is_valid() and address_form.is_valid():
+                customer = customer_form.save(False)
+                address = address_form.save(True)
+                mailing_address = mailing_address_form.save(True)
+                customer.address = address
+                customer.mailing_address = mailing_address
+                customer.save()
+                return redirect('customer', customer_id=customer.id)
+
+    else:
+        customer_form = forms.CustomerForm(prefix='customer')
+        address_form = forms.AddressForm(prefix='address')
+        mailing_address_form = forms.AddressForm(prefix='mailing_address')
+    address_form.fields.pop('mailbox')
+    return render(request, 'customers/customer_form.html', context={'title': 'Kunde anlegen',
+                                                                    'customer_form': customer_form,
+                                                                    'address_form': address_form,
+                                                                    'mailing_address_form': mailing_address_form,
+                                                                    'mailing_address_equals_address':
+                                                                        mailing_address_equals_address})
+
+
+@login_required()
+@permission_required('rms.delete_customer')
+def remove_customer_view(request, customer_id):
+    if request.method == 'POST':
+        try:
+            customer = models.Customer.objects.get(id=customer_id)
+            customer.delete()
+        except models.Customer.DoesNotExist:
+            pass
+
+    return redirect('customers')
+
+
+@login_required()
+@permission_required('rms.view_customer')
+def customer_view(request, customer_id):
+    try:
+        customer = models.Customer.objects.get(id=customer_id)
+        return render(request, 'customers/customer.html', context={'title': 'Kundeninformationen',
+                                                                   'customer': customer})
+    except models.Customer.DoesNotExist:
+        return redirect('customers')
+
+
+@login_required()
+@permission_required('rms.change_customer')
+def edit_customer_view(request, customer_id):
+    try:
+        customer = models.Customer.objects.get(id=customer_id)
+        mailing_address_equals_address = False
+        if request.method == 'POST':
+            customer_form = forms.CustomerForm(request.POST, prefix='customer', instance=customer)
+            address_form = forms.AddressForm(request.POST, prefix='address', instance=customer.address)
+            if 'mailing_address_equals_address' in request.POST \
+                    and request.POST['mailing_address_equals_address'] == 'on':
+                mailing_address_equals_address = True
+                mailing_address_form = forms.AddressForm(prefix='mailing_address', instance=customer.mailing_address)
+            else:
+                mailing_address_form = forms.AddressForm(request.POST, prefix='mailing_address',
+                                                         instance=customer.mailing_address)
+            if mailing_address_equals_address:
+                if customer_form.is_valid() and address_form.is_valid():
+                    customer = customer_form.save(False)
+                    address = address_form.save(True)
+                    customer.address = address
+                    customer.mailing_address = address
+                    customer.save()
+                    return redirect('customer', customer_id=customer.id)
+            else:
+                if mailing_address_form.is_valid() and customer_form.is_valid() and address_form.is_valid():
+                    customer = customer_form.save(False)
+                    address = address_form.save(True)
+                    mailing_address = mailing_address_form.save(True)
+                    customer.address = address
+                    customer.mailing_address = mailing_address
+                    customer.save()
+                    return redirect('customer', customer_id=customer.id)
+
+        else:
+            customer_form = forms.CustomerForm(prefix='customer', instance=customer)
+            address_form = forms.AddressForm(prefix='address', instance=customer.address)
+            mailing_address_form = forms.AddressForm(prefix='mailing_address', instance=customer.mailing_address)
+            if customer.address == customer.mailing_address:
+                mailing_address_equals_address = True
+        address_form.fields.pop('mailbox')
+        return render(request, 'customers/customer_form.html', context={'title': 'Kunde bearbeiten',
+                                                                        'customer': customer,
+                                                                        'customer_form': customer_form,
+                                                                        'address_form': address_form,
+                                                                        'mailing_address_form': mailing_address_form,
+                                                                        'mailing_address_equals_address':
+                                                                            mailing_address_equals_address,
+                                                                        'edit': True})
+    except models.Customer.DoesNotExist:
+        return redirect('customers')

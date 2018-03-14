@@ -42,6 +42,11 @@ urlpatterns = [
     path('settings/groups/<int:group_id>/delete', views.remove_group_view, name='remove_group'),
     path('settings/groups/<int:group_id>/modify', views.modify_group_view, name='modify_group'),
 
+    path('customers', views.customers_view, name='customers'),
+    path('customers/create', views.create_customer_view, name='create_customer'),
+    path('customers/<int:customer_id>', views.customer_view, name="customer"),
+    path('customers/<int:customer_id>/edit', views.edit_customer_view, name="edit_customer"),
+    path('customers/<int:customer_id>/remove', views.remove_customer_view, name="remove_customer"),
 
     path('api/inventory/tags/search', tag_search_view),
     path('api/inventory/tags/add', tag_add_view),
