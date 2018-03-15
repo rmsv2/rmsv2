@@ -697,7 +697,10 @@ def edit_customer_view(request, customer_id):
 
 @login_required()
 def reservations_view(request):
-    reservations = request.user.reservation_set.order_by('start_date').all()
+    if 'all' in request.GET and request.GET['all'] == 'yes' and request.user.is_superuser:
+        reservations = models.Reservation.objects.order_by('start_date').all()
+    else:
+        reservations = request.user.reservation_set.order_by('start_date').all()
 
     return render(request, 'reservation/reservations.html', context={'title': 'Reservierungen',
                                                                      'reservations': reservations})
