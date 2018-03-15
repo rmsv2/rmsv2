@@ -72,12 +72,14 @@
                     </ul>
                 </li>
                 {% endif %}
+                {% if perms.rms.view_reservation %}
                 <li class="{% if '/reservations' in request.path %}active{% endif %}">
                     <a href="{% url 'reservations' %}">
                         <i class="fa fa-file-text"></i>
                         <span>Reservierungen</span>
                     </a>
                 </li>
+                {% endif %}
                 {% if perms.rms.view_customer %}
                 <li class="{% if '/customers' in request.path %}active{% endif %}">
                     <a href="{% url 'customers' %}">

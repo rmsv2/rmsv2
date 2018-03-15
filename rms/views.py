@@ -696,6 +696,7 @@ def edit_customer_view(request, customer_id):
 
 
 @login_required()
+@permission_required('rms.view_reservation')
 def reservations_view(request):
     if 'all' in request.GET and request.GET['all'] == 'yes' and request.user.is_superuser:
         reservations = models.Reservation.objects.order_by('start_date').all()
@@ -707,9 +708,10 @@ def reservations_view(request):
 
 
 @login_required()
+@permission_required('rms.add_reservation')
 def create_reservation_view(request):
     if request.method == 'POST':
-        form = forms.ReservationForm(request.POST, initial={'owners': request.user})
+        form = forms.ReservationForm(request.POST)
         if form.is_valid():
             reservation = form.save()
             reservation.owners.add(request.user)
@@ -726,6 +728,7 @@ def create_reservation_view(request):
 
 
 @login_required()
+@permission_required('rms.view_reservation')
 def reservation_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
@@ -736,16 +739,17 @@ def reservation_view(request, reservation_id):
 
 
 @login_required()
+@permission_required('rms.change_reservation')
 def edit_reservation_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
         if request.method == 'POST':
-            form = forms.ReservationForm(request.POST, instance=reservation, initial={'owners': request.user})
+            form = forms.ReservationForm(request.POST, instance=reservation)
             if form.is_valid():
                 form.save()
                 return redirect('reservation', reservation_id)
         else:
-            form = forms.ReservationForm(instance=reservation, initial={'owners': request.user})
+            form = forms.ReservationForm(instance=reservation)
         context = {
             'title': 'Reservierung bearbeiten',
             'path': [
@@ -762,6 +766,7 @@ def edit_reservation_view(request, reservation_id):
 
 
 @login_required()
+@permission_required('rms.delete_permission')
 def remove_reservation_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)

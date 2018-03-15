@@ -14,7 +14,9 @@
     <section class="content">
     <div class="box box-default">
         <div class="box-body">
-            <a href="{% url 'edit_reservation' reservation.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Reservierung bearbeiten</a>
+            {% if perms.rms.change_reservation %}
+                <a href="{% url 'edit_reservation' reservation.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Reservierung bearbeiten</a>
+            {% endif %}
             {% include 'reservation/includes/reservation_info.html' with edit=True %}
         </div>
     </div>

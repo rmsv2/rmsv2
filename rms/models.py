@@ -128,7 +128,7 @@ class Project(models.Model):
 class Reservation(models.Model):
 
     class Meta:
-        permissions = (('view_all_reservations', 'Can view all reservations'),)
+        permissions = (('view_reservation', 'Can view reservation'),)
 
     name = models.CharField('Name', max_length=250)
     owners = models.ManyToManyField(auth_models.User, verbose_name='Besitzer')
