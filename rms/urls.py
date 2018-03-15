@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 from .api_views.inventory import *
+from rmsv2.settings import COMPANY_SHORT
 
 urlpatterns = [
     path('', views.home_view, name='home'),
@@ -41,6 +42,14 @@ urlpatterns = [
     path('settings/groups/<int:group_id>/edit', views.edit_group_view, name='edit_group'),
     path('settings/groups/<int:group_id>/delete', views.remove_group_view, name='remove_group'),
     path('settings/groups/<int:group_id>/modify', views.modify_group_view, name='modify_group'),
+
+    path('settings/reservations', views.reservations_view, name='reservations'),
+    path('settings/reservations/create', views.create_reservation_view, name='create_reservation'),
+    path('settings/reservations/'+COMPANY_SHORT+'-<int:reservation_id>', views.reservation_view, name='reservation'),
+    path('settings/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/edit',
+         views.edit_reservation_view, name='edit_reservation'),
+    path('settings/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/delete',
+         views.remove_reservation_view, name='remove_reservation'),
 
     path('customers', views.customers_view, name='customers'),
     path('customers/create', views.create_customer_view, name='create_customer'),

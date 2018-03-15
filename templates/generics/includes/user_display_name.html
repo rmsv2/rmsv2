@@ -1,0 +1,7 @@
+{% if user_object.first_name and user_object.last_name %}
+    {{ user_object.first_name }} {{ user_object.last_name }}
+{% elif user_object.email %}
+    {{ user_object.username }}
+{% else %}
+    {{ user_object.email }}
+{% endif %}

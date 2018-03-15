@@ -1,0 +1,22 @@
+<div class="modal modal-danger fade" id="delete_reservation{{ reservation.id }}" tabindex="-1" role="dialog" aria-labelledby="delete_reservation{{ reservation.id }}_label">
+    <form action="{% url 'remove_reservation' reservation.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-dialog" role="document" style="text-align: left;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete_reservation{{ reservation.id }}_label">Reservierung löschen</h4>
+                </div>
+                <div class="modal-body">
+                    Soll die Reservierung wirklich entfernt werden?<br>
+                    <br>
+                    {% include 'reservation/includes/reservation_info.html' %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline">Löschen</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

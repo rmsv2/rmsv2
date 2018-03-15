@@ -1,0 +1,18 @@
+<dl class="dl-horizontal">
+    <dt>ID</dt>
+    <dd>{{ reservation.full_id }}</dd>
+    <dt>Name</dt>
+    <dd>{{ reservation.name }}</dd>
+    <dt>Beschreibung</dt>
+    <dd>{{ reservation.description|default:"-" }}</dd>
+    <dt>Start</dt>
+    <dd>{{ reservation.start_date }}</dd>
+    <dt>End</dt>
+    <dd>{{ reservation.end_date }}</dd>
+    <dt>Besitzer</dt>
+    <dd>
+        {% for owner in reservation.owners.all %}
+            {% include 'generics/includes/user_display_name.html' with user_object=owner %}<br>
+        {% endfor %}
+    </dd>
+</dl>

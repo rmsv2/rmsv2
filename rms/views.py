@@ -693,3 +693,77 @@ def edit_customer_view(request, customer_id):
                                                                         'edit': True})
     except models.Customer.DoesNotExist:
         return redirect('customers')
+
+
+@login_required()
+def reservations_view(request):
+    reservations = request.user.reservation_set.order_by('start_date').all()
+
+    return render(request, 'reservation/reservations.html', context={'title': 'Reservierungen',
+                                                                     'reservations': reservations})
+
+
+@login_required()
+def create_reservation_view(request):
+    if request.method == 'POST':
+        form = forms.ReservationForm(request.POST, initial={'owners': request.user})
+        if form.is_valid():
+            reservation = form.save()
+            reservation.owners.add(request.user)
+            reservation.save()
+            return redirect('reservations')
+    else:
+        form = forms.ReservationForm(initial={'owners': request.user})
+    return render(request, 'reservation/reservation_form.html', context={'title': 'Reservierung erstellen',
+                                                                         'path': [{'text': '<i class="fa fa-file-text">'
+                                                                                           '</i>Reservierungen',
+                                                                                  'url': reverse('reservations')},
+                                                                                  {'text': 'Reservierung erstellen'}],
+                                                                         'form': form})
+
+
+@login_required()
+def reservation_view(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        return render(request, 'reservation/reservation.html', context={'title': 'Reservierung',
+                                                                        'reservation': reservation})
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+def edit_reservation_view(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        if request.method == 'POST':
+            form = forms.ReservationForm(request.POST, instance=reservation, initial={'owners': request.user})
+            if form.is_valid():
+                form.save()
+                return redirect('reservation', reservation_id)
+        else:
+            form = forms.ReservationForm(instance=reservation, initial={'owners': request.user})
+        context = {
+            'title': 'Reservierung bearbeiten',
+            'path': [
+                {'text': '<i class="fa fa-file-text"></i>Reservierungen',
+                 'url': reverse('reservations')},
+                {'text': reservation.name,
+                 'url': reverse('reservation', kwargs={'reservation_id': reservation_id})}
+            ],
+            'form': form
+        }
+        return render(request, 'reservation/reservation_form.html', context=context)
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+def remove_reservation_view(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        if request.method == 'POST':
+            reservation.delete()
+    except models.Reservation.DoesNotExist:
+        pass
+    return redirect('reservations')

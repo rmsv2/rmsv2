@@ -1,0 +1,22 @@
+{% extends 'inside.html' %}
+
+{% block content %}
+    <section class="content-header">
+    <h1>
+        Reservierung
+        <small>{{ reservation.full_id }}</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'reservations' %}"><i class="fa fa-file-text"></i> Reservierungen</a></li>
+        <li>{{ reservation.name }}</li>
+    </ol>
+    </section>
+    <section class="content">
+    <div class="box box-default">
+        <div class="box-body">
+            <a href="{% url 'edit_reservation' reservation.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Reservierung bearbeiten</a>
+            {% include 'reservation/includes/reservation_info.html' with edit=True %}
+        </div>
+    </div>
+    </section>
+{% endblock %}

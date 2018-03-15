@@ -142,6 +142,15 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 
+# Company
+
+COMPANY_NAME = config.get('general', 'company_name', fallback=None)
+COMPANY_SHORT = config.get('general', 'company_short', fallback=None)
+
+if COMPANY_NAME is None or COMPANY_SHORT is None:
+    print('Please specify company name and company short')
+    exit(1)
+
 # Email settings
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

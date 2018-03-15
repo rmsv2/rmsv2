@@ -158,4 +158,8 @@ class ReservationForm(BootstrapForm):
 
     class Meta:
         model = models.Reservation
-        fields = ['name', 'description', 'start_date', 'end_date']
+        fields = ['name', 'description', 'customer', 'start_date', 'end_date', 'owners']
+
+    def __init__(self, *args, **kwargs):
+        super(ReservationForm, self).__init__(*args, **kwargs)
+        self.fields['description'].required = False

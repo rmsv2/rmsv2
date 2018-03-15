@@ -5,7 +5,7 @@
     <h1>{{ title }}</h1>
     <ol class="breadcrumb">
         {% for element in path %}
-            <li><a href="{{ element.url }}">{{ element.text|safe }}</a></li>
+            <li>{% if element.url %}<a href="{{ element.url }}">{{ element.text|safe }}</a>{% else %}{{ element.text|safe }}{% endif %}</li>
         {% endfor %}
 
     </ol>

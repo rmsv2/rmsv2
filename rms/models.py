@@ -4,7 +4,7 @@ from djmoney.models.fields import MoneyField
 import string
 import random
 import os
-from rmsv2.settings import BASE_DIR
+from rmsv2.settings import BASE_DIR, COMPANY_SHORT
 
 # Create your models here.
 
@@ -113,6 +113,13 @@ class Customer(models.Model):
     mailing_address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='mailing_address')
     related_user = models.OneToOneField(User, on_delete=models.SET_DEFAULT, default=None, null=True)
 
+    def __str__(self):
+        string_representation = ''
+        if self.title is not None:
+            string_representation += self.title+' '
+        string_representation += self.first_name+' '+self.last_name
+        return string_representation
+
 
 class Project(models.Model):
     pass
@@ -123,15 +130,19 @@ class Reservation(models.Model):
     class Meta:
         permissions = (('view_all_reservations', 'Can view all reservations'),)
 
-    name = models.DateTimeField('Name')
-    owners = models.ManyToManyField(User)
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+    name = models.CharField('Name', max_length=250)
+    owners = models.ManyToManyField(auth_models.User, verbose_name='Besitzer')
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, verbose_name='Kunde')
     start_date = models.DateTimeField('Start')
     end_date = models.DateTimeField('Ende')
     description = models.TextField('Beschreibung')
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, default=None)
     devices = models.ManyToManyField(Device, through='ReservationDeviceMembership')
     instances = models.ManyToManyField(Instance)
+
+    @property
+    def full_id(self):
+        return COMPANY_SHORT+'-'+str(self.id)
 
 
 class ReservationDeviceMembership(models.Model):

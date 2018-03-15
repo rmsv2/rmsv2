@@ -1,0 +1,23 @@
+{% extends 'generics/form.html' %}
+
+{% block scripts %}
+    <script type="application/javascript">
+        var start_element = $('#{{ form.start_date.auto_id }}');
+        var end_element = $('#{{ form.end_date.auto_id }}');
+        start_element.datetimepicker({
+            format: 'DD.MM.YYYY HH:mm',
+            sideBySide: true
+        });
+        end_element.datetimepicker({
+            format: 'DD.MM.YYYY HH:mm',
+            useCurrent: false, //Important! See issue #1075
+            sideBySide: true
+        });
+        start_element.on("dp.change", function (e) {
+            end_element.data("DateTimePicker").minDate(e.date);
+        });
+        end_element.on("dp.change", function (e) {
+            start_element.data("DateTimePicker").maxDate(e.date);
+        });
+    </script>
+{% endblock %}
