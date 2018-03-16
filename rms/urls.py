@@ -62,5 +62,5 @@ urlpatterns = [
     path('api/inventory/tags/search', tag_search_view),
     path('api/inventory/tags/add', tag_add_view),
 
-    path('feeds/ics/reservation.ics', ReservationsFeed()),
+    path('feeds/ics/reservation.ics', ReservationsFeed(), name='reservations_feed'),
 ]
