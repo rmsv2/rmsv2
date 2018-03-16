@@ -700,11 +700,15 @@ def edit_customer_view(request, customer_id):
 def reservations_view(request):
     if 'all' in request.GET and request.GET['all'] == 'yes' and request.user.is_superuser:
         reservations = models.Reservation.objects.order_by('start_date').all()
+        show_all = True
     else:
         reservations = request.user.reservation_set.order_by('start_date').all()
-
+        show_all = False
+    reservations_feed_url = request.build_absolute_uri(reverse('reservations_feed'))
     return render(request, 'reservation/reservations.html', context={'title': 'Reservierungen',
-                                                                     'reservations': reservations})
+                                                                     'reservations': reservations,
+                                                                     'show_all': show_all,
+                                                                     'reservations_feed_url': reservations_feed_url})
 
 
 @login_required()
