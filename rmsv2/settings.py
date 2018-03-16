@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['*']
 
 # subpath Settings for installation on webserver subpath
 
-SUB_PATH = config.get('general', 'webserver_subpath', '')
+SUB_PATH = config.get('general', 'webserver_subpath', fallback='')
 
 
 # Application definition
