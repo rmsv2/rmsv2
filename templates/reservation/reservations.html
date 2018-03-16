@@ -30,11 +30,11 @@
                     <a href="{% url 'create_reservation' %}" class="btn btn-default btn-xs"><i class="fa fa-plus"></i> Reservierung erstellen</a>
                 {% endif %}
                 {% if show_all %}
-                    <button type="button" class="btn btn-default btn-xs" data-toggle="popover" data-placement="bottom" data-content="<b>iCal URL:</b><br><code>{{ reservations_feed_url }}&all=yes</code>" data-html="true">
+                    <button type="button" class="btn btn-default btn-xs" data-container="body" data-toggle="popover" data-placement="bottom" data-content="<b>iCal URL:</b><br><code>{{ reservations_feed_url }}&all=yes</code>" data-html="true">
                         <i class="fa fa-calendar"></i>
                     </button>
                 {% else %}
-                    <button type="button" class="btn btn-default btn-xs" data-toggle="popover" data-placement="bottom" data-content="<b>iCal URL:</b><br><code>{{ reservations_feed_url }}</code>" data-html="true">
+                    <button type="button" class="btn btn-default btn-xs" data-container="body" data-toggle="popover" data-placement="bottom" data-content="<b>iCal URL:</b><br><code>{{ reservations_feed_url }}</code>" data-html="true">
                         <i class="fa fa-calendar"></i>
                     </button>
                 {% endif %}
