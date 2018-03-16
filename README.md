@@ -41,6 +41,7 @@ If you use apache it is recommended to use the following configuration:
     WSGIDaemonProcess rmswsgi python-home=/var/www/rmsv2 python-path=/var/www/rmsv2
     WSGIProcessGroup rmswsgi
     WSGIScriptAlias /rmsv2 /var/www/rmsv2/rmsv2/wsgi.py process-group=rmswsgi
+    WSGIPassAuthorization On
     <Directory /var/www/rmsv2/rmsv2/>
             <Files wsgi.py>
                     Require all granted
