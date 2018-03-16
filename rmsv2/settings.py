@@ -29,6 +29,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# subpath Settings for installation on webserver subpath
+
+SUB_PATH = config.get('general', 'webserver_subpath', '')
+
 
 # Application definition
 
@@ -132,15 +136,15 @@ USE_THOUSAND_SEPARATOR = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = SUB_PATH+'/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = SUB_PATH+'/'
+LOGOUT_REDIRECT_URL = SUB_PATH+'/'
+LOGIN_URL = SUB_PATH+'/login/'
 
 # Company
 
