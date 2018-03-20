@@ -61,6 +61,9 @@ urlpatterns = [
 
     path('api/inventory/tags/search', tag_search_view),
     path('api/inventory/tags/add', tag_add_view),
+    path('api/inventory/devices/<int:device_id>/add_reservation',
+         add_reservation_to_device, name="add_reservation_to_device"),
+    path('api/inventory/devices/<int:device_id>/reservations', device_reservations_json, name="device_reservations"),
 
     path('feeds/ics/reservation.ics', ReservationsFeed(), name='reservations_feed'),
 ]

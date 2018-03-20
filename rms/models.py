@@ -5,6 +5,7 @@ import string
 import random
 import os
 from rmsv2.settings import BASE_DIR, COMPANY_SHORT
+from django.db.models import Q
 
 # Create your models here.
 
@@ -73,6 +74,26 @@ class Device(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.name, self.vendor)
 
+    def available_count(self, start, end):
+        available = 0
+        for instance in self.instance_set.all():
+            if instance.is_available(start, end):
+                available += 1
+        colliding_reservations = self.reservationdevicemembership_set.filter(
+            Q(reservation__start_date__range=[start, end]) |
+            Q(reservation__end_date__range=[start, end]) |
+            (Q(reservation__start_date__lte=start) & Q(reservation__end_date__gte=end))
+        ).aggregate(models.Sum('amount'))['amount__sum']
+        if colliding_reservations is not None:
+            available -= colliding_reservations
+        return available
+
+    def add_to_reservation(self, reservation, amount):
+        available = self.available_count(reservation.start_date, reservation.end_date)
+        if available < amount:
+            raise ValueError('Es sind nicht genug Geräte zur ausgewählten Zeit verfügbar.')
+        ReservationDeviceMembership.objects.create(reservation=reservation, device=self, amount=amount)
+
 
 class Instance(models.Model):
 
@@ -87,6 +108,17 @@ class Instance(models.Model):
     rentable = models.BooleanField('Ausleihbar', default=False)
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
+
+    def is_available(self, start, end, recursive=None):
+        if recursive is None:
+            colliding_reservations = self.reservation_set.filter(
+                Q(start_date__range=[start, end]) |
+                Q(end_date__range=[start, end]) |
+                (Q(start_date__lte=start) & Q(end_date__gte=end))
+            ).count()
+            if colliding_reservations > 0:
+                return False
+        return True
 
 
 class Address(models.Model):
@@ -143,6 +175,9 @@ class Reservation(models.Model):
     @property
     def full_id(self):
         return COMPANY_SHORT+'-'+str(self.id)
+
+    def __str__(self):
+        return '{} {} ({} - {})'.format(self.full_id, self.name, str(self.start_date), str(self.end_date))
 
 
 class ReservationDeviceMembership(models.Model):

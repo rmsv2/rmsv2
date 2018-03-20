@@ -20,6 +20,7 @@
     "font-awesome": "fontawesome#^4.7.0",
     "jquery-zoom": "^1.7.20",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
-    "select2": "^4.0.5"
+    "select2": "^4.0.5",
+    "fullcalendar": "^3.9.0"
   }
 }
