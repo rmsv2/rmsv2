@@ -116,7 +116,62 @@ def device_view(request, device_id):
         else:
             context['instances'] = device.instance_set.filter(rentable=True)
 
-        return render(request, 'inventory/device.html', context=context)
+        return render(request, 'inventory/device_instances.html', context=context)
+    except models.Device.DoesNotExist:
+        return HttpResponse('', status=404)
+
+
+@login_required()
+@permission_required('rms.view_device')
+def device_reservations_view(request, device_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+
+        path, path_urls = get_path(device.category)
+
+        context = {'title': device.name,
+                   'device': device,
+                   'path': path,
+                   'category_path_urls': path_urls}
+        if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
+            context['protected_error'] = True
+
+        if request.user.has_perm('rms.view_unrentable'):
+            context['instances'] = device.instance_set.all()
+        else:
+            context['instances'] = device.instance_set.filter(rentable=True)
+
+        return render(request, 'inventory/device_reservation.html', context=context)
+    except models.Device.DoesNotExist:
+        return HttpResponse('', status=404)
+
+
+@login_required()
+@permission_required('rms.view_device')
+def device_instance_view(request, device_id, instance_id):
+    try:
+        device = models.Device.objects.get(id=device_id)
+
+        path, path_urls = get_path(device.category)
+
+        context = {'title': device.name,
+                   'device': device,
+                   'path': path,
+                   'category_path_urls': path_urls}
+        if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
+            context['protected_error'] = True
+
+        if request.user.has_perm('rms.view_unrentable'):
+            context['instances'] = device.instance_set.all()
+        else:
+            context['instances'] = device.instance_set.filter(rentable=True)
+
+        try:
+            instance = models.Instance.objects.get(id=instance_id)
+            context['instance'] = instance
+            return render(request, 'inventory/device_instance.html', context=context)
+        except models.Instance.DoesNotExist:
+            return redirect('device', device_id=device.id)
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
 
@@ -795,5 +850,21 @@ def remove_device_from_reservation(request, reservation_id, device_id):
             except models.Device.DoesNotExist:
                 pass
         return redirect('reservation', reservation_id=reservation_id)
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+@permission_required('rms.change_reservation')
+def remove_instance_from_reservation(request, reservation_id, instance_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        if request.method == 'POST':
+            try:
+                instance = models.Instance.objects.get(id=instance_id)
+                reservation.instances.remove(instance)
+            except models.Instance.DoesNotExist:
+                pass
+        return redirect('reservation', reservation_id=reservation.id)
     except models.Reservation.DoesNotExist:
         return redirect('reservations')

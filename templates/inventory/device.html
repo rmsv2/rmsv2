@@ -62,21 +62,13 @@
     <div class="box" style="border-top: none;">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-                <li class="{% if not request.GET.sub or request.GET.sub == 'instances' %}active{% endif %}"><a href="#instances" aria-controls="instances" data-toggle="tab">Instanzen</a></li>
-                <li class="{% if request.GET.sub == 'reservations' %}active{% endif %}"><a href="#reservations" aria-controls="reservations" data-toggle="tab">Reservierungen</a></li>
+                <li class="{% if 'reservations' not in request.path %}active{% endif %}"><a href="{% url 'device' device.id %}">Instanzen</a></li>
+                <li class="{% if 'reservations' in request.path %}active{% endif %}"><a href="{% url 'device_reservations' device.id %}">Reservierungen</a></li>
             </ul>
         </div>
         <div class="box-body">
             <div class="tab-content">
-                <div role="tabpanel" class="tab-pane {% if not request.GET.sub or request.GET.sub == 'instances' %}active{% endif %}" id="instances">
-                    {% if perms.rms.add_instance %}
-                        <a href="{% url 'create_instance' device.id %}" class="btn btn-primary btn-xs pull-right"><i class="fa fa-plus"></i> Erstellen</a>
-                    {% endif %}
-                    {% include 'inventory/instance_list.html' with instances=instances %}
-                </div>
-                <div role="tabpanel" class="tab-pane {% if request.GET.sub == 'reservations' %}active{% endif %}" id="reservations">
-                    {% include 'inventory/widgets/device_reservations.html' %}
-                </div>
+                {%  block tab-content %}{% endblock %}
             </div>
         </div>
     </div>

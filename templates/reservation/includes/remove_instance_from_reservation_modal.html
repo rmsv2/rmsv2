@@ -1,0 +1,23 @@
+<div class="modal modal-danger fade" id="delete_instance_from_reservation{{ instance.id }}" tabindex="-1" role="dialog" aria-labelledby="delete_instance_from_reservation{{ instance.id }}_label">
+    <form action="{% url 'remove_instance_from_reservation' reservation.id instance.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-dialog" role="document" style="text-align: left;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete_instance_from_reservation{{ instance.id }}_label">Instanz von Reservierung entfernen?</h4>
+                </div>
+                <div class="modal-body">
+                    Soll die Instanz wirklich von der Reservierung entfernt werden?<br>
+                    <br>
+                    {% include 'inventory/widgets/instance_info.html' %}
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline">Entfernen</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

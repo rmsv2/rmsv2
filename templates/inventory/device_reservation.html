@@ -1,0 +1,104 @@
+{% extends 'inventory/device.html' %}
+
+{% block tab-content %}
+    {% load model_filter %}
+    <div id="reservation_calendar"></div>
+    <div class="modal modal-default fade" id="add_reservation_modal" tabindex="-1" role="dialog" aria-labelledby="add_reservation_modal_label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add_reservation_modal_label">Reservierung hinzufügen</h4>
+                </div>
+                <div class="modal-body">
+                    <select id="reservation_id_selector" name="reservation" style="width: 100%">
+                        {% for reservation in request.user.reservation_set|actual %}
+                            <option value="{{ reservation.id }}">{{ reservation.full_id }} {{ reservation.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <div class="form-group">
+                        <label class="col-sm-2" for="reservation_amount">Anzahl</label>
+                        <div class="col-sm-10">
+                            <input type="number" min="1" max="{{ instances|length }}" name="amount" id="reservation_amount" class="form-control">
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" onclick="postReservation()">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function addReservationToDevice() {
+            $('#add_reservation_modal').modal('show')
+        }
+        function postReservation() {
+            var reservation_id = $('#reservation_id_selector').val();
+            var amount = $('#reservation_amount').val();
+            var amount_max = $('#reservation_amount').attr('max');
+            $('#reservation_amount').parent().parent().removeClass('has-feedback has-error');
+            if(amount < 1 || amount > amount_max) {
+                $('#reservation_amount').parent().parent().addClass('has-feedback has-error');
+                return;
+            }
+            $.post('{% url 'add_reservation_to_device' device.id %}', {reservation: reservation_id, amount: amount})
+                .done(function () {
+                    var alert = $('<div class="alert alert-success" role="alert"><b>Erfolgreich gespeichert!</b></div>');
+                    $('#alert_area').append(alert);
+                    setTimeout(function () {
+                        alert.remove()
+                    }, 5000);
+                    $('#reservation_calendar').fullCalendar('refetchEvents');
+                    $('#add_reservation_modal').modal('hide');
+                })
+                .fail(function (xhr) {
+                    var alert = $('<div class="alert alert-danger" role="alert"><b>Fehler! </b>'+xhr.responseText+'</div>');
+                    $('#alert_area').append(alert);
+                    setTimeout(function () {
+                        alert.remove()
+                    }, 5000)
+                })
+        }
+        $('#reservation_calendar').fullCalendar({
+            locale: 'de',
+            customButtons: {
+                reservation: {
+                    text: 'Reservierung hinzufügen',
+                    click: addReservationToDevice
+                }
+            },
+            header: {
+                right: 'reservation today month,agendaWeek,agendaDay prev,next'
+            },
+            timeFormat: 'HH:mm',
+            slotLabelFormat: 'HH:mm',
+            allDayText: 'Ganztägig',
+            buttonText:{
+                today: 'Heute',
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag'
+            },
+            views: {
+                week: {
+                    columnHeaderFormat: 'ddd D.M.'
+                }
+            },
+            eventSources: [
+                {
+                    url: '{% url 'device_reservations_json' device.id %}',
+                    data: {slim:true}
+                }
+            ],
+            eventRender: function (event, element, view) {
+                element.tooltip({
+                    title: event.description
+                })
+            }
+        })
+    </script>
+{% endblock %}

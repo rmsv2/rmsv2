@@ -1,0 +1,8 @@
+{% extends 'inventory/device.html' %}
+
+{% block tab-content %}
+    {% if perms.rms.add_instance %}
+        <a href="{% url 'create_instance' device.id %}" class="btn btn-primary btn-xs pull-right"><i class="fa fa-plus"></i> Erstellen</a>
+    {% endif %}
+    {% include 'inventory/instance_list.html' with instances=instances %}
+{% endblock %}
