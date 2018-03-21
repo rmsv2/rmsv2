@@ -52,6 +52,8 @@ urlpatterns = [
          views.edit_reservation_view, name='edit_reservation'),
     path('settings/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/delete',
          views.remove_reservation_view, name='remove_reservation'),
+    path('settings/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/devices/<int:device_id>/remove',
+         views.remove_device_from_reservation, name="remove_device_from_reservation"),
 
     path('customers', views.customers_view, name='customers'),
     path('customers/create', views.create_customer_view, name='create_customer'),
@@ -64,6 +66,9 @@ urlpatterns = [
     path('api/inventory/devices/<int:device_id>/add_reservation',
          add_reservation_to_device, name="add_reservation_to_device"),
     path('api/inventory/devices/<int:device_id>/reservations', device_reservations_json, name="device_reservations"),
+
+    path('api/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/devices/<int:device_id>/changeAmount',
+         edit_device_reservation, name="edit_device_reservation_amount"),
 
     path('feeds/ics/reservation.ics', ReservationsFeed(), name='reservations_feed'),
 ]

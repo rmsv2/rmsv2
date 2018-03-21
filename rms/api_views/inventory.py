@@ -48,6 +48,33 @@ def add_reservation_to_device(request, device_id):
         return HttpResponse('', status=404)
 
 
+@csrf_exempt
+@login_required
+def edit_device_reservation(request, reservation_id, device_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        device = models.Device.objects.get(id=device_id)
+        if request.method == 'POST' and 'amount' in request.POST:
+            reservation_device_membership = reservation.reservationdevicemembership_set.get(device=device)
+            new_ammount = int(request.POST['amount'])
+            if new_ammount <= reservation_device_membership.amount:
+                reservation_device_membership.amount = new_ammount
+                reservation_device_membership.save()
+                return HttpResponse('', status=200)
+            else:
+                try:
+                    device.add_to_reservation(reservation, new_ammount-reservation_device_membership.amount)
+                    return HttpResponse('', status=200)
+                except ValueError as error:
+                    return HttpResponse(str(error), status=400)
+        else:
+            return HttpResponse('POST required with field "amount"', status=404)
+    except models.Reservation.DoesNotExist:
+        return HttpResponse('Reservierung nicht gefunden', status=404)
+    except models.Device.DoesNotExist:
+        return HttpResponse('Gerät nicht gefunden', status=404)
+
+
 @login_required
 def device_reservations_json(request, device_id):
     try:

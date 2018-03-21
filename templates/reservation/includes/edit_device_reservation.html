@@ -1,0 +1,41 @@
+<div class="modal modal-default fade" id="edit_device_reservation{{ device.id }}" tabindex="-1" role="dialog" aria-labelledby="edit_device_reservation{{ device.id }}_label">
+    <div class="modal-dialog" role="document" style="text-align: left;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="edit_device_reservation{{ device.id }}_label">Reservierung bearbeiten</h4>
+            </div>
+            <div class="modal-body">
+                {% include 'inventory/widgets/device_info.html' %}
+                <br>
+                <div class="form-group">
+                    <label class="col-sm-2" for="reservation_amount">Anzahl</label>
+                    <div class="col-sm-10">
+                        <input type="number" min="1" max="{{ device.instance_set.count }}" name="amount" id="reservation_amount_{{ device.id }}" class="form-control" value="{{ amount }}">
+                    </div>
+                </div>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-default" id="reservation_button_{{ device.id }}">Ändern</button>
+            </div>
+            <script>
+                $('#reservation_button_{{ device.id }}').on('click', function () {
+                    var new_amount = $('#reservation_amount_{{ device.id }}').val();
+                    $.post('{% url 'edit_device_reservation_amount' reservation.id device.id %}', {amount: new_amount})
+                        .done(function () {
+                            window.location = '{% url 'reservation' reservation.id %}';
+                        })
+                        .fail(function (xhr) {
+                            var alert = $('<div class="alert alert-danger" role="alert"><b>Fehler! </b>'+xhr.responseText+'</div>');
+                            $('#alert_area').append(alert);
+                            setTimeout(function () {
+                                alert.remove()
+                            }, 5000)
+                        })
+                })
+            </script>
+        </div>
+    </div>
+</div>

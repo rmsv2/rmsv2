@@ -736,6 +736,8 @@ def create_reservation_view(request):
 def reservation_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
+        reserved_devices = {}
+        reserved_devices
         return render(request, 'reservation/reservation.html', context={'title': 'Reservierung',
                                                                         'reservation': reservation})
     except models.Reservation.DoesNotExist:
@@ -779,3 +781,19 @@ def remove_reservation_view(request, reservation_id):
     except models.Reservation.DoesNotExist:
         pass
     return redirect('reservations')
+
+
+@login_required()
+@permission_required('rms.change_reservation')
+def remove_device_from_reservation(request, reservation_id, device_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        if request.method == 'POST':
+            try:
+                device = models.Device.objects.get(id=device_id)
+                reservation.reservationdevicemembership_set.get(device=device).delete()
+            except models.Device.DoesNotExist:
+                pass
+        return redirect('reservation', reservation_id=reservation_id)
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')

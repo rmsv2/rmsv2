@@ -1,0 +1,24 @@
+<div class="modal modal-danger fade" id="delete_device_from_reservation{{ device.id }}" tabindex="-1" role="dialog" aria-labelledby="delete_device_from_reservation{{ device.id }}_label">
+    <form action="{% url 'remove_device_from_reservation' reservation.id device.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-dialog" role="document" style="text-align: left;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete_device_from_reservation{{ device.id }}_label">Gerät von Reservierung entfernen?</h4>
+                </div>
+                <div class="modal-body">
+                    Soll das Gerät wirklich von der Reservierung entfernt werden?<br>
+                    <br>
+                    {% include 'inventory/widgets/device_info.html' %}
+                    <br>
+                    <b>Anzahl:</b> {{ amount }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Abbrechen</button>
+                    <button type="submit" class="btn btn-outline">Entfernen</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

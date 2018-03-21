@@ -92,7 +92,12 @@ class Device(models.Model):
         available = self.available_count(reservation.start_date, reservation.end_date)
         if available < amount:
             raise ValueError('Es sind nicht genug Geräte zur ausgewählten Zeit verfügbar.')
-        ReservationDeviceMembership.objects.create(reservation=reservation, device=self, amount=amount)
+        try:
+            reservationdevice_membership = reservation.reservationdevicemembership_set.get(device=self)
+            reservationdevice_membership.amount += amount
+            reservationdevice_membership.save()
+        except ReservationDeviceMembership.DoesNotExist:
+            ReservationDeviceMembership.objects.create(reservation=reservation, device=self, amount=amount)
 
 
 class Instance(models.Model):

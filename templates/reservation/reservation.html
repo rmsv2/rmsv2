@@ -20,5 +20,41 @@
             {% include 'reservation/includes/reservation_info.html' with edit=True %}
         </div>
     </div>
+    {% if reservation.reservationdevicemembership_set.all %}
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">Geräte</h3>
+        </div>
+        <div class="box-body">
+            <div role="tabpanel" class="tab-pane active" id="devices">
+                <table class="table table-striped table-hover table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Hersteller</th>
+                        <th>Anzahl</th>
+                        <th style="text-align: right;">Aktionen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for device_relation in reservation.reservationdevicemembership_set.all %}
+                        <tr>
+                            <td>{{ device_relation.device.name }}</td>
+                            <td>{{ device_relation.device.vendor }}</td>
+                            <td>{{ device_relation.amount }}</td>
+                            <td style="text-align: right">
+                                <a href="#" data-toggle="modal" data-target="#edit_device_reservation{{ device_relation.device.id }}"><i class="fa fa-edit"></i></a>
+                                <a href="#" data-toggle="modal" data-target="#delete_device_from_reservation{{ device_relation.device.id }}"><i class="fa fa-trash text-danger"></i></a>
+                            </td>
+                        </tr>
+                        {% include 'reservation/includes/remove_device_from_reservation_modal.html' with device=device_relation.device amount=device_relation.amount %}
+                        {% include 'reservation/includes/edit_device_reservation.html' with device=device_relation.device amount=device_relation.amount %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     </section>
 {% endblock %}
