@@ -17,7 +17,7 @@
                         <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>
                     {% endif %}
                     {% if perms.rms.delete_instance %}
-                        <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash"></i></a>
+                        <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash text-danger"></i></a>
                     {% endif %}
                 </td>
             </tr>
