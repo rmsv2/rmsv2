@@ -132,7 +132,7 @@ def add_instance_to_reservation(request, instance_id):
         if request.method == 'POST' and 'reservation' in request.POST:
             try:
                 reservation = models.Reservation.objects.get(id=int(request.POST['reservation']))
-                instance.add_to_reservation(reservation)
+                models.ReservationInstanceMembership.objects.create(reservation=reservation, instance=instance)
                 return HttpResponse('', status=200)
             except models.Reservation.DoesNotExist:
                 return HttpResponse('Reservierung nicht gefunden.', status=404)

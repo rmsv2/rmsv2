@@ -183,7 +183,7 @@ class Reservation(models.Model):
     description = models.TextField('Beschreibung')
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, default=None)
     devices = models.ManyToManyField(Device, through='ReservationDeviceMembership')
-    instances = models.ManyToManyField(Instance)
+    instances = models.ManyToManyField(Instance, through='ReservationInstanceMembership')
 
     @property
     def full_id(self):
@@ -197,3 +197,8 @@ class ReservationDeviceMembership(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     device = models.ForeignKey(Device, on_delete=models.PROTECT)
     amount = models.IntegerField()
+
+
+class ReservationInstanceMembership(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    instance = models.ForeignKey(Instance, on_delete=models.PROTECT)

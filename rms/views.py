@@ -791,8 +791,6 @@ def create_reservation_view(request):
 def reservation_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
-        reserved_devices = {}
-        reserved_devices
         return render(request, 'reservation/reservation.html', context={'title': 'Reservierung',
                                                                         'reservation': reservation})
     except models.Reservation.DoesNotExist:
@@ -862,7 +860,7 @@ def remove_instance_from_reservation(request, reservation_id, instance_id):
         if request.method == 'POST':
             try:
                 instance = models.Instance.objects.get(id=instance_id)
-                reservation.instances.remove(instance)
+                reservation.reservationinstancemembership_set.get(instance=instance).delete()
             except models.Instance.DoesNotExist:
                 pass
         return redirect('reservation', reservation_id=reservation.id)
