@@ -114,16 +114,24 @@ class Instance(models.Model):
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
 
-    def is_available(self, start, end, recursive=None):
-        if recursive is None:
-            colliding_reservations = self.reservation_set.filter(
-                Q(start_date__range=[start, end]) |
-                Q(end_date__range=[start, end]) |
-                (Q(start_date__lte=start) & Q(end_date__gte=end))
-            ).count()
-            if colliding_reservations > 0:
+    def is_available(self, start, end, indirect=False):
+        colliding_reservations = self.reservation_set.filter(
+            Q(start_date__range=[start, end]) |
+            Q(end_date__range=[start, end]) |
+            (Q(start_date__lte=start) & Q(end_date__gte=end))
+        ).count()
+        if colliding_reservations > 0:
+            return False
+        if indirect:
+            if self.device.available_count(start, end) == 0:
                 return False
         return True
+
+    def add_to_reservation(self, reservation):
+        if self.is_available(reservation.start_date, reservation.end_date, indirect=True):
+            reservation.instances.add(self)
+        else:
+            raise ValueError('Dieses Gerät ist zur ausgewählten Zeit nicht verfügbar.')
 
 
 class Address(models.Model):
