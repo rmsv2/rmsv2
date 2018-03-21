@@ -116,8 +116,8 @@ class Instance(models.Model):
 
     def is_available(self, start, end, indirect=False):
         colliding_reservations = self.reservation_set.filter(
-            (Q(reservation__start_date__gte=start) & Q(reservation__end_date__lt=end)) |
-            (Q(reservation__end_date__gt=start) & Q(reservation__end_date__lte=end)) |
+            (Q(start_date__gte=start) & Q(end_date__lt=end)) |
+            (Q(end_date__gt=start) & Q(end_date__lte=end)) |
             (Q(start_date__lte=start) & Q(end_date__gte=end))
         ).count()
         if colliding_reservations > 0:
