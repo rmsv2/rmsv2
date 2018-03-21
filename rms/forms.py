@@ -163,3 +163,33 @@ class ReservationForm(BootstrapForm):
     def __init__(self, *args, **kwargs):
         super(ReservationForm, self).__init__(*args, **kwargs)
         self.fields['description'].required = False
+
+    def clean_start_date(self):
+        new_start_date = self.cleaned_data.get('start_date')
+        old_start_date = self.instance.start_date
+        if old_start_date is not None:
+            if new_start_date < old_start_date:
+                for device_relation in self.instance.reservationdevicemembership_set.all():
+                    if device_relation.amount > device_relation.device.available_count(new_start_date, old_start_date):
+                        raise ValidationError('Starttermin kann nicht geändert werden, da nicht alle reservierten '
+                                              'Geräte verfügbar sind')
+                for instance in self.instance.instances.all():
+                    if not instance.is_available(new_start_date, old_start_date):
+                        raise ValidationError('Starttermin kann nicht geändert werden, da nicht alle reservierten '
+                                              'Geräte verfügbar sind')
+        return new_start_date
+
+    def clean_end_date(self):
+        new_end_date = self.cleaned_data.get('end_date')
+        old_end_date = self.instance.end_date
+        if old_end_date is not None:
+            if new_end_date > old_end_date:
+                for device_relation in self.instance.reservationdevicemembership_set.all():
+                    if device_relation.amount > device_relation.device.available_count(old_end_date, new_end_date):
+                        raise ValidationError('Endtermin kann nicht geändert werden, da nicht alle reservierten '
+                                              'Geräte verfügbar sind')
+                for instance in self.instance.instances.all():
+                    if not instance.is_available(old_end_date, new_end_date):
+                        raise ValidationError('Endtermin kann nicht geändert werden, da nicht alle reservierten '
+                                              'Geräte verfügbar sind')
+
