@@ -6,6 +6,7 @@ import random
 import os
 from rmsv2.settings import BASE_DIR, COMPANY_SHORT
 from django.db.models import Q
+from rms.exceptions import *
 
 # Create your models here.
 
@@ -76,22 +77,28 @@ class Device(models.Model):
 
     def available_count(self, start, end):
         available = 0
+        collisions = set()
         for instance in self.instance_set.all():
-            if instance.is_available(start, end):
+            is_available, instance_collisions = instance.is_available(start, end)
+            if is_available:
                 available += 1
+            else:
+                collisions = collisions.union(instance_collisions)
         colliding_reservations = self.reservationdevicemembership_set.filter(
             (Q(reservation__start_date__gte=start) & Q(reservation__end_date__lt=end)) |
             (Q(reservation__end_date__gt=start) & Q(reservation__end_date__lte=end)) |
             (Q(reservation__start_date__lte=start) & Q(reservation__end_date__gte=end))
-        ).aggregate(models.Sum('amount'))['amount__sum']
-        if colliding_reservations is not None:
-            available -= colliding_reservations
-        return available
+        )
+        colliding_reservations_count = colliding_reservations.aggregate(models.Sum('amount'))['amount__sum']
+        collisions = collisions.union(set(colliding_reservations))
+        if colliding_reservations_count is not None:
+            available -= colliding_reservations_count
+        return available, collisions
 
     def add_to_reservation(self, reservation, amount):
-        available = self.available_count(reservation.start_date, reservation.end_date)
+        available, collisions = self.available_count(reservation.start_date, reservation.end_date)
         if available < amount:
-            raise ValueError('Es sind nicht genug Geräte zur ausgewählten Zeit verfügbar.')
+            raise ReservationError('Es sind nicht genug Geräte zur ausgewählten Zeit verfügbar.', collisions)
         try:
             reservationdevice_membership = reservation.reservationdevicemembership_set.get(device=self)
             reservationdevice_membership.amount += amount
@@ -116,24 +123,26 @@ class Instance(models.Model):
 
     def is_available(self, start, end, indirect=False):
         if not self.rentable:
-            return False
+            return False, set()
         colliding_reservations = self.reservation_set.filter(
             (Q(start_date__gte=start) & Q(end_date__lt=end)) |
             (Q(end_date__gt=start) & Q(end_date__lte=end)) |
             (Q(start_date__lte=start) & Q(end_date__gte=end))
-        ).count()
-        if colliding_reservations > 0:
-            return False
+        )
+        if colliding_reservations.count() > 0:
+            return False, set(colliding_reservations)
         if indirect:
-            if self.device.available_count(start, end) == 0:
-                return False
-        return True
+            device_available_count, device_collisions = self.device.available_count(start, end)
+            if device_available_count == 0:
+                return False, device_collisions
+        return True, set()
 
     def add_to_reservation(self, reservation):
-        if self.is_available(reservation.start_date, reservation.end_date, indirect=True):
-            reservation.instances.add(self)
+        is_available, collisions = self.is_available(reservation.start_date, reservation.end_date, indirect=True)
+        if is_available:
+            ReservationInstanceMembership.objects.create(reservation=reservation, instance=self)
         else:
-            raise ValueError('Dieses Gerät ist zur ausgewählten Zeit nicht verfügbar.')
+            raise ReservationError('Dieses Gerät ist zur ausgewählten Zeit nicht verfügbar.', collisions)
 
 
 class Address(models.Model):

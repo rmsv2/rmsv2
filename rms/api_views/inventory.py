@@ -6,6 +6,7 @@ from django.shortcuts import reverse
 from rms import models
 from datetime import datetime
 from django.utils.timezone import localtime, make_aware
+from rms.exceptions import *
 
 
 @login_required
@@ -41,8 +42,8 @@ def add_reservation_to_device(request, device_id):
                 return HttpResponse('', status=200)
             except models.Reservation.DoesNotExist:
                 pass
-            except ValueError as error:
-                return HttpResponse(str(error), status=400)
+            except ReservationError as error:
+                return JsonResponse(data=error.get_json_dir(), status=400, safe=False)
         return HttpResponse('', status=400)
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
@@ -65,8 +66,8 @@ def edit_device_reservation(request, reservation_id, device_id):
                 try:
                     device.add_to_reservation(reservation, new_ammount-reservation_device_membership.amount)
                     return HttpResponse('', status=200)
-                except ValueError as error:
-                    return HttpResponse(str(error), status=400)
+                except ReservationError as error:
+                    return JsonResponse(data=error.get_json_dir(), status=400, safe=False)
         else:
             return HttpResponse('POST required with field "amount"', status=404)
     except models.Reservation.DoesNotExist:
@@ -132,12 +133,12 @@ def add_instance_to_reservation(request, instance_id):
         if request.method == 'POST' and 'reservation' in request.POST:
             try:
                 reservation = models.Reservation.objects.get(id=int(request.POST['reservation']))
-                models.ReservationInstanceMembership.objects.create(reservation=reservation, instance=instance)
+                instance.add_to_reservation(reservation)
                 return HttpResponse('', status=200)
             except models.Reservation.DoesNotExist:
                 return HttpResponse('Reservierung nicht gefunden.', status=404)
-            except ValueError as error:
-                return HttpResponse(str(error), status=400)
+            except ReservationError as error:
+                return JsonResponse(data=error.get_json_dir(), status=400, safe=400)
         else:
             return HttpResponse('POST required with field "reservation"', status=400)
     except models.Instance.DoesNotExist:

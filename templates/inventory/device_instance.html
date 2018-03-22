@@ -23,6 +23,8 @@
                             <option value="{{ reservation.id }}">{{ reservation.full_id }} {{ reservation.name }}</option>
                         {% endfor %}
                     </select>
+                    <br>
+                    <div class="collision-feedback"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Abbrechen</button>
@@ -48,7 +50,24 @@
                     $('#add_reservation_modal').modal('hide');
                 })
                 .fail(function (xhr) {
-                    var alert = $('<div class="alert alert-danger" role="alert"><b>Fehler! </b>'+xhr.responseText+'</div>');
+                    var alert_text = xhr.responseText;
+                    if (xhr.responseJSON.msg ) {
+                        alert_text = xhr.responseJSON.msg;
+                    }
+                    if (xhr.responseJSON.collisions && typeof xhr.responseJSON.collisions === 'object') {
+                        var modal_body = $('#add_reservation_modal').find('.collision-feedback');
+                        modal_body.empty();
+                        var collision_list = $('<ul></ul>');
+                        modal_body.append('<h3>Kollisionen</h3>');
+                        modal_body.append(collision_list);
+                        for (var i in xhr.responseJSON.collisions) {
+                            if (xhr.responseJSON.collisions.hasOwnProperty(i)) {
+                                var reservation = xhr.responseJSON.collisions[i];
+                                collision_list.append($('<li>'+reservation.full_id+' '+reservation.name+'</li>'))
+                            }
+                        }
+                    }
+                    var alert = $('<div class="alert alert-danger" role="alert"><b>Fehler! </b>'+alert_text+'</div>');
                     $('#alert_area').append(alert);
                     setTimeout(function () {
                         alert.remove()
