@@ -115,6 +115,8 @@ class Instance(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
     def is_available(self, start, end, indirect=False):
+        if not self.rentable:
+            return False
         colliding_reservations = self.reservation_set.filter(
             (Q(start_date__gte=start) & Q(end_date__lt=end)) |
             (Q(end_date__gt=start) & Q(end_date__lte=end)) |
