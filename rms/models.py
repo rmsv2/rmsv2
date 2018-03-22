@@ -107,7 +107,7 @@ class Instance(models.Model):
                        ('view_instance', 'Can view instance'),)
 
     serial_number = models.CharField('Seriennummer', max_length=200)
-    inventory_number = models.CharField('Inventarnummer', max_length=200)
+    inventory_number = models.CharField('Inventarnummer', max_length=200, unique=True)
     identificial_description = models.TextField('Identifikations- beschreibung', null=True, blank=True)
     broken = models.BooleanField('Defekt?')
     rentable = models.BooleanField('Ausleihbar', default=False)
