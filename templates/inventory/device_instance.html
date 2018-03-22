@@ -5,6 +5,7 @@
         <a href="{% url 'edit_instance' device.id instance.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Instanz bearbeiten</a>
     {% endif %}
     {% include 'inventory/widgets/instance_info.html' %}
+    {% if instance.rentable %}
     <h3>Reservierungen</h3>
     <hr>
     {% load model_filter %}
@@ -98,4 +99,5 @@
             }
         })
     </script>
+    {% endif %}
 {% endblock %}
