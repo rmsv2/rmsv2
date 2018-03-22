@@ -192,4 +192,5 @@ class ReservationForm(BootstrapForm):
                     if not instance.is_available(old_end_date, new_end_date):
                         raise ValidationError('Endtermin kann nicht geändert werden, da nicht alle reservierten '
                                               'Geräte verfügbar sind')
+        return new_end_date
 
