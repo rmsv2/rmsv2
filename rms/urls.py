@@ -9,7 +9,7 @@ from rms.feeds import ReservationsFeed
 urlpatterns = [
     path('', views.home_view, name='home'),
 
-    path('search/<str:type>', views.search_view, name="search"),
+    path('search', views.search_view, name="search"),
 
     path('inventory/addDevice', views.add_device_view, name='add_device'),
     path('inventory/devices/<int:device_id>/delete', views.delete_device_view, name='delete_device'),

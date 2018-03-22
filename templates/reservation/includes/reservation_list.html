@@ -1,0 +1,41 @@
+<table class="table table-striped table-hover table-condensed">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Besitzer</th>
+        <th>Zeitraum</th>
+        {% if not without_controls %}
+            <th style="text-align: right;">Aktionen</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for reservation in reservations %}
+        <tr>
+            <td><a href="{% url 'reservation' reservation.id %}">{{ reservation.full_id }}</a></td>
+            <td><a href="{% url 'reservation' reservation.id %}">{{ reservation.name }}</a></td>
+            <td>
+                {% for owner in reservation.owners.all %}
+                    {% include 'generics/includes/user_display_name.html' with user_object=owner %}<br>
+                {% endfor %}
+            </td>
+            <td>Von {{ reservation.start_date }}<br> bis {{ reservation.end_date }}</td>
+            {% if not without_controls %}
+            <td style="text-align: right;">
+                {% if perms.rms.change_reservation %}
+                    <a href="{% url 'edit_reservation' reservation.id %}"><i class="fa fa-edit"></i></a>
+                {% endif %}
+                {% if perms.rms.delete_reservation %}
+                    <a href="#" data-toggle="modal" data-target="#delete_reservation{{ reservation.id }}"><i class="fa fa-trash text-danger"></i></a>
+                    {% include 'reservation/includes/reservation_delete_modal.html' %}
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    {% if not reservations %}
+        <tr><td colspan="100" style="text-align: center;">Es wurden keine Reservierungen gefunden</td></tr>
+    {% endif %}
+    </tbody>
+</table>

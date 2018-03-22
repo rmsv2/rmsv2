@@ -11,17 +11,42 @@
     </ol>
     </section>
     <section class="content">
-    <div class="box" style="border-top: none;">
-        <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-                <li class="{% if '/search/devices' in request.path %}active{% endif %}"><a href="{% url 'search' 'devices' %}?search={{ search_string }}"><i class="far fa-cubes"></i> Inventar</a></li>
-            </ul>
+    {% if not reservations and not devices and not customers %}
+        <div class="box">
+            <div class="box-body" style="text-align: center;">
+                <h3>Keine Ergebnisse für "<i>{{ search_string }}</i>" gefunden</h3>
+            </div>
         </div>
-        <div class="box-body">
-            {% if type == 'devices' %}
-                {% include 'inventory/device_list.html' with devices=elements %}
-            {% endif %}
+    {% endif %}
+    {% if devices and perms.rms.view_device %}
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Geräte</h3>
+            </div>
+            <div class="box-body">
+                {% include 'inventory/device_list.html' with devices=devices without_controls=True %}
+            </div>
         </div>
-    </div>
+    {% endif %}
+    {% if reservations and perms.rms.view_reservation %}
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Reservierungen</h3>
+            </div>
+            <div class="box-body">
+                {% include 'reservation/includes/reservation_list.html' with without_controls=True %}
+            </div>
+        </div>
+    {% endif %}
+    {% if customers and perms.rms.view_customer %}
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Kundendaten</h3>
+            </div>
+            <div class="box-body">
+                {% include 'customers/includes/customer_list.html' with without_controls=True %}
+            </div>
+        </div>
+    {% endif %}
     </section>
 {% endblock %}

@@ -599,24 +599,45 @@ def group_view(request, group_id):
 
 
 @login_required()
-def search_view(request, type):
+def search_view(request):
     if request.method == 'GET' and 'search' in request.GET:
         search_string = request.GET['search']
-        if type == 'devices':
-            elements = models.Device.objects.filter(Q(instance__identificial_description__icontains=search_string) |
-                                                    Q(instance__inventory_number__icontains=search_string) |
-                                                    Q(instance__serial_number__icontains=search_string) |
-                                                    Q(description__icontains=search_string) |
-                                                    Q(name__icontains=search_string) |
-                                                    Q(vendor__icontains=search_string) |
-                                                    Q(model_number__icontains=search_string))
-        else:
-            elements = []
+        context = {
+            'search_string': search_string,
+            'title': 'Suche {}'.format(search_string)
+        }
+        if request.user.has_perm('rms.view_device'):
+            devices = models.Device.objects.filter(Q(instance__identificial_description__icontains=search_string) |
+                                                   Q(instance__inventory_number__icontains=search_string) |
+                                                   Q(instance__serial_number__icontains=search_string) |
+                                                   Q(description__icontains=search_string) |
+                                                   Q(name__icontains=search_string) |
+                                                   Q(vendor__icontains=search_string) |
+                                                   Q(model_number__icontains=search_string))
+            context['devices'] = set(devices)
 
-        return render(request, 'search.html', context={'title': 'Suche',
-                                                       'search_string': search_string,
-                                                       'type': type,
-                                                       'elements': elements})
+        if request.user.has_perm('rms.view_reservation'):
+            reservations = models.Reservation.objects.filter(Q(name__icontains=search_string) |
+                                                             Q(description__icontains=search_string))
+            context['reservations'] = set(reservations)
+
+        if request.user.has_perm('rms.view_customer'):
+            customers = models.Customer.objects.filter(Q(first_name__icontains=search_string) |
+                                                       Q(last_name__icontains=search_string) |
+                                                       Q(mail__icontains=search_string) |
+                                                       Q(phone__icontains=search_string) |
+                                                       Q(mobile__icontains=search_string) |
+                                                       Q(address__city__icontains=search_string) |
+                                                       Q(address__street__icontains=search_string) |
+                                                       Q(address__zip_code__icontains=search_string) |
+                                                       Q(address__mailbox__icontains=search_string) |
+                                                       Q(mailing_address__city__icontains=search_string) |
+                                                       Q(mailing_address__street__icontains=search_string) |
+                                                       Q(mailing_address__zip_code__icontains=search_string) |
+                                                       Q(mailing_address__mailbox__icontains=search_string))
+            context['customers'] = set(customers)
+
+        return render(request, 'search.html', context=context)
     else:
         return redirect(request.path)
 

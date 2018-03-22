@@ -3,7 +3,9 @@
 <tr>
     <th>Name</th>
     <th>Hersteller</th>
-    <th style="text-align: right;">Aktionen</th>
+    {% if not without_controls %}
+        <th style="text-align: right;">Aktionen</th>
+    {% endif %}
 </tr>
 </thead>
 <tbody>
@@ -12,14 +14,16 @@
         <tr>
             <td><a href="{% url 'device' device.id %}">{{ device.name }}</a></td>
             <td><a href="{% url 'device' device.id %}">{{ device.vendor }}</a></td>
-            <td style="text-align: right;">
-                {% if perms.rms.change_device %}
-                    <a href="{% url 'edit_device' device.id %}"><i class="fa fa-edit"></i></a>
-                {% endif %}
-                {% if perms.rms.delete_device %}
-                    <a href="#" data-toggle="modal" data-target="#delete_device{{ device.id }}"><i class="fa fa-trash text-danger"></i></a>
-                {% endif %}
-            </td>
+            {% if not without_controls %}
+                <td style="text-align: right;">
+                    {% if perms.rms.change_device %}
+                        <a href="{% url 'edit_device' device.id %}"><i class="fa fa-edit"></i></a>
+                    {% endif %}
+                    {% if perms.rms.delete_device %}
+                        <a href="#" data-toggle="modal" data-target="#delete_device{{ device.id }}"><i class="fa fa-trash text-danger"></i></a>
+                    {% endif %}
+                </td>
+            {% endif %}
         </tr>
         {% include 'inventory/modals/device_delete_modal.html' %}
     {% endfor %}
