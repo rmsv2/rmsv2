@@ -169,14 +169,24 @@ class ReservationForm(BootstrapForm):
         old_start_date = self.instance.start_date
         if old_start_date is not None:
             if new_start_date < old_start_date:
+                available_error = False
+                collisions = set()
                 for device_relation in self.instance.reservationdevicemembership_set.all():
-                    if device_relation.amount > device_relation.device.available_count(new_start_date, old_start_date):
-                        raise ValidationError('Starttermin kann nicht geändert werden, da nicht alle reservierten '
-                                              'Geräte verfügbar sind')
+                    available_count, collision = device_relation.device.available_count(new_start_date, old_start_date)
+                    if device_relation.amount > available_count:
+                        available_error = True
+                        collisions = collisions.union(collision)
                 for instance in self.instance.instances.all():
-                    if not instance.is_available(new_start_date, old_start_date):
-                        raise ValidationError('Starttermin kann nicht geändert werden, da nicht alle reservierten '
-                                              'Geräte verfügbar sind')
+                    is_available, collision = instance.is_available(new_start_date, old_start_date)
+                    if not is_available:
+                        available_error = True
+                        collisions = collisions.union(collision)
+                if available_error:
+                    errors = []
+                    for reservation in collisions:
+                        errors.append(ValidationError('Kollision mit: {} {}'.format(reservation.full_id,
+                                                                                    reservation.name)))
+                    raise ValidationError(errors)
         return new_start_date
 
     def clean_end_date(self):
