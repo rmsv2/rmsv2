@@ -19,8 +19,10 @@
                     <td><a href="{% url 'device' device_relation.device.id %}">{{ device_relation.device.vendor }}</a></td>
                     <td>{{ device_relation.amount }}</td>
                     <td style="text-align: right">
-                        <a href="#" data-toggle="modal" data-target="#edit_device_reservation{{ device_relation.device.id }}"><i class="fa fa-edit"></i></a>
-                        <a href="#" data-toggle="modal" data-target="#delete_device_from_reservation{{ device_relation.device.id }}"><i class="fa fa-trash text-danger"></i></a>
+                        {% if perms.rms.change_reservation %}
+                            <a href="#" data-toggle="modal" data-target="#edit_device_reservation{{ device_relation.device.id }}"><i class="fa fa-edit"></i></a>
+                            <a href="#" data-toggle="modal" data-target="#delete_device_from_reservation{{ device_relation.device.id }}"><i class="fa fa-trash text-danger"></i></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% include 'reservation/includes/remove_device_from_reservation_modal.html' with device=device_relation.device amount=device_relation.amount %}
@@ -47,7 +49,9 @@
                     <td><a href="{% url 'device_instance' instance.device.id instance.id %}">{{ instance.device.vendor }}</a></td>
                     <td><a href="{% url 'device_instance' instance.device.id instance.id %}">{{ instance.inventory_number }}</a></td>
                     <td style="text-align: right;">
-                        <a href="#" data-toggle="modal" data-target="#delete_instance_from_reservation{{ instance.id }}"><i class="fa fa-trash text-danger"></i></a>
+                        {% if perms.rms.change_reservation %}
+                            <a href="#" data-toggle="modal" data-target="#delete_instance_from_reservation{{ instance.id }}"><i class="fa fa-trash text-danger"></i></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% include 'reservation/includes/remove_instance_from_reservation_modal.html' %}
