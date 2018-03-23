@@ -812,8 +812,32 @@ def create_reservation_view(request):
 def reservation_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
-        return render(request, 'reservation/reservation.html', context={'title': 'Reservierung',
-                                                                        'reservation': reservation})
+        return render(request, 'reservation/reservation_reservations.html', context={'title': 'Reservierung',
+                                                                                     'reservation': reservation})
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+@permission_required('rms.change_reservation')
+def reservation_checkout_view(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+
+        return render(request, 'reservation/reservation_checkout.html', context={'title': 'Reservierung Ausleihen',
+                                                                                 'reservation': reservation})
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+@permission_required('rms.change_reservation')
+def reservation_checkin_view(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+
+        return render(request, 'reservation/reservation_checkin.html', context={'title': 'Reservierung Rückbage',
+                                                                                'reservation': reservation})
     except models.Reservation.DoesNotExist:
         return redirect('reservations')
 

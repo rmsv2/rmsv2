@@ -1,0 +1,58 @@
+{% extends 'reservation/reservation.html' %}
+
+{% block tab-content %}
+    {% if reservation.reservationdevicemembership_set.all %}
+        <h3>Geräte</h3>
+        <table class="table table-striped table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Hersteller</th>
+                <th>Anzahl</th>
+                <th style="text-align: right;">Aktionen</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for device_relation in reservation.reservationdevicemembership_set.all %}
+                <tr>
+                    <td><a href="{% url 'device' device_relation.device.id %}">{{ device_relation.device.name }}</a></td>
+                    <td><a href="{% url 'device' device_relation.device.id %}">{{ device_relation.device.vendor }}</a></td>
+                    <td>{{ device_relation.amount }}</td>
+                    <td style="text-align: right">
+                        <a href="#" data-toggle="modal" data-target="#edit_device_reservation{{ device_relation.device.id }}"><i class="fa fa-edit"></i></a>
+                        <a href="#" data-toggle="modal" data-target="#delete_device_from_reservation{{ device_relation.device.id }}"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                {% include 'reservation/includes/remove_device_from_reservation_modal.html' with device=device_relation.device amount=device_relation.amount %}
+                {% include 'reservation/includes/edit_device_reservation.html' with device=device_relation.device amount=device_relation.amount %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if reservation.instances.all %}
+        <h3>Instanzen</h3>
+        <table class="table table-striped table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>Gerätename</th>
+                <th>Gerätehersteller</th>
+                <th>Inventarnummer</th>
+                <th style="text-align: right">Aktionen</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for instance in reservation.instances.all %}
+                <tr>
+                    <td><a href="{% url 'device_instance' instance.device.id instance.id %}">{{ instance.device.name }}</a></td>
+                    <td><a href="{% url 'device_instance' instance.device.id instance.id %}">{{ instance.device.vendor }}</a></td>
+                    <td><a href="{% url 'device_instance' instance.device.id instance.id %}">{{ instance.inventory_number }}</a></td>
+                    <td style="text-align: right;">
+                        <a href="#" data-toggle="modal" data-target="#delete_instance_from_reservation{{ instance.id }}"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                {% include 'reservation/includes/remove_instance_from_reservation_modal.html' %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

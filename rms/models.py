@@ -7,6 +7,7 @@ import os
 from rmsv2.settings import BASE_DIR, COMPANY_SHORT
 from django.db.models import Q
 from rms.exceptions import *
+from django.utils import timezone
 
 # Create your models here.
 
@@ -199,6 +200,13 @@ class Reservation(models.Model):
     @property
     def full_id(self):
         return COMPANY_SHORT+'-'+str(self.id)
+
+    def has_started(self):
+        return timezone.now() > self.start_date
+
+    def has_ended(self):
+        ret = timezone.now() > self.end_date
+        return timezone.now() > self.end_date
 
     def __str__(self):
         return '{} {} ({} - {})'.format(self.full_id, self.name, str(self.start_date), str(self.end_date))
