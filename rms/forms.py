@@ -167,6 +167,7 @@ class ReservationForm(BootstrapForm):
     def clean_start_date(self):
         new_start_date = self.cleaned_data.get('start_date')
         old_start_date = self.instance.start_date
+        old_end_date = self.instance.end_date
         if old_start_date is not None:
             if new_start_date < old_start_date:
                 available_error = False

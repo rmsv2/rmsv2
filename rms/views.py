@@ -8,6 +8,7 @@ from django.db.models import Q
 from rms import forms
 from . import models
 from .decorators import permission_required
+from rms.exceptions import *
 
 # Create your views here.
 
@@ -823,9 +824,12 @@ def reservation_view(request, reservation_id):
 def reservation_checkout_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
-
-        return render(request, 'reservation/reservation_checkout.html', context={'title': 'Reservierung Ausleihen',
-                                                                                 'reservation': reservation})
+        context = {'title': 'Reservierung Ausleihen', 'reservation': reservation, 'devices': {}}
+        for instance_relation in reservation.reservationcheckoutinstance_set.all():
+            if instance_relation.instance.device not in context['devices']:
+                context['devices'][instance_relation.instance.device] = []
+            context['devices'][instance_relation.instance.device].append(instance_relation)
+        return render(request, 'reservation/reservation_checkout.html', context=context)
     except models.Reservation.DoesNotExist:
         return redirect('reservations')
 
@@ -836,7 +840,7 @@ def reservation_checkin_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
 
-        return render(request, 'reservation/reservation_checkin.html', context={'title': 'Reservierung Rückbage',
+        return render(request, 'reservation/reservation_checkin.html', context={'title': 'Reservierung Rückgabe',
                                                                                 'reservation': reservation})
     except models.Reservation.DoesNotExist:
         return redirect('reservations')

@@ -91,7 +91,8 @@ class Device(models.Model):
             (Q(reservation__start_date__lte=start) & Q(reservation__end_date__gte=end))
         )
         colliding_reservations_count = colliding_reservations.aggregate(models.Sum('amount'))['amount__sum']
-        collisions = collisions.union(set(colliding_reservations))
+        for reservation_relation in colliding_reservations:
+            collisions.add(reservation_relation.reservation)
         if colliding_reservations_count is not None:
             available -= colliding_reservations_count
         return available, collisions
@@ -106,6 +107,16 @@ class Device(models.Model):
             reservationdevice_membership.save()
         except ReservationDeviceMembership.DoesNotExist:
             ReservationDeviceMembership.objects.create(reservation=reservation, device=self, amount=amount)
+
+    def instances_to_checkout(self, reservation):
+        reservation_relation = self.reservationdevicemembership_set.objects.get(reservation=reservation)
+        instances = []
+        for instance in self.instance_set.all():
+            is_available, collisions = instance.is_available(reservation_relation.reservation.start_date,
+                                                             reservation_relation.reservation.end_date)
+            if is_available:
+                instances.append(instance)
+        return instances
 
 
 class Instance(models.Model):
@@ -130,8 +141,16 @@ class Instance(models.Model):
             (Q(end_date__gt=start) & Q(end_date__lte=end)) |
             (Q(start_date__lte=start) & Q(end_date__gte=end))
         )
-        if colliding_reservations.count() > 0:
-            return False, set(colliding_reservations)
+        colliding_checkouts = self.reservationcheckoutinstance_set.filter(
+            (Q(reservation__start_date__gte=start) & Q(reservation__end_date__lt=end)) |
+            (Q(reservation__end_date__gt=start) & Q(reservation__end_date__lte=end)) |
+            (Q(reservation__start_date__lte=start) & Q(reservation__end_date__gte=end))
+        )
+        checkout_collisions = set()
+        for reservation_relation in colliding_checkouts:
+            checkout_collisions.add(reservation_relation.reservation)
+        if colliding_reservations.count()+colliding_checkouts.count() > 0:
+            return False, set(colliding_reservations).union(checkout_collisions)
         if indirect:
             device_available_count, device_collisions = self.device.available_count(start, end)
             if device_available_count == 0:
@@ -196,6 +215,10 @@ class Reservation(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, default=None)
     devices = models.ManyToManyField(Device, through='ReservationDeviceMembership')
     instances = models.ManyToManyField(Instance, through='ReservationInstanceMembership')
+    checked_out_instances = models.ManyToManyField(Instance, through='ReservationCheckoutInstance',
+                                                   related_name='checked_out_reservations')
+    checked_in_instances = models.ManyToManyField(Instance, through='ReservationClearedInstance',
+                                                  related_name='checked_in_reservations')
 
     @property
     def full_id(self):
@@ -205,8 +228,32 @@ class Reservation(models.Model):
         return timezone.now() > self.start_date
 
     def has_ended(self):
-        ret = timezone.now() > self.end_date
         return timezone.now() > self.end_date
+
+    def checkout_instance(self, instance):
+        is_available, collisions = instance.is_available(self.start_date, self.end_date)
+        if is_available or self in collisions:
+            try:
+                instance_relation = self.reservationinstancemembership_set.get(instance=instance)
+                instance_relation.delete()
+            except ReservationInstanceMembership.DoesNotExist:
+                try:
+                    device_relation = self.reservationdevicemembership_set.get(device=instance.device)
+                    if device_relation.amount > 1:
+                        device_relation.amount -= 1
+                        device_relation.save()
+                    else:
+                        device_relation.delete()
+                except ReservationDeviceMembership.DoesNotExist:
+                    is_available, collisions = instance.is_available(self.start_date, self.end_date, indirect=True)
+                    if not is_available:
+                        raise CheckoutError('Das ausgewählte Gerät ist zum gewünschten Zeitpunkt nicht verfügbar',
+                                            collisions)
+            ReservationCheckoutInstance.objects.create(reservation=self,
+                                                       instance=instance,
+                                                       checkout_date=timezone.now())
+        else:
+            raise CheckoutError('Das ausgewählte Gerät ist zum gewünschten Zeitpunkt nicht verfügbar.', collisions)
 
     def __str__(self):
         return '{} {} ({} - {})'.format(self.full_id, self.name, str(self.start_date), str(self.end_date))
@@ -221,3 +268,16 @@ class ReservationDeviceMembership(models.Model):
 class ReservationInstanceMembership(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     instance = models.ForeignKey(Instance, on_delete=models.PROTECT)
+
+
+class ReservationCheckoutInstance(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.PROTECT)
+    instance = models.ForeignKey(Instance, on_delete=models.PROTECT)
+    checkout_date = models.DateTimeField()
+
+
+class ReservationClearedInstance(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.PROTECT)
+    instance = models.ForeignKey(Instance, on_delete=models.PROTECT)
+    checkout_date = models.DateTimeField()
+    checkin_date = models.DateTimeField()

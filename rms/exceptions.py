@@ -1,5 +1,6 @@
 from django.utils.timezone import localtime
 
+
 class ReservationError(ValueError):
     def __init__(self, message, collisions):
         super(ReservationError, self).__init__(message)
@@ -18,5 +19,10 @@ class ReservationError(ValueError):
                 'start': localtime(reservation.start_date).isoformat(),
                 'end': localtime(reservation.end_date).isoformat()
             })
-            return json_data
+        return json_data
+
+
+class CheckoutError(ReservationError):
+    def __init__(self, *args, **kwargs):
+        super(CheckoutError, self).__init__(*args, **kwargs)
 

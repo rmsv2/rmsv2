@@ -83,6 +83,8 @@ urlpatterns = [
 
     path('api/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/devices/<int:device_id>/changeAmount',
          edit_device_reservation, name="edit_device_reservation_amount"),
+    path('api/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/checkout',
+         checkout_instance, name='api_reservation_checkout'),
 
     path('feeds/ics/reservation.ics', ReservationsFeed(), name='reservations_feed'),
 ]

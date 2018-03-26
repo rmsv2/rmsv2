@@ -138,8 +138,28 @@ def add_instance_to_reservation(request, instance_id):
             except models.Reservation.DoesNotExist:
                 return HttpResponse('Reservierung nicht gefunden.', status=404)
             except ReservationError as error:
-                return JsonResponse(data=error.get_json_dir(), status=400, safe=400)
+                return JsonResponse(data=error.get_json_dir(), status=400, safe=False)
         else:
             return HttpResponse('POST required with field "reservation"', status=400)
     except models.Instance.DoesNotExist:
         return HttpResponse('Instanz nicht gefunden.', status=404)
+
+
+@csrf_exempt
+@login_required
+def checkout_instance(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        if request.method == 'POST' and 'inventory_number' in request.POST:
+            try:
+                instance = models.Instance.objects.get(inventory_number=request.POST['inventory_number'])
+                reservation.checkout_instance(instance)
+                return HttpResponse('', status=200)
+            except models.Instance.DoesNotExist:
+                error = ReservationError('Es wurde kein Gerät mit der Inventarnummer "{}" gefunden'
+                                         .format(request.POST['inventory_number']), set())
+                return JsonResponse(data=error.get_json_dir(), status=404, safe=False)
+            except CheckoutError as error:
+                return JsonResponse(data=error.get_json_dir(), status=400, safe=False)
+    except models.Reservation.DoesNotExist:
+        return HttpResponse('Die Reservierung wurde nicht gefunden.', status=404)
