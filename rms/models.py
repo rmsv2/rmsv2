@@ -263,6 +263,17 @@ class Reservation(models.Model):
         else:
             raise CheckoutError('Das ausgewählte Gerät ist zum gewünschten Zeitpunkt nicht verfügbar.', collisions)
 
+    def checkin_instance(self, instance):
+        try:
+            checked_out_relation = ReservationCheckoutInstance.objects.get(reservation=self, instance=instance)
+            ReservationClearedInstance.objects.create(reservation=self,
+                                                      instance=instance,
+                                                      checkout_date=checked_out_relation.checkout_date,
+                                                      checkin_date=timezone.now())
+            checked_out_relation.delete()
+        except ReservationCheckoutInstance.DoesNotExist:
+            raise CheckinError('Das ausgewählte Gerät wurde nicht für diese Reservierung ausgeliehen.')
+
     def __str__(self):
         return '{} {} ({} - {})'.format(self.full_id, self.name, str(self.start_date), str(self.end_date))
 

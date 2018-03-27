@@ -839,9 +839,12 @@ def reservation_checkout_view(request, reservation_id):
 def reservation_checkin_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
-
-        return render(request, 'reservation/reservation_checkin.html', context={'title': 'Reservierung Rückgabe',
-                                                                                'reservation': reservation})
+        context = {'title': 'Reservierung Rückgabe', 'reservation': reservation, 'devices': {}}
+        for instance_relation in reservation.reservationclearedinstance_set.all():
+            if instance_relation.instance.device not in context['devices']:
+                context['devices'][instance_relation.instance.device] = []
+            context['devices'][instance_relation.instance.device].append(instance_relation)
+        return render(request, 'reservation/reservation_checkin.html', context=context)
     except models.Reservation.DoesNotExist:
         return redirect('reservations')
 

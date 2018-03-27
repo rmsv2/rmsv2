@@ -26,3 +26,8 @@ class CheckoutError(ReservationError):
     def __init__(self, *args, **kwargs):
         super(CheckoutError, self).__init__(*args, **kwargs)
 
+
+class CheckinError(ValueError):
+    def __init__(self, message):
+        super(CheckinError, self).__init__(message)
+
