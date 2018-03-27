@@ -224,6 +224,14 @@ class Reservation(models.Model):
     def full_id(self):
         return COMPANY_SHORT+'-'+str(self.id)
 
+    @property
+    def device_count(self):
+        count = 0
+        count += self.instances.count()
+        for device_relation in self.reservationdevicemembership_set.all():
+            count += device_relation.amount
+        return count
+
     def has_started(self):
         return timezone.now() > self.start_date
 
