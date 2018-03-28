@@ -164,54 +164,66 @@ class ReservationForm(BootstrapForm):
         super(ReservationForm, self).__init__(*args, **kwargs)
         self.fields['description'].required = False
 
-    def clean_start_date(self):
-        new_start_date = self.cleaned_data.get('start_date')
+    def clean(self):
+        cleaned_data = super(ReservationForm, self).clean()
         old_start_date = self.instance.start_date
         old_end_date = self.instance.end_date
-        if old_start_date is not None:
-            if new_start_date < old_start_date:
-                available_error = False
-                collisions = set()
-                for device_relation in self.instance.reservationdevicemembership_set.all():
-                    available_count, collision = device_relation.device.available_count(new_start_date, old_start_date)
-                    if device_relation.amount > available_count:
-                        available_error = True
-                        collisions = collisions.union(collision)
-                for instance in self.instance.instances.all():
-                    is_available, collision = instance.is_available(new_start_date, old_start_date)
-                    if not is_available:
-                        available_error = True
-                        collisions = collisions.union(collision)
-                if available_error:
-                    errors = []
-                    for reservation in collisions:
-                        errors.append(ValidationError('Kollision mit: {} {}'.format(reservation.full_id,
-                                                                                    reservation.name)))
-                    raise ValidationError(errors)
-        return new_start_date
+        new_start_date = cleaned_data.get('start_date')
+        new_end_date = cleaned_data.get('end_date')
 
-    def clean_end_date(self):
-        new_end_date = self.cleaned_data.get('end_date')
-        old_end_date = self.instance.end_date
-        if old_end_date is not None:
-            if new_end_date > old_end_date:
-                available_error = False
-                collisions = set()
-                for device_relation in self.instance.reservationdevicemembership_set.all():
-                    available_count, collision = device_relation.device.available_count(old_end_date, new_end_date)
-                    if device_relation.amount > available_count:
-                        available_error = True
-                        collisions = collisions.union(collision)
-                for instance in self.instance.instances.all():
-                    is_available, collision = instance.is_available(old_end_date, new_end_date)
-                    if not is_available:
-                        available_error = True
-                        collisions = collisions.union(collision)
-                if available_error:
-                    errors = []
-                    for reservation in collisions:
-                        errors.append(ValidationError('Kollision mit: {} {}'.format(reservation.full_id,
-                                                                                    reservation.name)))
-                    raise ValidationError(errors)
-        return new_end_date
+        if new_start_date >= new_end_date:
+            raise ValidationError({'end_date': ValidationError('Das Ende muss nach dem Start liegen.')})
 
+        if old_end_date is None or old_start_date is None:
+            return cleaned_data
+
+        def all_available(start, end, error_target=None):
+            available_error = False
+            collisions = set()
+            for device_relation in self.instance.reservationdevicemembership_set.all():
+                available_count, collision = device_relation.device.available_count(start, end)
+                if device_relation.amount > available_count:
+                    available_error = True
+                    collisions = collisions.union(collision)
+            for instance in self.instance.instances.all():
+                is_available, collision = instance.is_available(start, end)
+                if not is_available:
+                    available_error = True
+                    collisions = collisions.union(collision)
+            for instance_relation in self.instance.checked_out_instances.all():
+                is_available, collision = instance_relation.instance.is_available(start, end)
+                if not is_available:
+                    available_error = True
+                    collisions = collisions.union(collision)
+            if available_error:
+                errors = []
+                for reservation in collisions:
+                    errors.append(ValidationError('Kollision mit: {} {}'.format(reservation.full_id,
+                                                                                reservation.name)))
+                if error_target is not None:
+                    raise ValidationError({error_target: errors})
+                else:
+                    raise ValidationError(errors)
+        validation_errors = []
+        if new_start_date >= old_end_date or new_end_date <= old_start_date:
+            if self.instance.checked_out_instances.count() > 0:
+                raise ValidationError('Wenn schon ein Gerät ausgeliehen ist '
+                                      'kann die Reservierung nicht komplett verschoben werden.')
+            all_available(new_start_date, new_end_date)
+        else:
+            try:
+                if new_start_date < old_start_date:
+                    all_available(new_start_date, old_start_date, 'start_date')
+            except ValidationError as error:
+                validation_errors.append(error)
+
+            try:
+                if new_end_date > old_end_date:
+                    all_available(old_end_date, new_end_date, 'end_date')
+            except ValidationError as error:
+                validation_errors.append(error)
+
+            if len(validation_errors) > 0:
+                raise ValidationError(validation_errors)
+
+        return cleaned_data
