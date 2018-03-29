@@ -107,18 +107,40 @@ def instance_reservations_json(request, instance_id):
         instance = models.Instance.objects.get(id=instance_id)
         reservations = []
         reservation_base = instance.reservation_set
+        checkout_base = instance.reservationcheckoutinstance_set
+        checkin_base = instance.reservationclearedinstance_set
         if 'start' in request.GET:
             start = datetime.strptime(request.GET['start'], '%Y-%m-%d')
             reservation_base.filter(end_date__gte=start)
+            checkout_base.filter(reservation__start_date__gte=start)
+            checkin_base.filter(reservation__start_date__gte=start)
         if 'end' in request.GET:
             end = datetime.strptime(request.GET['end'], '%Y-%m-%d')
             reservation_base.filter(start_date__lte=end)
+            checkout_base.filter(reservation__start_date__lte=end)
+            checkin_base.filter(reservation__start_date__lte=end)
         for reservation in reservation_base.all():
             reservations.append({
                 'start': localtime(reservation.start_date).isoformat(),
                 'end': localtime(reservation.end_date).isoformat(),
                 'url': reverse('reservation', kwargs={'reservation_id': reservation.id}),
                 'title': '{} {}'.format(reservation.full_id, reservation.name),
+            })
+        for reservation_relation in checkout_base.all():
+            reservations.append({
+                'start': localtime(reservation_relation.checkout_date).isoformat(),
+                'end': localtime(reservation_relation.reservation.end_date).isoformat(),
+                'url': reverse('reservation', kwargs={'reservation_id': reservation_relation.reservation.id}),
+                'title': '{} {}'.format(reservation_relation.reservation.full_id,
+                                        reservation_relation.reservation_id.name)
+            })
+        for reservation_relation in checkin_base.all():
+            reservations.append({
+                'start': localtime(reservation_relation.checkout_date).isoformat(),
+                'end': localtime(reservation_relation.checkin_date).isoformat(),
+                'url': reverse('reservation', kwargs={'reservation_id': reservation_relation.reservation.id}),
+                'title': '{} {}'.format(reservation_relation.reservation.full_id,
+                                        reservation_relation.reservation_id.name)
             })
         return JsonResponse(reservations, status=200, safe=False)
     except models.Instance.DoesNotExist:
