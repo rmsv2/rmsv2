@@ -77,6 +77,11 @@
                     <a href="{% url 'reservations' %}">
                         <i class="fa fa-file-text"></i>
                         <span>Reservierungen</span>
+                        <span class="pull-right-container">
+                            {% if danger_reservations_count > 0 %}
+                                <span class="label pull-right bg-red">{{ danger_reservations_count }}</span>
+                            {% endif %}
+                        </span>
                     </a>
                 </li>
                 {% endif %}

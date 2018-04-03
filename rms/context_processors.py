@@ -1,7 +1,15 @@
 from . import models
+from django.utils import timezone
 
 
 def categories(request):
     return {
         'top_categories': models.Category.objects.filter(top_category=None).order_by('name')
+    }
+
+
+def menu_notifications(request):
+    danger_reservations = models.Reservation.objects.filter(owners=request.user, end_date__lt=timezone.now()).count()
+    return {
+        'danger_reservations_count': danger_reservations
     }
