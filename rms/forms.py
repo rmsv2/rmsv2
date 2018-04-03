@@ -190,8 +190,8 @@ class ReservationForm(BootstrapForm):
                 if not is_available:
                     available_error = True
                     collisions = collisions.union(collision)
-            for instance_relation in self.instance.checked_out_instances.all():
-                is_available, collision = instance_relation.instance.is_available(start, end)
+            for instance in self.instance.checked_out_instances.all():
+                is_available, collision = instance.is_available(start, end)
                 if not is_available:
                     available_error = True
                     collisions = collisions.union(collision)
