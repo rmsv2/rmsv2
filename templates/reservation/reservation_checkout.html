@@ -1,48 +1,50 @@
 {% extends 'reservation/reservation.html' %}
 
 {% block tab-content %}
-    <form id="checkout-form">
-    {% csrf_token %}
-        <div class="form-group col-md-10">
-            <input type="text" name="inventory_number" placeholder="Inventar Nummer" class="form-control" autofocus id="inventory_number">
-        </div>
-        <button type="submit" class="btn btn-primary col-md-2">Auschecken</button>
-    </form>
-    <br><br>
-    <div id="checkout-alert-area"></div>
-    <script>
-    $('#checkout-form').on('submit', function (event) {
-        event.preventDefault();
-        var inventory_number = $('#inventory_number').val();
-        $.post('{% url 'api_reservation_checkout' reservation.id %}', {inventory_number: inventory_number})
-            .done(function (data, status) {
-                window.location.reload()
-            }).fail(function (xhr) {
-                var alert_area = $('#checkout-alert-area');
-                alert_area.empty();
-                var alert_element = $('<div class="alert alert-danger"></div>');
-                var alert_text = $('<span>'+xhr.responseText+'</span>');
-                if (xhr.responseJSON.msg ) {
-                    alert_text.text(xhr.responseJSON.msg);
-                }
-                alert_element.append(alert_text);
-                alert_element.append($('<br>'));
+    {% if not reservation.has_ended %}
+        <form id="checkout-form">
+        {% csrf_token %}
+            <div class="form-group col-md-10">
+                <input type="text" name="inventory_number" placeholder="Inventar Nummer" class="form-control" autofocus id="inventory_number">
+            </div>
+            <button type="submit" class="btn btn-primary col-md-2">Auschecken</button>
+        </form>
+        <br><br>
+        <div id="checkout-alert-area"></div>
+        <script>
+        $('#checkout-form').on('submit', function (event) {
+            event.preventDefault();
+            var inventory_number = $('#inventory_number').val();
+            $.post('{% url 'api_reservation_checkout' reservation.id %}', {inventory_number: inventory_number})
+                .done(function (data, status) {
+                    window.location.reload()
+                }).fail(function (xhr) {
+                    var alert_area = $('#checkout-alert-area');
+                    alert_area.empty();
+                    var alert_element = $('<div class="alert alert-danger"></div>');
+                    var alert_text = $('<span>'+xhr.responseText+'</span>');
+                    if (xhr.responseJSON.msg ) {
+                        alert_text.text(xhr.responseJSON.msg);
+                    }
+                    alert_element.append(alert_text);
+                    alert_element.append($('<br>'));
 
-                if (xhr.responseJSON.collisions && typeof xhr.responseJSON.collisions === 'object' && xhr.responseJSON.collisions.length > 0) {
-                    var collision_list = $('<ul></ul>');
-                    alert_element.append('<b>Kollisionen:</b>');
-                    alert_element.append(collision_list);
-                    for (var i in xhr.responseJSON.collisions) {
-                        if (xhr.responseJSON.collisions.hasOwnProperty(i)) {
-                            var reservation = xhr.responseJSON.collisions[i];
-                            collision_list.append($('<li>'+reservation.full_id+' '+reservation.name+'</li>'))
+                    if (xhr.responseJSON.collisions && typeof xhr.responseJSON.collisions === 'object' && xhr.responseJSON.collisions.length > 0) {
+                        var collision_list = $('<ul></ul>');
+                        alert_element.append('<b>Kollisionen:</b>');
+                        alert_element.append(collision_list);
+                        for (var i in xhr.responseJSON.collisions) {
+                            if (xhr.responseJSON.collisions.hasOwnProperty(i)) {
+                                var reservation = xhr.responseJSON.collisions[i];
+                                collision_list.append($('<li>'+reservation.full_id+' '+reservation.name+'</li>'))
+                            }
                         }
                     }
-                }
-                alert_area.append(alert_element)
-            });
-    })
-    </script>
+                    alert_area.append(alert_element)
+                });
+        })
+        </script>
+    {% endif %}
     <h3>Ausgeliehene Geräte</h3>
     <table class="table">
     <thead>

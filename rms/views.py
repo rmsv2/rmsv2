@@ -9,6 +9,7 @@ from rms import forms
 from . import models
 from .decorators import permission_required
 from rms.exceptions import *
+from django.utils import timezone
 
 # Create your views here.
 
@@ -776,14 +777,21 @@ def edit_customer_view(request, customer_id):
 @permission_required('rms.view_reservation')
 def reservations_view(request):
     if 'all' in request.GET and request.GET['all'] == 'yes' and request.user.is_superuser:
-        reservations = models.Reservation.objects.order_by('start_date').all()
+        reservation_base = models.Reservation.objects
         show_all = True
     else:
-        reservations = request.user.reservation_set.order_by('start_date').all()
+        reservation_base = request.user.reservation_set
         show_all = False
+    reservation_base.order_by('start_date')
+    actual_reservations = reservation_base.filter(end_date__gte=timezone.now())
+    danger_reservations = reservation_base.filter(end_date__lt=timezone.now())\
+        .exclude(reservationcheckoutinstance=None)
+    past_reservations = reservation_base.filter(end_date__lt=timezone.now(), reservationcheckoutinstance=None)
     reservations_feed_url = request.build_absolute_uri(reverse('reservations_feed'))
     return render(request, 'reservation/reservations.html', context={'title': 'Reservierungen',
-                                                                     'reservations': reservations,
+                                                                     'actual_reservations': actual_reservations,
+                                                                     'past_reservations': past_reservations,
+                                                                     'danger_reservations': danger_reservations,
                                                                      'show_all': show_all,
                                                                      'reservations_feed_url': reservations_feed_url})
 

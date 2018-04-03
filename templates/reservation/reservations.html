@@ -39,7 +39,15 @@
                     </button>
                 {% endif %}
             </div>
-            {% include 'reservation/includes/reservation_list.html' %}
+            {% if danger_reservations %}
+                {% include 'reservation/includes/reservation_list.html' with reservations=danger_reservations danger=True %}
+            {% endif %}
+            <h4>Aktuelle Reservierungen</h4>
+            {% include 'reservation/includes/reservation_list.html' with reservations=actual_reservations %}
+            {% if past_reservations %}
+                <h4>Vergangene Reservierungen</h4>
+                {% include 'reservation/includes/reservation_list.html' with reservations=past_reservations %}
+            {% endif %}
         </div>
     </div>
     </section>

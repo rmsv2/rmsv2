@@ -24,7 +24,7 @@
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 <li class="{% if 'checkout' not in request.path and 'checkin' not in request.path %}active{% endif %}"><a href="{% url 'reservation' reservation.id %}">Reservierung <span class="label label-primary">{{ reservation.device_count }}</span></a></li>
-                {% if not reservation.has_ended and reservation.has_started %}
+                {% if reservation.has_started %}
                     <li class="{% if 'checkout' in request.path %}active{% endif %}"><a href="{% url 'reservation_checkout' reservation.id %}">Ausleihen <span class="label label-primary">{{ reservation.checked_out_instances.all|length }}</span></a></li>
                 {% endif %}
                 {% if reservation.has_started %}

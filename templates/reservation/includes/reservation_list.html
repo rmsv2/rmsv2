@@ -13,14 +13,14 @@
     <tbody>
     {% for reservation in reservations %}
         <tr>
-            <td><a href="{% url 'reservation' reservation.id %}">{{ reservation.full_id }}</a></td>
-            <td><a href="{% url 'reservation' reservation.id %}">{{ reservation.name }}</a></td>
-            <td>
+            <td><a href="{% url 'reservation' reservation.id %}" class="{% if danger %}text-danger {% endif %}">{{ reservation.full_id }}</a></td>
+            <td><a href="{% url 'reservation' reservation.id %}" class="{% if danger %}text-danger {% endif %}">{{ reservation.name }}</a></td>
+            <td class="{% if danger %}text-danger {% endif %}">
                 {% for owner in reservation.owners.all %}
                     {% include 'generics/includes/user_display_name.html' with user_object=owner %}<br>
                 {% endfor %}
             </td>
-            <td>Von {{ reservation.start_date }}<br> bis {{ reservation.end_date }}</td>
+            <td class="{% if danger %}text-danger {% endif %}">Von {{ reservation.start_date }}<br> bis {{ reservation.end_date }}</td>
             {% if not without_controls %}
             <td style="text-align: right;">
                 {% if perms.rms.change_reservation %}
