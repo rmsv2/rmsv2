@@ -63,6 +63,8 @@ urlpatterns = [
          views.remove_device_from_reservation, name="remove_device_from_reservation"),
     path('reservations/'+COMPANY_SHORT+'-<int:reservation_id>/instances/<int:instance_id>/remove',
          views.remove_instance_from_reservation, name='remove_instance_from_reservation'),
+    path('reservations/'+COMPANY_SHORT+'-<int:reservation_id>/export',
+         views.reservation_pdf_generation, name='reservation_pdf'),
 
     path('customers', views.customers_view, name='customers'),
     path('customers/create', views.create_customer_view, name='create_customer'),

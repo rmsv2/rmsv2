@@ -10,6 +10,9 @@ from . import models
 from .decorators import permission_required
 from rms.exceptions import *
 from django.utils import timezone
+from rms.pdf_exporter import PDF
+import os
+from rmsv2 import settings
 
 # Create your views here.
 
@@ -924,5 +927,64 @@ def remove_instance_from_reservation(request, reservation_id, instance_id):
             except models.Instance.DoesNotExist:
                 pass
         return redirect('reservation', reservation_id=reservation.id)
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+@permission_required('rms.change_reservation')
+def reservation_pdf_generation(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        latest_pdf_date = None
+        other_pdfs = reservation.checkoutticket_set.order_by('-creation_date')
+        latest_pdf = other_pdfs.first()
+        if latest_pdf is not None:
+            latest_pdf_date = latest_pdf.creation_date
+        instances_to_print = reservation.reservationcheckoutinstance_set
+        if latest_pdf_date is not None:
+            instances_to_print = instances_to_print.filter(checkout_date__gte=latest_pdf_date)
+        instances = list()
+        for instance_relation in instances_to_print.all():
+            instances.append(instance_relation.instance)
+        if len(instances) >= 1:
+            creation_date = localtime(timezone.now())
+            out_filename = 'uploads/checkout_tickets/{}-{}.pdf'.format(reservation.full_id, other_pdfs.count())
+            out_path = os.path.join(settings.BASE_DIR, 'static', out_filename)
+            if not os.path.exists(os.path.dirname(out_path)):
+                os.makedirs(os.path.dirname(out_path))
+            pdf = PDF()
+            pdf.draw_address(reservation.customer)
+            pdf.draw_type('Leihschein', extension=other_pdfs.count())
+            pdf.draw_reservation_header(reservation, creation_date=creation_date)
+            pdf.draw_rent_item_table(instances)
+            pdf.draw_signing_fields(reservation.customer, request.user)
+            pdf.save_pdf(out_path)
+            ticket = models.CheckoutTicket(creation_date=creation_date, file_path=out_filename, reservation=reservation)
+            ticket.save()
+        return redirect('reservation', reservation_id=reservation.id)
+    except models.Reservation.DoesNotExist:
+        return redirect('reservations')
+
+
+@login_required()
+@permission_required('rms.view_reservation')
+def reservation_pdf_view(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        reservation_instances = list(reservation.checked_out_instances.all())
+        reservation_instances.extend(reservation_instances)
+        reservation_instances.extend(reservation_instances)
+        reservation_instances.extend(reservation_instances)
+        reservation_instances.extend(reservation_instances)
+        reservation_instances.extend(reservation_instances)
+        reservation_instances.extend(reservation_instances)
+        pdf = PDF()
+        pdf.draw_address(reservation.customer)
+        pdf.draw_type('Leihschein', extension=1)
+        pdf.draw_reservation_header(reservation)
+        pdf.draw_rent_item_table(reservation_instances)
+        pdf.draw_signing_fields(reservation.customer, request.user)
+        return HttpResponse(pdf.get_pdf(), status=200, content_type="application/pdf")
     except models.Reservation.DoesNotExist:
         return redirect('reservations')

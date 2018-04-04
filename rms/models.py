@@ -172,6 +172,15 @@ class Address(models.Model):
     city = models.CharField('Stadt', max_length=200)
     zip_code = models.CharField('Postleitzahl', max_length=5)
 
+    def __str__(self):
+        result = ''
+        if self.mailbox is not None:
+            result += 'Postfach {}\n'.format(self.mailbox)
+        else:
+            result += '{} {}\n'.format(self.street, self.number)
+        result += '{} {}\n'.format(self.zip_code, self.city)
+        return result
+
 
 class Customer(models.Model):
 
@@ -274,6 +283,16 @@ class Reservation(models.Model):
         except ReservationCheckoutInstance.DoesNotExist:
             raise CheckinError('Das ausgewählte Gerät wurde nicht für diese Reservierung ausgeliehen.')
 
+    def non_ticket_instances(self):
+        new_export = True
+        latest_pdf = self.checkoutticket_set.order_by('-creation_date').first()
+        if latest_pdf is not None:
+            new_instances = self.reservationcheckoutinstance_set \
+                .filter(checkout_date__gte=latest_pdf.creation_date).count()
+            if new_instances == 0:
+                new_export = False
+        return new_export
+
     def __str__(self):
         return '{} {} ({} - {})'.format(self.full_id, self.name, str(self.start_date), str(self.end_date))
 
@@ -300,3 +319,13 @@ class ReservationClearedInstance(models.Model):
     instance = models.ForeignKey(Instance, on_delete=models.PROTECT)
     checkout_date = models.DateTimeField()
     checkin_date = models.DateTimeField()
+
+
+class CheckoutTicket(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    file_path = models.CharField(max_length=500)
+    creation_date = models.DateTimeField(default=timezone.now)
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file_path)

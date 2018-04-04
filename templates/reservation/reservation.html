@@ -1,4 +1,6 @@
 {% extends 'inside.html' %}
+{% load model_filter %}
+{% load static %}
 
 {% block content %}
     <section class="content-header">
@@ -17,7 +19,19 @@
             {% if perms.rms.change_reservation %}
                 <a href="{% url 'edit_reservation' reservation.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Reservierung bearbeiten</a>
             {% endif %}
-            {% include 'reservation/includes/reservation_info.html' with edit=True %}
+            <div class="col-md-6">
+                {% include 'reservation/includes/reservation_info.html' with edit=True %}
+            </div>
+            <div class="col-md-6">
+                <ul>
+                    {% for ticket in reservation.checkoutticket_set|order_by:"creation_date"|all %}
+                        <li><a href="{% static ticket.file_path %}">{{ ticket.filename }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% if reservation.non_ticket_instances %}
+                    <a href="{% url 'reservation_pdf' reservation.id %}" class="btn btn-primary btn-xs">Leihschein generieren</a>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="box" style="border-top: none;">

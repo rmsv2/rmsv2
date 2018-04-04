@@ -169,3 +169,9 @@ EMAIL_USE_TLS = True if config.get('mail', 'tls', fallback='yes') == 'yes' else 
 if EMAIL_HOST is None or EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None:
     print('Email unconfigured!')
     exit(1)
+
+# PDF options
+PDF_BACKGROUND = os.path.join(BASE_DIR, config.get('pdf', 'background', fallback='static/empty.pdf'))
+PDF_FROM_LINE = config.get('pdf', 'from', fallback='')
+PDF_SAVE_TOP = config.getint('pdf', 'save-top', fallback=20)
+PDF_SAVE_BOTTOM = config.getint('pdf', 'save-bottom', fallback=20)
