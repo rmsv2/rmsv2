@@ -9,7 +9,9 @@ def categories(request):
 
 
 def menu_notifications(request):
-    danger_reservations = models.Reservation.objects.filter(owners=request.user, end_date__lt=timezone.now()).count()
-    return {
-        'danger_reservations_count': danger_reservations
-    }
+    if request.user.is_authenticated:
+        danger_reservations = models.Reservation.objects.filter(owners=request.user, end_date__lt=timezone.now()).count()
+        return {
+            'danger_reservations_count': danger_reservations
+        }
+    return {}
