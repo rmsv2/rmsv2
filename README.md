@@ -18,6 +18,7 @@ Python package requirements are:
 * Pillow
 * PyPDF2
 * reportlab
+* typing
 
 ### Basic installation
 
@@ -25,7 +26,7 @@ Python package requirements are:
 2. Switch to repo directory `cd rmsv2`
 3. Generate python virtual environment `python3 -m venv venv`
 4. Switch to virtual environment `source venv/bin/activate`
-5. Install python packages `pip install django django-money django-ical psycopg2 Pillow PyPDF2 reportlab`
+5. Install python packages `pip install django django-money django-ical psycopg2 Pillow PyPDF2 reportlab typing`
 6. Copy default config to configure RMS `cp config/config.default.ini config/config.ini` now edit `config.ini`
 7. Execute migrations `python manage.py migrate`
 8. Install bower dependencies `cd static` and `bower install`
