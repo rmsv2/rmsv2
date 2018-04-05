@@ -21,6 +21,7 @@
     "jquery-zoom": "^1.7.20",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "select2": "^4.0.5",
-    "fullcalendar": "^3.9.0"
+    "fullcalendar": "^3.9.0",
+    "quagga": "^0.12.1"
   }
 }

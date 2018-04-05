@@ -4,13 +4,25 @@
     {% if not reservation.has_ended %}
         <form id="checkout-form">
         {% csrf_token %}
-            <div class="form-group col-xs-10">
+            <div class="form-group col-xs-9">
                 <input type="text" name="inventory_number" placeholder="Inventar Nummer" class="form-control" autofocus id="inventory_number">
             </div>
-            <button type="submit" class="btn btn-primary col-xs-2">Auschecken</button>
+            <div class="btn-group col-xs-3">
+                <button type="submit" class="btn btn-primary col-xs-8">Auschecken</button>
+                <button type="button" class="btn btn-default col-xs-4" onclick="scanQRCode()"><i class="glyphicon glyphicon-barcode"></i></button>
+            </div>
         </form>
         <br><br>
         <div id="checkout-alert-area"></div>
+        <style>
+        #interactive.viewport * {
+            position: absolute;
+            width: 100%;
+        }
+        </style>
+        <div style="position: fixed; display: none; z-index: 99999;">
+            <div id="interactive" class="viewport"></div>
+        </div>
         <script>
         $('#checkout-form').on('submit', function (event) {
             event.preventDefault();
@@ -42,6 +54,83 @@
                     }
                     alert_area.append(alert_element)
                 });
+        });
+
+        function scanQRCode() {
+            var codes = [];
+            Quagga.onDetected(function (data) {
+                codes.push(data.codeResult.code);
+                if (codes.length > 20) {
+                    var codemap = {};
+                    for (var i in codes) {
+                        if (codes.hasOwnProperty(i)) {
+                            if (!codemap[codes[i]]) {
+                                codemap[codes[i]] = 0
+                            }
+                            codemap[codes[i]]++
+                        }
+                    }
+                    var candidateCount = 0;
+                    var candidate = null;
+                    for (var j in codemap) {
+                        if (codemap.hasOwnProperty(j)) {
+                            if (candidateCount < codemap[j]) {
+                                candidateCount = codemap[j];
+                                candidate = j;
+                            }
+                        }
+                    }
+                    $('#inventory_number').val(candidate);
+                    $('#checkout-form').submit();
+                    Quagga.stop();
+                    codes = [];
+                    $('#interactive.viewport').parent().hide();
+                }
+            });
+            Quagga.init({
+                inputStream : {
+                    name: 'Live',
+                    type: 'LiveStream',
+                    constraints: {
+                        facingMode: 'environment'
+                    }
+                },
+                decoder: {
+                    readers: [
+                        'code_128_reader',
+                        'ean_reader',
+                    ],
+                    multiple: false
+                },
+                locator: {
+                    halfSample: true,
+                    pathSize: 'medium'
+                }
+            }, function (err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                var viewport = $('#interactive.viewport').parent();
+                viewport.css('top', window.pageYOffset+'px');
+                viewport.css('left', window.pageXOffset+'px');
+                viewport.css('width', window.innerWidth+'px');
+                viewport.css('height', window.innerHeight+'px');
+                viewport.show();
+                Quagga.start();
+                viewport.find('canvas').on('click', function() {
+                    Quagga.stop();
+                    codes = [];
+                    $('#interactive.viewport').parent().hide();
+                })
+            })
+        }
+        $(document).on('resize', function () {
+            var viewport = $('#interactive.viewport').parent();
+            viewport.css('top', window.pageYOffset+'px');
+            viewport.css('left', window.pageXOffset+'px');
+            viewport.css('width', window.innerWidth+'px');
+            viewport.css('height', window.innerHeight+'px');
         })
         </script>
     {% endif %}
