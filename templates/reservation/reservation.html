@@ -19,10 +19,10 @@
             {% if perms.rms.change_reservation %}
                 <a href="{% url 'edit_reservation' reservation.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Reservierung bearbeiten</a>
             {% endif %}
-            <div class="col-md-6">
+            <div class="col-xs-6">
                 {% include 'reservation/includes/reservation_info.html' with edit=True %}
             </div>
-            <div class="col-md-6">
+            <div class="col-xs-6">
                 <ul>
                     {% for ticket in reservation.checkoutticket_set|order_by:"creation_date"|all %}
                         <li><a href="{% static ticket.file_path %}">{{ ticket.filename }}</a></li>

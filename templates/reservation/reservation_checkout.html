@@ -4,10 +4,10 @@
     {% if not reservation.has_ended %}
         <form id="checkout-form">
         {% csrf_token %}
-            <div class="form-group col-md-10">
+            <div class="form-group col-xs-10">
                 <input type="text" name="inventory_number" placeholder="Inventar Nummer" class="form-control" autofocus id="inventory_number">
             </div>
-            <button type="submit" class="btn btn-primary col-md-2">Auschecken</button>
+            <button type="submit" class="btn btn-primary col-xs-2">Auschecken</button>
         </form>
         <br><br>
         <div id="checkout-alert-area"></div>
