@@ -1,5 +1,5 @@
 from rmsv2 import settings
-from rms.models import Customer, Reservation, Instance, Device
+from rms.models import Customer, Reservation, Instance, Device, AbstractItem
 from django.conf import settings
 from django.utils import formats, timezone
 from django.contrib.auth.models import User
@@ -115,13 +115,20 @@ class PDF:
 
         self.top_border = self.top_border-25.5*mm
 
-    def draw_rent_item_table(self, instances: Iterable[Instance]):
+    def draw_rent_item_table(self, instances: Iterable[Instance], abstract_items: Iterable[AbstractItem]):
         # grouping instances by devices
         devices = dict()
         for instance in instances:
             if instance.device not in devices:
                 devices[instance.device] = []
             devices[instance.device].append(instance)
+
+        # grouping abstract items by name
+        grouped_abstract_items = {}
+        for item in abstract_items:
+            if item.name not in grouped_abstract_items:
+                grouped_abstract_items[item.name] = 0
+            grouped_abstract_items[item.name] += item.amount
 
         def draw_device(device: Device, instances: List[Instance]):
             if self.top_border-self.bottom_border < 11*mm:
@@ -158,6 +165,25 @@ class PDF:
 
             self.top_border -= 2*mm
 
+        def draw_abstract_item(name: str, amount: int):
+            name_wrapped = textwrap.wrap(name, width=60)
+
+            if self.top_border - self.bottom_border < len(name_wrapped)*4.2*mm:
+                self._new_page()
+                draw_table_header()
+
+            self.pdf.setFont('Arial', 10)
+            for idx, line in enumerate(name_wrapped):
+                self.pdf.drawString(26*mm, self.top_border-((idx+1)*4.2)*mm, line)
+            self.pdf.drawRightString(184*mm, self.top_border-4.2*mm, str(amount))
+
+            self.top_border -= (len(name_wrapped)*4.2*mm+2*mm)
+
+            p = self.pdf.beginPath()
+            p.moveTo(25 * mm, self.top_border)
+            p.lineTo(185 * mm, self.top_border)
+            self.pdf.drawPath(p)
+
         def draw_table_header():
             p = self.pdf.beginPath()
             p.moveTo(25*mm, self.top_border-10*mm)
@@ -171,6 +197,9 @@ class PDF:
         draw_table_header()
         for device, instances in devices.items():
             draw_device(device, instances)
+
+        for name, amount in grouped_abstract_items.items():
+            draw_abstract_item(name, amount)
 
     def get_pdf(self) -> bytes:
         self.pdf.save()

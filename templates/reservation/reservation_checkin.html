@@ -131,6 +131,30 @@
         viewport.css('height', window.innerHeight+'px');
     })
     </script>
+    {% if grouped_abstract_items %}
+        <h3>Nicht inventarisierte Ergänzungen</h3>
+        <table class="table">
+        <thead>
+        <tr>
+            <th class="col-xs-8">Name</th>
+            <th class="col-xs-2" style="text-align: right;">Anzahl</th>
+            <th class="col-xs-2" style="text-align: right;">Aktionen</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for name, amount in grouped_abstract_items.items %}
+            <tr>
+            <td>{{ name }}</td>
+            <td style="text-align: right;">{{ amount }}</td>
+            <td style="text-align: right;">
+                <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#checkin_item_{{ forloop.counter }}_modal">Rückgabe</button>
+            </td>
+            </tr>
+            {% include 'reservation/includes/abstract_item_checkin_modal.html' with id=forloop.counter %}
+        {% endfor %}
+        </tbody>
+        </table>
+    {% endif %}
     <h3>Zurückgegebene Geräte</h3>
     <table class="table">
     <thead>

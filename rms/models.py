@@ -284,14 +284,20 @@ class Reservation(models.Model):
             raise CheckinError('Das ausgewählte Gerät wurde nicht für diese Reservierung ausgeliehen.')
 
     def non_ticket_instances(self):
-        new_export = True
         latest_pdf = self.checkoutticket_set.order_by('-creation_date').first()
         if latest_pdf is not None:
-            new_instances = self.reservationcheckoutinstance_set \
+            new_checkouts = self.reservationcheckoutinstance_set \
                 .filter(checkout_date__gte=latest_pdf.creation_date).count()
-            if new_instances == 0:
-                new_export = False
-        return new_export
+            new_checkouts += self.abstract_items.filter(checkout_date__gte=latest_pdf.creation_date).count()
+            if new_checkouts == 0:
+                return False
+        return True
+
+    def checked_out_count(self):
+        count = self.checked_out_instances.count()
+        for item in self.abstract_items.all():
+            count += item.amount
+        return count
 
     def __str__(self):
         return '{} {} ({} - {})'.format(self.full_id, self.name, str(self.start_date), str(self.end_date))
@@ -329,3 +335,10 @@ class CheckoutTicket(models.Model):
     @property
     def filename(self):
         return os.path.basename(self.file_path)
+
+
+class AbstractItem(models.Model):
+    name = models.CharField('Name', max_length=500)
+    amount = models.IntegerField('Anzahl')
+    reservation = models.ForeignKey(Reservation, on_delete=models.PROTECT, related_name='abstract_items')
+    checkout_date = models.DateTimeField(default=timezone.now)

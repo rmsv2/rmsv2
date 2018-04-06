@@ -204,3 +204,26 @@ def checkin_instance(request, reservation_id):
                 return HttpResponse(str(error), status=400)
     except models.Reservation.DoesNotExist:
         return HttpResponse('Die Reservierung wurde nicht gefunden.', status=404)
+
+
+@csrf_exempt
+@login_required
+def checkin_abstract_item(request, reservation_id):
+    try:
+        reservation = models.Reservation.objects.get(id=reservation_id)
+        if request.method == 'POST' and 'item_name' in request.POST and 'amount' in request.POST:
+            checkin_amount = int(request.POST.get('amount'))
+            abstract_items = reservation.abstract_items.filter(name=request.POST.get('item_name'))\
+                .order_by('checkout_date').all()
+            for item in abstract_items:
+                if item.amount <= checkin_amount:
+                    checkin_amount -= item.amount
+                    item.delete()
+                else:
+                    item.amount -= checkin_amount
+                    item.save()
+                if checkin_amount == 0:
+                    break
+            return HttpResponse('', status=200)
+    except models.Reservation.DoesNotExist:
+        return HttpResponse('Die Reservierung wurde nicht gefunden.', status=404)

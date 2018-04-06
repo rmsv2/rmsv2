@@ -89,6 +89,8 @@ urlpatterns = [
          checkout_instance, name='api_reservation_checkout'),
     path('api/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/checkin',
          checkin_instance, name='api_reservation_checkin'),
+    path('api/reservations/'+COMPANY_SHORT+'-<int:reservation_id>/checkin_abstract',
+         checkin_abstract_item, name="api_reservation_checkin_abstract"),
 
     path('feeds/ics/reservation.ics', ReservationsFeed(), name='reservations_feed'),
 ]

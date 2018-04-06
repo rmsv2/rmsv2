@@ -1,0 +1,61 @@
+<div class="modal modal-default fade" id="checkin_item_{{ id }}_modal" tabindex="-1" role="dialog" aria-labelledby="checkin_item_{{ id }}_modal_label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="checkin_item_{{ id }}_modal_label">Rückgabe</h4>
+            </div>
+            <div class="modal-body">
+                Rückgabe von <b>{{ name }}</b>:
+                <br><br>
+                <form id="checkin_item_{{ id }}_form">
+                    <div class="form-group">
+                        <label class="col-sm-2" for="checkin_amount_{{ id }}">Anzahl</label>
+                        <div class="col-sm-10">
+                            <input type="number" min="1" max="{{ amount }}" name="amount" id="checkin_amount_{{ id }}" class="form-control">
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="checkin_submit_{{ id }}">Rückgabe</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#checkin_item_{{ id }}_modal').on('shown.bs.modal', function () {
+        $('#checkin_amount_{{ id }}').focus();
+    });
+    $('#checkin_submit_{{ id }}').on('click', checkin_item_{{ id }});
+    $('#checkin_item_{{ id }}_form').on('submit', function (e) {
+        e.preventDefault();
+        checkin_item_{{ id }}();
+    });
+
+    function checkin_item_{{ id }}() {
+        var checkin_amount_field = $('#checkin_amount_{{ id }}');
+        var checkin_amount = parseInt(checkin_amount_field.val());
+        var checkin_amount_max = checkin_amount_field.attr('max');
+
+        checkin_amount_field.parent().parent().removeClass('has-feedback has-error');
+        if (checkin_amount < 1 || checkin_amount > checkin_amount_max) {
+            checkin_amount_field.parent().parent().addClass('has-feedback has-error');
+            return;
+        }
+
+        $.post('{% url 'api_reservation_checkin_abstract' reservation.id %}', {item_name: '{{ name }}', amount: checkin_amount})
+            .done(function () {
+                window.location.href = '{% url 'reservation_checkin' reservation.id %}';
+            })
+            .fail(function (xhr) {
+                var alert = $('<div class="alert alert-danger" role="alert"><b>Fehler! </b>'+xhr.responseText+'</div>');
+                    $('#alert_area').append(alert);
+                    setTimeout(function () {
+                        alert.remove()
+                    }, 5000)
+            })
+    }
+</script>

@@ -134,6 +134,42 @@
         })
         </script>
     {% endif %}
+    <h3>Nicht inventarisierte Ergänzungen</h3>
+    <form action="{{ request.path }}" method="post">
+        {% csrf_token %}
+        <table class="table">
+        <thead>
+        <tr>
+            <th class="col-xs-6">Name</th>
+            <th class="col-xs-2">Ausleihzeitpunkt</th>
+            <th class="col-xs-2" style="text-align: right;">Anzahl</th>
+            <th class="col-xs-2" style="text-align: right;">Aktionen</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for name, items in abstract_items.items %}
+            <tr>
+                <td rowspan="{{ items|length|add:"1" }}"><a href="javascript:$('#id_name').val('{{ name }}');">{{ name }}</td>
+            </tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item.checkout_date }}</td>
+                    <td style="text-align: right;">{{ item.amount }}</td>
+                    <td style="text-align: right;"></td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+        {% if not reservation.has_ended %}
+            <tr>
+                <td class="{% if abstract_item_form.name.errors %}has-feedback has-error{% endif %}">{{ abstract_item_form.name }}</td>
+                <td></td>
+                <td class="{% if abstract_item_form.amount.errors %}has-feedback has-error{% endif %}">{{ abstract_item_form.amount }}</td>
+                <td><button type="submit" class="btn btn-primary" style="width: 100%;">Hinzufügen</button></td>
+            </tr>
+        {% endif %}
+        </tbody>
+        </table>
+    </form>
     <h3>Ausgeliehene Geräte</h3>
     <table class="table">
     <thead>

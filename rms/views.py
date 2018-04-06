@@ -835,11 +835,27 @@ def reservation_view(request, reservation_id):
 def reservation_checkout_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
-        context = {'title': 'Reservierung Ausleihen', 'reservation': reservation, 'devices': {}}
+
+        if request.method == 'POST':
+            abstract_item_form = forms.AbstractItemForm(request.POST)
+            if abstract_item_form.is_valid():
+                abstract_item = abstract_item_form.save(False)
+                abstract_item.reservation = reservation
+                abstract_item.save()
+                return redirect('reservation_checkout', reservation_id=reservation.id)
+        else:
+            abstract_item_form = forms.AbstractItemForm()
+
+        context = {'title': 'Reservierung Ausleihen', 'reservation': reservation, 'devices': {},
+                   'abstract_item_form': abstract_item_form, 'abstract_items': {}}
         for instance_relation in reservation.reservationcheckoutinstance_set.all():
             if instance_relation.instance.device not in context['devices']:
                 context['devices'][instance_relation.instance.device] = []
             context['devices'][instance_relation.instance.device].append(instance_relation)
+        for abstract_item in reservation.abstract_items.all():
+            if abstract_item.name not in context['abstract_items']:
+                context['abstract_items'][abstract_item.name] = []
+            context['abstract_items'][abstract_item.name].append(abstract_item)
         return render(request, 'reservation/reservation_checkout.html', context=context)
     except models.Reservation.DoesNotExist:
         return redirect('reservations')
@@ -850,11 +866,16 @@ def reservation_checkout_view(request, reservation_id):
 def reservation_checkin_view(request, reservation_id):
     try:
         reservation = models.Reservation.objects.get(id=reservation_id)
-        context = {'title': 'Reservierung Rückgabe', 'reservation': reservation, 'devices': {}}
+        context = {'title': 'Reservierung Rückgabe', 'reservation': reservation, 'devices': {},
+                   'grouped_abstract_items': {}}
         for instance_relation in reservation.reservationclearedinstance_set.all():
             if instance_relation.instance.device not in context['devices']:
                 context['devices'][instance_relation.instance.device] = []
             context['devices'][instance_relation.instance.device].append(instance_relation)
+        for item in reservation.abstract_items.all():
+            if item.name not in context['grouped_abstract_items']:
+                context['grouped_abstract_items'][item.name] = 0
+            context['grouped_abstract_items'][item.name] += item.amount
         return render(request, 'reservation/reservation_checkin.html', context=context)
     except models.Reservation.DoesNotExist:
         return redirect('reservations')
@@ -947,7 +968,8 @@ def reservation_pdf_generation(request, reservation_id):
         instances = list()
         for instance_relation in instances_to_print.all():
             instances.append(instance_relation.instance)
-        if len(instances) >= 1:
+        abstract_items = list(reservation.abstract_items.filter(checkout_date__gte=latest_pdf_date).all())
+        if len(instances)+len(abstract_items) >= 1:
             creation_date = localtime(timezone.now())
             out_filename = 'uploads/checkout_tickets/{}-{}.pdf'.format(reservation.full_id, other_pdfs.count())
             out_path = os.path.join(settings.BASE_DIR, 'static', out_filename)
@@ -957,7 +979,7 @@ def reservation_pdf_generation(request, reservation_id):
             pdf.draw_address(reservation.customer)
             pdf.draw_type('Leihschein', extension=other_pdfs.count())
             pdf.draw_reservation_header(reservation, creation_date=creation_date)
-            pdf.draw_rent_item_table(instances)
+            pdf.draw_rent_item_table(instances, abstract_items)
             pdf.draw_signing_fields(reservation.customer, request.user)
             pdf.save_pdf(out_path)
             ticket = models.CheckoutTicket(creation_date=creation_date, file_path=out_filename, reservation=reservation)
@@ -966,25 +988,3 @@ def reservation_pdf_generation(request, reservation_id):
     except models.Reservation.DoesNotExist:
         return redirect('reservations')
 
-
-@login_required()
-@permission_required('rms.view_reservation')
-def reservation_pdf_view(request, reservation_id):
-    try:
-        reservation = models.Reservation.objects.get(id=reservation_id)
-        reservation_instances = list(reservation.checked_out_instances.all())
-        reservation_instances.extend(reservation_instances)
-        reservation_instances.extend(reservation_instances)
-        reservation_instances.extend(reservation_instances)
-        reservation_instances.extend(reservation_instances)
-        reservation_instances.extend(reservation_instances)
-        reservation_instances.extend(reservation_instances)
-        pdf = PDF()
-        pdf.draw_address(reservation.customer)
-        pdf.draw_type('Leihschein', extension=1)
-        pdf.draw_reservation_header(reservation)
-        pdf.draw_rent_item_table(reservation_instances)
-        pdf.draw_signing_fields(reservation.customer, request.user)
-        return HttpResponse(pdf.get_pdf(), status=200, content_type="application/pdf")
-    except models.Reservation.DoesNotExist:
-        return redirect('reservations')

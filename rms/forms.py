@@ -227,3 +227,18 @@ class ReservationForm(BootstrapForm):
                 raise ValidationError(validation_errors)
 
         return cleaned_data
+
+
+class AbstractItemForm(BootstrapForm):
+
+    class Meta:
+        model = models.AbstractItem
+        exclude = ['reservation', 'checkout_date']
+
+    def clean_amount(self):
+        amount = self.cleaned_data['amount']
+
+        if amount < 1:
+            raise ValidationError('Es ist mindestens der Wert 1 nötig.')
+        else:
+            return amount
