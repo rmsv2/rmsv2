@@ -30,6 +30,7 @@ Python package requirements are:
 6. Copy default config to configure RMS `cp config/config.default.ini config/config.ini` now edit `config.ini`
 7. Execute migrations `python manage.py migrate`
 8. Install bower dependencies `cd static` and `bower install`
+9. add initial admin user `python3 manage.py createsuperuser`
 
 ### Install with apache
 
@@ -45,6 +46,11 @@ If you use apache it is recommended to use the following configuration:
     WSGIProcessGroup rmswsgi
     WSGIScriptAlias /rmsv2 /var/www/rmsv2/rmsv2/wsgi.py process-group=rmswsgi
     WSGIPassAuthorization On
+    
+    RewriteEngine on
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+    
     <Directory /var/www/rmsv2/rmsv2/>
             <Files wsgi.py>
                     Require all granted
