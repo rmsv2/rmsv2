@@ -9,6 +9,11 @@
         {{ protected_error.content }}
     </div>
     {% endif %}
+    {% if not device.active %}
+        <div class="alert alert-warning" role="alert">
+            <h4><i class="fa fa-warning"></i> Diese Gerät ist deaktiviert!</h4>
+        </div>
+    {% endif %}
     <section class="content-header">
     <h1>Gerätetyp: {{ device.name }}</h1>
     <ol class="breadcrumb">
@@ -24,7 +29,7 @@
         <div class="box-header with-border">
             <h3 class="box-title">Informationen</h3>
             <div class="box-tools">
-                {% if perms.rms.change_device %}
+                {% if perms.rms.change_device and device.active %}
                     <a href="{% url 'edit_device' device.id %}"><button class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Bearbeiten</button></a>
                 {% endif %}
             </div>

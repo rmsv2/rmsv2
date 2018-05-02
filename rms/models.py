@@ -68,10 +68,11 @@ class Device(models.Model):
     price_rental = MoneyField('Vermietpreis', decimal_places=2, max_digits=20, default_currency='EUR')
     tags = models.ManyToManyField(Tag, blank=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, verbose_name='Kategorie', blank=True)
+    active = models.BooleanField(default=True)
 
     @classmethod
     def uncategorized(cls):
-        return cls.objects.filter(category=None)
+        return cls.objects.filter(category=None).filter(active=True)
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.vendor)

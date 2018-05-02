@@ -1,6 +1,12 @@
 {% extends 'inventory/device.html' %}
 
 {% block tab-content %}
+
+    {% if not instance.active %}
+        <div class="alert alert-warning" role="alert">
+            <h4><i class="fa fa-warning"></i> Diese Instanz ist deaktiviert!</h4>
+        </div>
+    {% endif %}
     {% if perms.rms.change_instance and instance.active %}
         <a href="{% url 'edit_instance' device.id instance.id %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-edit"></i> Instanz bearbeiten</a>
     {% endif %}

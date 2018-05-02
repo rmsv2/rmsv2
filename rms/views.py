@@ -90,9 +90,10 @@ def delete_device_view(request, device_id):
     try:
         device = models.Device.objects.get(id=device_id)
 
-        try:
-            device.delete()
-        except ProtectedError:
+        if device.instance_set.filter(active=True).count() == 0:
+            device.active = False
+            device.save()
+        else:
             return redirect(reverse('device', kwargs={'device_id': device.id})+'?protected_error=device')
 
     except models.Device.DoesNotExist:
@@ -305,7 +306,8 @@ def category_view(request, category_id):
         context = {'title': 'Kategorie: {}'.format(category.name),
                    'path': path,
                    'category_path_urls': path_urls,
-                   'category': category}
+                   'category': category,
+                   'devices': category.device_set.filter(active=True)}
 
         if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
             context['protected_error'] = True
@@ -320,7 +322,7 @@ def category_view(request, category_id):
 @permission_required('rms.view_category')
 def uncategorized_view(request):
     return render(request, 'inventory/uncategorized.html', context={'devices': models.Device.uncategorized(),
-                                                                            'title': 'Unkategorisierte Geräte'})
+                                                                    'title': 'Unkategorisierte Geräte'})
 
 
 @login_required()
