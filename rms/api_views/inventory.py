@@ -175,6 +175,9 @@ def checkout_instance(request, reservation_id):
         if request.method == 'POST' and 'inventory_number' in request.POST:
             try:
                 instance = models.Instance.objects.get(inventory_number=request.POST['inventory_number'])
+                if not instance.active:
+                    raise CheckoutError(
+                        'Das gewünschte Gerät ist im System deaktiviert und kann nicht entliehen werden.', set())
                 reservation.checkout_instance(instance)
                 return HttpResponse('', status=200)
             except models.Instance.DoesNotExist:
