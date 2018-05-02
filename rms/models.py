@@ -132,6 +132,7 @@ class Instance(models.Model):
     rentable = models.BooleanField('Ausleihbar', default=False)
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
+    active = models.BooleanField(default=True)
 
     def is_available(self, start, end, indirect=False):
         if not self.rentable:

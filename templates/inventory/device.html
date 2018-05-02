@@ -5,8 +5,8 @@
     {% if protected_error %}
     <div class="alert alert-danger alert-dismissable" role="alert">
         <a href="{% url 'device' device.id %}"><button type="button" class="close" aria-hidden="true">&times;</button></a>
-        <h4><i class="fa fa-ban"></i> Gerätetyp konnte nicht entfernt werden!</h4>
-        So lange Instanzen dieses Gerätetyps existieren kann der Gerätetyp nicht gelöscht werden.
+        <h4><i class="fa fa-ban"></i> {{ protected_error.header }}</h4>
+        {{ protected_error.content }}
     </div>
     {% endif %}
     <section class="content-header">

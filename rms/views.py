@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
-from django.db.models import Q
+from django.db.models import Q, ProtectedError
 from rms import forms
 from . import models
 from .decorators import permission_required
@@ -93,7 +93,7 @@ def delete_device_view(request, device_id):
         try:
             device.delete()
         except ProtectedError:
-            return redirect(reverse('device', kwargs={'device_id': device.id})+'?protected_error=1')
+            return redirect(reverse('device', kwargs={'device_id': device.id})+'?protected_error=device')
 
     except models.Device.DoesNotExist:
         pass
@@ -113,13 +113,23 @@ def device_view(request, device_id):
                    'device': device,
                    'path': path,
                    'category_path_urls': path_urls}
-        if 'protected_error' in request.GET and request.GET['protected_error'] == '1':
-            context['protected_error'] = True
+        if 'protected_error' in request.GET:
+            if request.GET['protected_error'] == 'device':
+                context['protected_error'] = {
+                    'header': 'Gerätetyp konnte nicht entfernt werden!',
+                    'content': 'So lange Instanzen dieses Gerätetyps existieren kann der Gerätetyp nicht gelöscht werden.'
+                }
+            if request.GET['protected_error'] == 'instance':
+                context['protected_error'] = {
+                    'header': 'Instanz konnte nicht gelöscht werden!',
+                    'content': 'Diese Instanz ist Reserviert oder verliehen und kann desshalb nicht aus dem System entfernt werden.'
+                }
 
         if request.user.has_perm('rms.view_unrentable'):
             context['instances'] = device.instance_set.all()
         else:
             context['instances'] = device.instance_set.filter(rentable=True)
+        context['instances'] = context['instances'].filter(active=True)
 
         return render(request, 'inventory/device_instances.html', context=context)
     except models.Device.DoesNotExist:
@@ -246,8 +256,12 @@ def delete_instance_view(request, device_id, instance_id):
         instance = models.Instance.objects.get(id=instance_id)
 
         if request.method == 'POST':
-            instance.delete()
-            return redirect('device', device_id=device.id)
+            if instance.reservationcheckoutinstance_set.count() == 0 or instance.reservation_set.count() == 0:
+                instance.active = False
+                instance.save()
+                return redirect('device', device_id=device.id)
+            else:
+                return redirect(reverse('device', kwargs={'device_id': device.id})+'?protected_error=instance')
     except models.Device.DoesNotExist:
         return HttpResponse('', status=404)
     except models.Instance.DoesNotExist:
