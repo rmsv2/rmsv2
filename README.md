@@ -32,7 +32,7 @@ Python package requirements are:
 8. Install bower dependencies `cd static` and `bower install`
 9. add initial admin user `python3 manage.py createsuperuser`
 
-### Install with apache
+#### Install with apache
 
 If you use apache it is recommended to use the following configuration:
 
@@ -56,3 +56,56 @@ If you use apache it is recommended to use the following configuration:
                     Require all granted
             </Files>
     </Directory>
+
+#### Install with nginx and uwsgi
+
+First you need to install `uwsgi` inside the virtual environment
+
+    pip install uwsgi
+
+To install `uwsgi` you first need to install a C compiler like gcc.
+
+Now we need to configure nginx.
+Create the file `/etc/nginx/sites-available/rmsv2` with the following content:
+
+    server {
+        listen 80;
+        
+        charset utf-8;
+        
+        location /static {
+            alias /var/www/rmsv2/static;
+        }
+        
+        location / {
+            uwsgi_pass unix:///var/run/rmsv2.socket;
+            include uwsgi_params;
+        }
+    }
+
+Now you can run `uwsgi` manually from inside the virtual environment
+
+    uwsgi --uwsgi-socket /tmp/rmsv2.socket --module rmsv2.wsgi --uid 33 --gid 33 --thunder-lock
+
+and all things working well.
+
+But of course it's better to run this in a service, so here is a sample systemd service file
+
+    [Unit]
+    Description=uWSGI serve for rmsv2 system
+    
+    [Service]
+    EnvironmentFile=venv/bin/sctivate
+    ExecStart=/var/www/rmsv2/venv/bin/uwsgi --uwsgi-socket /tmp/rmsv2.socket --module rmsv2.wsgi
+    WorkingDirectory=/var/www/rmsv2/
+    User=www-data
+    Group=www-data
+    
+    [Install]
+    WantedBy=multi-user.target
+
+copy this to the file `/etc/systemd/system/rms_uwsgi.service` and execute the following to enable and start the service.
+
+    systemctl daemon-reload
+    systemctl enable rms_uwsgi.service
+    systemctl start rms_uwsgi.service
