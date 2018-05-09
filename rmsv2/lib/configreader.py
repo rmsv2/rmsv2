@@ -11,4 +11,4 @@ config_files = [
 
 # read files
 
-config.read(config_files)
+config.read(config_files, encoding='utf-8')
