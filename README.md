@@ -95,8 +95,8 @@ But of course it's better to run this in a service, so here is a sample systemd 
     Description=uWSGI serve for rmsv2 system
     
     [Service]
-    ExecProStart=source venv/bin/sctivate
-    ExecStart=uwsgi --uwsgi-socket /tmp/rmsv2.socket --module rmsv2.wsgi
+    EnvironmentFile=venv/bin/sctivate
+    ExecStart=/var/www/rmsv2/venv/bin/uwsgi --uwsgi-socket /tmp/rmsv2.socket --module rmsv2.wsgi
     WorkingDirectory=/var/www/rmsv2/
     User=www-data
     Group=www-data
