@@ -126,7 +126,7 @@ class Instance(models.Model):
         permissions = (('view_unrentable', 'Can view unrentable inventory'),
                        ('view_instance', 'Can view instance'),)
 
-    serial_number = models.CharField('Seriennummer', max_length=200)
+    serial_number = models.CharField('Seriennummer', max_length=200, null=True, blank=True)
     inventory_number = models.CharField('Inventarnummer', max_length=200, unique=True)
     identificial_description = models.TextField('Identifikations- beschreibung', null=True, blank=True)
     broken = models.BooleanField('Defekt?')
