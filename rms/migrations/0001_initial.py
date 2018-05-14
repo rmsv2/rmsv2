@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
             name='Instance',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('serial_number', models.CharField(max_length=200, verbose_name='Seriennummer')),
+                ('serial_number', models.CharField(blank=True, null=True, max_length=200, verbose_name='Seriennummer')),
                 ('inventory_number', models.CharField(max_length=200, verbose_name='Inventarnummer')),
                 ('identificial_description', models.TextField(blank=True, null=True, verbose_name='Identifikations- beschreibung')),
                 ('broken', models.BooleanField(verbose_name='Defekt?')),
