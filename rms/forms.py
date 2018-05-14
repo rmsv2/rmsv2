@@ -20,7 +20,7 @@ class DeviceForm(BootstrapForm):
 
     class Meta:
         model = models.Device
-        exclude = []
+        exclude = ['active']
         widgets = {
             'tags': TagInputWidget(),
         }
@@ -30,7 +30,7 @@ class InstanceForm(BootstrapForm):
 
     class Meta:
         model = models.Instance
-        exclude = []
+        exclude = ['active']
         widgets = {
             'tags': TagInputWidget(),
         }
