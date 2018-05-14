@@ -984,7 +984,10 @@ def reservation_pdf_generation(request, reservation_id):
         instances = list()
         for instance_relation in instances_to_print.all():
             instances.append(instance_relation.instance)
-        abstract_items = list(reservation.abstract_items.filter(checkout_date__gte=latest_pdf_date).all())
+        abstract_items_to_print = reservation.abstract_items
+        if latest_pdf_date is not None:
+            abstract_items_to_print = abstract_items_to_print.filter(checkout_date__gte=latest_pdf_date)
+        abstract_items = list(abstract_items_to_print.all())
         if len(instances)+len(abstract_items) >= 1:
             creation_date = localtime(timezone.now())
             out_filename = 'uploads/checkout_tickets/{}-{}.pdf'.format(reservation.full_id, other_pdfs.count())
