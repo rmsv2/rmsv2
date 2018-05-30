@@ -1,0 +1,7 @@
+pyquery==1.4.0
+django_ical==1.4
+django_money==0.12.3
+reportlab==3.4.0
+requests==2.18.4
+PyPDF2==1.26.0
+typing==3.6.4
