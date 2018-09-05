@@ -1,9 +1,8 @@
 from django.forms import ModelForm, fields, ValidationError
-from django import forms
 from django.contrib.auth import models as auth_models
 from django.contrib.auth import forms as auth_forms
 from rms import models
-from .form_widgets import TagInputWidget
+from .form_fields import TagField
 
 
 class BootstrapForm(ModelForm):
@@ -21,8 +20,8 @@ class DeviceForm(BootstrapForm):
     class Meta:
         model = models.Device
         exclude = ['active']
-        widgets = {
-            'tags': TagInputWidget(),
+        field_classes = {
+            'tags': TagField
         }
 
 
@@ -31,8 +30,8 @@ class InstanceForm(BootstrapForm):
     class Meta:
         model = models.Instance
         exclude = ['active']
-        widgets = {
-            'tags': TagInputWidget(),
+        field_classes = {
+            'tags': TagField
         }
 
     def disable_device_field(self):

@@ -11,12 +11,12 @@ from rms.exceptions import *
 
 @login_required
 def tag_search_view(request):
-    if 'search' in request.GET:
-        tags = Tag.objects.filter(name__contains=request.GET['search'])
+    if 'term' in request.GET:
+        tags = Tag.objects.filter(name__icontains=request.GET['term'])
         return_value = []
         for tag in tags:
-            return_value.append(tag.name)
-        return JsonResponse(return_value, status=200, safe=False)
+            return_value.append({'id': tag.name, 'text': tag.name})
+        return JsonResponse({'results': return_value}, status=200, safe=False)
     return HttpResponse('', 400)
 
 

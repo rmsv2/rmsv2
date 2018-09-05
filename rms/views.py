@@ -226,8 +226,10 @@ def edit_instance_view(request, device_id, instance_id):
         instance = models.Instance.objects.get(id=instance_id)
 
         if request.method == 'POST':
-            post = request.POST.dict()
-            post['device'] = '{}'.format(device.id)
+            # post = request.POST.dict()
+            # post['device'] = '{}'.format(device.id)
+            post = request.POST.copy()
+            post.update({'device': device.id})
             form = forms.InstanceForm(post, instance=instance)
             if form.is_valid():
                 form.save()

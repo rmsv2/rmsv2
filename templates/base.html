@@ -39,7 +39,12 @@
 {% block scripts %}
 {% endblock %}
     <script type="application/javascript">
-    $('select').select2();
+    $('select').each(function () {
+        var $this = $(this);
+        if(!$this.data('select2')) {
+            $this.select2()
+        }
+    });
     $("[data-toggle=popover]").popover();
     </script>
 </html>

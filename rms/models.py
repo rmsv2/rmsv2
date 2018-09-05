@@ -38,6 +38,9 @@ class Group(auth_models.Group):
 class Tag(models.Model):
     name = models.CharField('Name', max_length=200, unique=True, primary_key=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Category(models.Model):
 

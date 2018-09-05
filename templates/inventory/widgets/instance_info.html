@@ -9,8 +9,8 @@
     <dd>{% if instance.rentable %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</dd>
     <dt>Tags</dt>
     <dd>
-        {% for tag in instance.tags_set.all %}
-            <span>{{ tag.name }}</span>
+        {% for tag in instance.tags.all %}
+            <span>{{ tag.name }}</span>{% if not forloop.last %},{% endif %}
         {% endfor %}
 
     </dd>

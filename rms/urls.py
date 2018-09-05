@@ -72,8 +72,8 @@ urlpatterns = [
     path('customers/<int:customer_id>/edit', views.edit_customer_view, name="edit_customer"),
     path('customers/<int:customer_id>/remove', views.remove_customer_view, name="remove_customer"),
 
-    path('api/inventory/tags/search', tag_search_view),
-    path('api/inventory/tags/add', tag_add_view),
+    path('api/inventory/tags/search', tag_search_view, name='api_tag_search'),
+    path('api/inventory/tags/add', tag_add_view, name='api_tag_add'),
     path('api/inventory/devices/<int:device_id>/reservations/add',
          add_reservation_to_device, name="add_reservation_to_device"),
     path('api/inventory/devices/<int:device_id>/reservations',

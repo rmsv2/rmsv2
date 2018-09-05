@@ -15,8 +15,8 @@
     <dd>{% money_localize device.price_rental %}</dd>
     <dt>Tags</dt>
     <dd>
-        {% for tag in device.tags_set.all %}
-            <span>{{ tag.name }}</span>
+        {% for tag in device.tags.all %}
+            <span>{{ tag.name }}</span>{% if not forloop.last %},{% endif %}
         {% endfor %}
 
     </dd>
