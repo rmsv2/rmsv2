@@ -93,6 +93,14 @@
                     </a>
                 </li>
                 {% endif %}
+                {% if perms.rms.view_warehouse %}
+                <li class="{% if '/warehouses' in request.path %}active{% endif %}">
+                    <a href="{% url 'warehouses' %}">
+                        <i class="fa fa-warehouse"></i>
+                        <span>Lagerorte</span>
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </section>
     </aside>
