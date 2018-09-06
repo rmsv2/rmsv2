@@ -171,7 +171,9 @@ if EMAIL_HOST is None or EMAIL_HOST_USER is None or EMAIL_HOST_PASSWORD is None:
     exit(1)
 
 # PDF options
-PDF_BACKGROUND = os.path.join(BASE_DIR, config.get('pdf', 'background', fallback='static/empty.pdf'))
+PDF_BACKGROUND = config.get('pdf', 'background', fallback=None)
+if PDF_BACKGROUND is not None:
+    PDF_BACKGROUND = os.path.join(BASE_DIR, PDF_BACKGROUND)
 PDF_FROM_LINE = config.get('pdf', 'from', fallback='')
 PDF_SAVE_TOP = config.getint('pdf', 'save-top', fallback=20)
 PDF_SAVE_BOTTOM = config.getint('pdf', 'save-bottom', fallback=20)

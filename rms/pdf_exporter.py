@@ -24,7 +24,10 @@ pdfmetrics.registerFont(TTFont('Arial Bold', os.path.join(settings.BASE_DIR, 'st
 class PDF:
 
     def __init__(self):
-        self.base_pdf = PdfFileReader(open(settings.PDF_BACKGROUND, 'rb'))
+        if settings.PDF_BACKGROUND is not None:
+            self.base_pdf = PdfFileReader(open(settings.PDF_BACKGROUND, 'rb'))
+        else:
+            self.base_pdf = None
         self.output_pdf = PdfFileWriter()
         self._pdf_buffer = BytesIO()
         self.pdf = canvas.Canvas(self._pdf_buffer, pagesize=A4)
@@ -208,7 +211,8 @@ class PDF:
         final_pdf = PdfFileWriter()
         for i in range(0, content_pdf.getNumPages()):
             page = content_pdf.getPage(i)
-            page.mergePage(self.base_pdf.getPage(0))
+            if self.base_pdf is not None:
+                page.mergePage(self.base_pdf.getPage(0))
             final_pdf.addPage(page)
         final_pdf.write(final_buffer)
         return final_buffer.getvalue()
