@@ -16,12 +16,12 @@
     "tests"
   ],
   "dependencies": {
-    "admin-lte": "adminlte#^2.4.2",
-    "font-awesome": "fontawesome#^4.7.0",
+    "admin-lte": "adminlte#^2.4.5",
     "jquery-zoom": "^1.7.20",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "select2": "^4.0.5",
     "fullcalendar": "^3.9.0",
-    "quagga": "^0.12.1"
+    "quagga": "^0.12.1",
+    "Font-Awesome": "https://github.com/FortAwesome/Font-Awesome.git#^5.3.1"
   }
 }
