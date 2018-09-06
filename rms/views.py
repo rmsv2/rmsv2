@@ -633,10 +633,12 @@ def search_view(request):
             devices = models.Device.objects.filter(Q(instance__identificial_description__icontains=search_string) |
                                                    Q(instance__inventory_number__icontains=search_string) |
                                                    Q(instance__serial_number__icontains=search_string) |
+                                                   Q(instance__tags__name__icontains=search_string) |
                                                    Q(description__icontains=search_string) |
                                                    Q(name__icontains=search_string) |
                                                    Q(vendor__icontains=search_string) |
-                                                   Q(model_number__icontains=search_string))
+                                                   Q(model_number__icontains=search_string) |
+                                                   Q(tags__name__icontains=search_string))
             context['devices'] = set(devices)
 
         if request.user.has_perm('rms.view_reservation'):
