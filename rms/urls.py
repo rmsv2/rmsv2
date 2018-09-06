@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from rms.views import views
 from .api_views.inventory import *
 from rmsv2.settings import COMPANY_SHORT
 

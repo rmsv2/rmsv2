@@ -6,8 +6,8 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.db.models.deletion import ProtectedError
 from django.db.models import Q, ProtectedError
 from rms import forms
-from . import models
-from .decorators import permission_required
+from rms import models
+from rms.decorators import permission_required
 from rms.exceptions import *
 from django.utils import timezone
 from rms.pdf_exporter import PDF
