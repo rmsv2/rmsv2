@@ -14,7 +14,7 @@
     <div class="box box-default">
         <div class="box-body">
             {% if perms.rms.add_warehouse %}
-                <a href="" class="btn btn-default btn-xs pull-right"><i class="fa fa-plus"></i> Lagerort anlegen</a>
+                <a href="{% url 'add_warehouse' %}" class="btn btn-default btn-xs pull-right"><i class="fa fa-plus"></i> Lagerort anlegen</a>
             {% endif %}
             {% include 'warehouses/includes/warehouses_list.html' %}
         </div>

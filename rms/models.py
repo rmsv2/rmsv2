@@ -351,7 +351,7 @@ class AbstractItem(models.Model):
 
 
 class Warehouse(models.Model):
-    name = models.CharField('Name', max_length=200)
+    name = models.CharField('Bezeichnung', max_length=200)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
 
     class Meta:

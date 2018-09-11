@@ -241,3 +241,10 @@ class AbstractItemForm(BootstrapForm):
             raise ValidationError('Es ist mindestens der Wert 1 nötig.')
         else:
             return amount
+
+
+class WarehouseForm(BootstrapForm):
+
+    class Meta:
+        model = models.Warehouse
+        fields = ['name']
