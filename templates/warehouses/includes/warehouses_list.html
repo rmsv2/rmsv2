@@ -11,7 +11,7 @@
     <tbody>
     {% for warehouse in warehouses %}
         <tr>
-        <td><a href="{% url 'warehouse' warehouse.id %}">{{ warehouse.name }}</a></td>
+        <td>{{ warehouse.name }}</td>
         <td>{% include 'customers/includes/address.html' with address=warehouse.address %}</td>
         {% if not without_controls %}
         <td style="text-align: right;">
