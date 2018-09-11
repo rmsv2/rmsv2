@@ -137,7 +137,7 @@ class Instance(models.Model):
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
     active = models.BooleanField(default=True)
-    warehouse = models.ForeignKey('Warehouse', on_delete=models.PROTECT, null=True, default=None)
+    warehouse = models.ForeignKey('Warehouse', verbose_name='Lagerort', on_delete=models.PROTECT, null=True, default=None)
 
     def is_available(self, start, end, indirect=False):
         if not self.rentable:
