@@ -1,6 +1,7 @@
 from django.urls import path
 
 from rms.views import views
+from rms.views import warehouses as warehouses_views
 from .api_views.inventory import *
 from rmsv2.settings import COMPANY_SHORT
 
@@ -71,6 +72,11 @@ urlpatterns = [
     path('customers/<int:customer_id>', views.customer_view, name="customer"),
     path('customers/<int:customer_id>/edit', views.edit_customer_view, name="edit_customer"),
     path('customers/<int:customer_id>/remove', views.remove_customer_view, name="remove_customer"),
+
+    path('warehouses', warehouses_views.table_view, name='warehouses'),
+    path('warehouses/add', warehouses_views.create_warehouse, name='add_warehouse'),
+    path('warehouses/<int:warehouse_id>/edit', warehouses_views.edit_warehouse, name='edit_warehouse'),
+    path('warehouses/<int:warehouse_id>/delete', warehouses_views.delete_warehouse, name='delete_warehouse'),
 
     path('api/inventory/tags/search', tag_search_view, name='api_tag_search'),
     path('api/inventory/tags/add', tag_add_view, name='api_tag_add'),

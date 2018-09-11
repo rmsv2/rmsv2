@@ -137,6 +137,7 @@ class Instance(models.Model):
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
     active = models.BooleanField(default=True)
+    warehouse = models.ForeignKey('Warehouse', verbose_name='Lagerort', on_delete=models.PROTECT, null=True, default=None)
 
     def is_available(self, start, end, indirect=False):
         if not self.rentable:
@@ -347,3 +348,14 @@ class AbstractItem(models.Model):
     amount = models.IntegerField('Anzahl')
     reservation = models.ForeignKey(Reservation, on_delete=models.PROTECT, related_name='abstract_items')
     checkout_date = models.DateTimeField(default=timezone.now)
+
+
+class Warehouse(models.Model):
+    name = models.CharField('Bezeichnung', max_length=200)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+
+    class Meta:
+        permissions = (('view_warehouse', 'Can view warehouse'),)
+
+    def __str__(self):
+        return self.name

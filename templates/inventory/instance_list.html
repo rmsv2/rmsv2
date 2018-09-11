@@ -4,6 +4,7 @@
         <th>Seriennummer</th>
         <th>Inventarnummer</th>
         <th>Ausleihbar?</th>
+        <th>Lagerort</th>
         <th style="text-align: right;">Aktionen</th>
     </tr>
     </thead>
@@ -14,6 +15,7 @@
                 <td><a href="{% url 'device_instance' device.id instance.id %}">{{ instance.serial_number }}</a></td>
                 <td><a href="{% url 'device_instance' device.id instance.id %}">{{ instance.inventory_number }}</a></td>
                 <td>{% if instance.rentable %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
+                <td>{{ instance.warehouse.name }}</td>
                 <td style="text-align: right;">
                     {% if perms.rms.change_instance %}
                         <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>

@@ -1,8 +1,10 @@
+{% load devices %}
 <table class="table table-striped table-hover">
 <thead>
 <tr>
     <th>Name</th>
     <th>Hersteller</th>
+    <th>Lagerorte</th>
     {% if not without_controls %}
         <th style="text-align: right;">Aktionen</th>
     {% endif %}
@@ -14,6 +16,13 @@
         <tr>
             <td><a href="{% url 'device' device.id %}">{{ device.name }}</a></td>
             <td><a href="{% url 'device' device.id %}">{{ device.vendor }}</a></td>
+            <td>
+            {% with warehouses=device|warehouses %}
+                {% for warehouse in warehouses %}
+                    {{ warehouse.name }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            {% endwith %}
+            </td>
             {% if not without_controls %}
                 <td style="text-align: right;">
                     {% if perms.rms.change_device %}

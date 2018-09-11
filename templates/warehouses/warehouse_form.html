@@ -1,0 +1,30 @@
+{% extends 'inside.html' %}
+
+{% block content %}
+    <section class="content-header">
+    <h1>
+        Lagerort {% if type == 'edit' %}bearbeiten{% elif type == 'new' %}anlegen{% endif %}
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'warehouses' %}"><i class="fa fa-warehouse"></i> Lagerorte</a></li>
+        {% if type == 'new' %}
+        <li>Lagerort anlegen</li>
+        {% elif type == 'edit' %}
+        <li><a href="{% url 'warehouse' warehouse.id %}">{{ warehouse.name }}</a></li>
+        {% endif %}
+    </ol>
+    </section>
+    <section class="content">
+    <div class="box box-default">
+        <div class="box-body">
+            <form action="{{ request.path }}" method="post" class="form-horizontal">
+                {% csrf_token %}
+                {% include 'generics/includes/only_form_fields.html' with form=warehouse_form %}
+                {% include 'generics/includes/only_form_fields.html' with form=address_form %}
+                <button type="button" onclick="window.history.back()" class="btn btn-default">Abbrechen</button>
+                <button type="submit" class="btn btn-primary pull-right">Speichern</button>
+            </form>
+        </div>
+    </div>
+    </section>
+{% endblock %}
