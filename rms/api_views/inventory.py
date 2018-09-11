@@ -132,7 +132,7 @@ def instance_reservations_json(request, instance_id):
                 'end': localtime(reservation_relation.reservation.end_date).isoformat(),
                 'url': reverse('reservation', kwargs={'reservation_id': reservation_relation.reservation.id}),
                 'title': '{} {}'.format(reservation_relation.reservation.full_id,
-                                        reservation_relation.reservation_id.name)
+                                        reservation_relation.reservation.name)
             })
         for reservation_relation in checkin_base.all():
             reservations.append({
@@ -140,7 +140,7 @@ def instance_reservations_json(request, instance_id):
                 'end': localtime(reservation_relation.checkin_date).isoformat(),
                 'url': reverse('reservation', kwargs={'reservation_id': reservation_relation.reservation.id}),
                 'title': '{} {}'.format(reservation_relation.reservation.full_id,
-                                        reservation_relation.reservation_id.name)
+                                        reservation_relation.reservation.name)
             })
         return JsonResponse(reservations, status=200, safe=False)
     except models.Instance.DoesNotExist:
