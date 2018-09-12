@@ -133,7 +133,7 @@ class Instance(models.Model):
     inventory_number = models.CharField('Inventarnummer', max_length=200, unique=True)
     identificial_description = models.TextField('Identifikations- beschreibung', null=True, blank=True)
     broken = models.BooleanField('Defekt?')
-    rentable = models.BooleanField('Ausleihbar', default=False)
+    rentable = models.BooleanField('Ausleihbar', default=True)
     device = models.ForeignKey(Device, on_delete=models.PROTECT, verbose_name='Gerätetyp')
     tags = models.ManyToManyField(Tag, blank=True)
     active = models.BooleanField(default=True)
