@@ -33,6 +33,11 @@ class InstanceForm(BootstrapForm):
         field_classes = {
             'tags': TagField
         }
+        error_messages = {
+            'inventory_number': {
+                'unique': 'Instanz mit dieser Inventarnummer existiert bereits'
+            }
+        }
 
     def disable_device_field(self):
         self.fields['device'].widget.attrs.update({'disabled': 'disabled'})
