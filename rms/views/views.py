@@ -260,8 +260,11 @@ def delete_instance_view(request, device_id, instance_id):
 
         if request.method == 'POST':
             if instance.reservationcheckoutinstance_set.count() == 0 or instance.reservation_set.count() == 0:
-                instance.active = False
-                instance.save()
+                try:
+                    instance.delete()
+                except ProtectedError:
+                    instance.active = False
+                    instance.save()
                 return redirect('device', device_id=device.id)
             else:
                 return redirect(reverse('device', kwargs={'device_id': device.id})+'?protected_error=instance')
