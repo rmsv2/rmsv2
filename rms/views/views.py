@@ -201,28 +201,43 @@ def device_instance_view(request, device_id, instance_id):
 
 @login_required()
 @permission_required('rms.add_instance')
-def create_instance_view(request, device_id):
-    try:
-        device = models.Device.objects.get(id=device_id)
+def create_instance_view(request, device_id=None):
+    if device_id is not None:
+        try:
+            device = models.Device.objects.get(id=device_id)
+            if request.method == 'POST':
+                post = request.POST.dict()
+                post['device'] = '{}'.format(device.id)
+                form = forms.InstanceForm(post)
+                if form.is_valid():
+                    form.save()
+                    return redirect('device', device_id=device.id)
+            else:
+                form = forms.InstanceForm(initial={'device': device})
+            form.disable_device_field()
+            path, path_urls = get_path(device.category)
+            path.insert(0, {'text': '<i class="fa fa-cubes"></i>Inventar'})
+            path.append({'url': reverse('device', kwargs={'device_id': device.id}), 'text': device.name})
+            return render(request, 'generics/form.html', context={'title': 'Instanz erstellen',
+                                                                  'form': form,
+                                                                  'path': path,
+                                                                  'category_path_urls': path_urls})
+        except models.Device.DoesNotExist:
+            return HttpResponse('', status=404)
+    else:
         if request.method == 'POST':
-            post = request.POST.dict()
-            post['device'] = '{}'.format(device.id)
-            form = forms.InstanceForm(post)
+            form = forms.InstanceForm(request.POST)
             if form.is_valid():
-                form.save()
-                return redirect('device', device_id=device.id)
+                instance = form.save()
+                return redirect('device', device_id=instance.device_id)
         else:
-            form = forms.InstanceForm(initial={'device': device})
-        form.disable_device_field()
-        path, path_urls = get_path(device.category)
-        path.insert(0, {'text': '<i class="fa fa-cubes"></i>Inventar'})
-        path.append({'url': reverse('device', kwargs={'device_id': device.id}), 'text': device.name})
+            form = forms.InstanceForm()
         return render(request, 'generics/form.html', context={'title': 'Instanz erstellen',
                                                               'form': form,
-                                                              'path': path,
-                                                              'category_path_urls': path_urls})
-    except models.Device.DoesNotExist:
-        return HttpResponse('', status=404)
+                                                              'path': [
+                                                                  {'text': '<i class="fa fa-cubes"></i> Inventar'},
+                                                                  {'text': 'Instanz erstellen'}
+                                                              ]})
 
 
 @login_required()
