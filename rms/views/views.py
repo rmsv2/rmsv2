@@ -60,9 +60,13 @@ def add_device_view(request):
             return redirect('device', device_id=device.id)
     else:
         form = forms.DeviceForm()
-    return render(request, 'inventory/device_form.html', context={'form': form,
-                                                                  'add': True,
-                                                                  'title': 'Gerätetyp erstellen'})
+    return render(request, 'generics/form.html', context={'form': form,
+                                                          'add': True,
+                                                          'title': 'Gerätetyp erstellen',
+                                                          'path': [
+                                                              {'text': '<i class="fa fa-cubes"></i> Inventar'},
+                                                              {'text': 'Gerätetyp erstellen'}
+                                                          ]})
 
 
 @login_required()
