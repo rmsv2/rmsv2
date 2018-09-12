@@ -59,7 +59,10 @@ def add_device_view(request):
             device = form.save(commit=True)
             return redirect('device', device_id=device.id)
     else:
-        form = forms.DeviceForm()
+        if 'category' in request.GET:
+            form = forms.DeviceForm(initial={'category': request.GET.get('category')})
+        else:
+            form = forms.DeviceForm()
     return render(request, 'generics/form.html', context={'form': form,
                                                           'add': True,
                                                           'title': 'Gerätetyp erstellen',

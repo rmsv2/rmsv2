@@ -19,6 +19,9 @@
                 <button class="btn btn-default btn-xs" data-toggle="modal" data-target="#category_delete_modal"><i class="fa fa-trash"></i> Entfernen</button>
             {% endif %}
         </div>
+        {% if perms.rms.add_device %}
+            <a href="{% url 'add_device' %}?category={{ category.id }}" class="btn btn-xs btn-default"><i class="fa fa-plus"></i> Gerätetyp erstellen</a>
+        {% endif %}
     </h1>
     <ol class="breadcrumb">
         <li><i class="fa fa-cubes"></i> Inventar</li>
