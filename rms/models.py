@@ -80,6 +80,14 @@ class Device(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.name, self.vendor)
 
+    @property
+    def instances_count(self):
+        return self.instance_set.count()
+
+    @property
+    def rentable_instances_count(self):
+        return self.instance_set.filter(rentable=True, broken=False).count()
+
     def available_count(self, start, end):
         available = 0
         collisions = set()

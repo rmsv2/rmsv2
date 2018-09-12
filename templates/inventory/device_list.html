@@ -5,6 +5,7 @@
     <th>Name</th>
     <th>Hersteller</th>
     <th>Lagerorte</th>
+    <th><span data-toggle="tooltip" data-container="body" title="ausleihbar/gesamt">Instanzen</span></th>
     {% if not without_controls %}
         <th style="text-align: right;">Aktionen</th>
     {% endif %}
@@ -23,6 +24,7 @@
                 {% endfor %}
             {% endwith %}
             </td>
+            <td>{{ device.rentable_instances_count }}/{{ device.instances_count }}</td>
             {% if not without_controls %}
                 <td style="text-align: right;">
                     {% if perms.rms.change_device %}
