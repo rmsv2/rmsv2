@@ -54,7 +54,7 @@ def home_view(request):
 @permission_required('rms.add_device')
 def add_device_view(request):
     if request.method == 'POST':
-        form = forms.DeviceForm(request.POST)
+        form = forms.DeviceForm(request.POST, files=request.FILES)
         if form.is_valid():
             device = form.save(commit=True)
             return redirect('device', device_id=device.id)
