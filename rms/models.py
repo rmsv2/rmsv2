@@ -4,7 +4,7 @@ from djmoney.models.fields import MoneyField
 import string
 import random
 import os
-from rmsv2.settings import BASE_DIR, COMPANY_SHORT
+from rmsv2.settings import BASE_DIR, COMPANY_SHORT, SUB_PATH
 from django.db.models import Q
 from rms.exceptions import *
 from django.utils import timezone
@@ -87,6 +87,10 @@ class Device(models.Model):
     @property
     def rentable_instances_count(self):
         return self.instance_set.filter(rentable=True, broken=False).count()
+
+    @property
+    def picture_url(self):
+        return SUB_PATH+'/'+str(self.picture)
 
     def available_count(self, start, end):
         available = 0
