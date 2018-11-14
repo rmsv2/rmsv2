@@ -10,7 +10,7 @@
         {% if type == 'new' %}
         <li>Lagerort anlegen</li>
         {% elif type == 'edit' %}
-        <li><a href="{% url 'warehouse' warehouse.id %}">{{ warehouse.name }}</a></li>
+        <li><a href="{% url 'edit_warehouse' warehouse.id %}">{{ warehouse.name }}</a></li>
         {% endif %}
     </ol>
     </section>
