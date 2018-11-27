@@ -1,6 +1,10 @@
 <table class="table table-hover table-striped">
     <thead>
     <tr>
+        {% if device_info %}
+            <th>Name</th>
+            <th>Hersteller</th>
+        {% endif %}
         <th>Seriennummer</th>
         <th>Inventarnummer</th>
         <th>Ausleihbar?</th>
@@ -11,21 +15,27 @@
     <tbody>
     {% if perms.rms.view_instance %}
         {% for instance in instances %}
-            <tr>
-                <td><a href="{% url 'device_instance' device.id instance.id %}">{{ instance.serial_number }}</a></td>
-                <td><a href="{% url 'device_instance' device.id instance.id %}">{{ instance.inventory_number }}</a></td>
-                <td>{% if instance.rentable %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
-                <td>{{ instance.warehouse.name }}</td>
-                <td style="text-align: right;">
-                    {% if perms.rms.change_instance %}
-                        <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>
+            {% with device=instance.device %}
+                <tr>
+                    {% if device_info %}
+                        <td><a href="{% url 'device_instance' device.id instance.id %}">{{ device.name }}</a></td>
+                        <td><a href="{% url 'device_instance' device.id instance.id %}">{{ device.vendor }}</a></td>
                     {% endif %}
-                    {% if perms.rms.delete_instance %}
-                        <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash text-danger"></i></a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% include 'inventory/modals/instance_delete_modal.html' %}
+                    <td><a href="{% url 'device_instance' device.id instance.id %}">{{ instance.serial_number }}</a></td>
+                    <td><a href="{% url 'device_instance' device.id instance.id %}">{{ instance.inventory_number }}</a></td>
+                    <td>{% if instance.rentable %}<i class="fa fa-check text-success"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td>
+                    <td>{{ instance.warehouse.name }}</td>
+                    <td style="text-align: right;">
+                        {% if perms.rms.change_instance %}
+                            <a href="{% url 'edit_instance' instance.device.id instance.id %}"><i class="fa fa-edit"></i></a>
+                        {% endif %}
+                        {% if perms.rms.delete_instance %}
+                            <a href="#" data-toggle="modal" data-target="#delete_instance{{ instance.id }}"><i class="fa fa-trash text-danger"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% include 'inventory/modals/instance_delete_modal.html' %}
+            {% endwith %}
         {% endfor %}
         {% if not instances %}
         <tr>

@@ -11,6 +11,13 @@
     </ol>
     </section>
     <section class="content">
+    {% if instance.count == 1 %}
+        <div class="box box-info">
+            <div class="box-body">
+                {% include 'inventory/instance_list.html' with instances=instance device_info=True %}
+            </div>
+        </div>
+    {% endif %}
     {% if not reservations and not devices and not customers %}
         <div class="box">
             <div class="box-body" style="text-align: center;">

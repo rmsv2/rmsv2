@@ -666,6 +666,8 @@ def search_view(request):
                                                    Q(tags__name__icontains=search_string))
             context['devices'] = set(devices)
 
+            context['instance'] = models.Instance.objects.filter(inventory_number=search_string)
+
         if request.user.has_perm('rms.view_reservation'):
             reservations = models.Reservation.objects.filter(Q(name__icontains=search_string) |
                                                              Q(description__icontains=search_string))
