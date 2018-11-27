@@ -6,4 +6,4 @@ register = template.Library()
 
 @register.filter('warehouses')
 def warehouses(device: Device):
-    return Warehouse.objects.filter(instance__in=device.instance_set.all())
+    return Warehouse.objects.filter(instance__in=device.instance_set.all()).distinct()
