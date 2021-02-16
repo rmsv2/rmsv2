@@ -7,11 +7,13 @@ services:
       - POSTGRES_DB=rms
       - POSTGRES_USER=rms
       - POSTGRES_PASSWORD=rms
+    volumes:
+      - db-data:/var/lib/postgresql/data
   web:
     build: .
     command: bash -c "python /code/manage.py migrate && python /code/manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/code
+      - web-data:/code
     ports:
       - 8000:8000
     depends_on:
