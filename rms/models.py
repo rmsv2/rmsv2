@@ -196,10 +196,7 @@ class Address(models.Model):
 class Customer(models.Model):
 
 
-    company = models.CharField('Firma', max_length=200, default=None, null=True)
-    title = models.CharField('Titel', max_length=50, default=None, null=True)
-    first_name = models.CharField('Vorname', max_length=200)
-    last_name = models.CharField('Nachname', max_length=200)
+    name = models.CharField('Name', max_length=200)
     mail = models.EmailField('E-Mail Adresse')
     phone = models.CharField('Telefon', max_length=30, default=None, null=True)
     mobile = models.CharField('Mobiltelefon', max_length=30, default=None, null=True)
@@ -209,9 +206,7 @@ class Customer(models.Model):
 
     def __str__(self):
         string_representation = ''
-        if self.title is not None:
-            string_representation += self.title+' '
-        string_representation += self.first_name+' '+self.last_name
+        string_representation += self.name
         return string_representation
 
 

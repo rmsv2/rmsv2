@@ -135,8 +135,6 @@ class CustomerForm(BootstrapForm):
 
     def __init__(self, *args, **kwargs):
         super(CustomerForm, self).__init__(*args, **kwargs)
-        self.fields['company'].required = False
-        self.fields['title'].required = False
         self.fields['phone'].required = False
         self.fields['mobile'].required = False
 
