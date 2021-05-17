@@ -674,8 +674,7 @@ def search_view(request):
             context['reservations'] = set(reservations)
 
         if request.user.has_perm('rms.view_customer'):
-            customers = models.Customer.objects.filter(Q(first_name__icontains=search_string) |
-                                                       Q(last_name__icontains=search_string) |
+            customers = models.Customer.objects.filter(Q(name__icontains=search_string) |
                                                        Q(mail__icontains=search_string) |
                                                        Q(phone__icontains=search_string) |
                                                        Q(mobile__icontains=search_string) |
