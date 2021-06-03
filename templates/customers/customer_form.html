@@ -8,7 +8,7 @@
     <ol class="breadcrumb">
         <li><a href="{% url 'customers' %}"><i class="fa fa-users"></i>Kundendaten</a></li>
         {% if edit %}
-        <li><a href="{% url 'customer' customer.id %}">{{ customer.first_name }} {{ customer.last_name }}</a></li>
+        <li><a href="{% url 'customer' customer.id %}">{{ customer.name }}</a></li>
         {% else %}
         <li>Kunde anlegen</li>
         {% endif %}

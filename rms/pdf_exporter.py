@@ -51,8 +51,6 @@ class PDF:
         self.pdf.setFontSize(8)
         self.pdf.drawString(25*mm, 246.5*mm, settings.PDF_FROM_LINE)
         self.pdf.setFontSize(11)
-        if customer.company is not None:
-            self.pdf.drawString(25*mm, 238.1*mm, customer.company)
         self.pdf.drawString(25*mm, 233*mm, str(customer))
         if customer.mailing_address.mailbox is not None:
             self.pdf.drawString(25*mm, 228*mm, 'Postfach: {}'.format(customer.mailing_address.mailbox))
